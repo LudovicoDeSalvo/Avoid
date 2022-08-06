@@ -86,7 +86,7 @@ class wall extends Entity{
 // FUNCTIONS
 //
 
-//lol xd
+//lol xd mega lol
 
 
 
