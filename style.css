@@ -1,0 +1,38 @@
+html{
+    
+    color: white;
+    font-family: 'Merriweather', serif;
+}
+
+body {
+    background-color: #272727;
+    opacity: 1;
+    background-image:  radial-gradient(#d4d4d4 1.5px, transparent 1.5px), radial-gradient(#d4d4d4 1.5px, #272727 1.5px);
+    background-size: 60px 60px;
+    background-position: 0 0,30px 30px;
+}
+
+h1{
+    text-align: center;
+}
+
+.outer{
+    text-align: center;
+
+}
+
+
+.square{
+    width: 50px;
+    height: 50px;
+    display: inline-block;
+    margin: 0px;
+    background-color: white;
+    color: black;
+    margin: auto;
+    border: 1px solid black;
+  }
+
+.square:hover{
+    background-color: aqua;
+}
