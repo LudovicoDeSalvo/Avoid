@@ -21,6 +21,13 @@ var game = new Phaser.Game(config);
 // GAME ELEMENTS
 
 var entities = [];
+var pg
+
+
+
+// GAME VARIABLES
+
+var playerSize = 10;
 
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -30,53 +37,110 @@ var entities = [];
 //
 
 class Entity{
-    constructor(x,y,width,height,collision){
+    constructor(scene,x,y,width,height,collision,deadly){
+        
+        this.scene = scene
         this.x = x
         this.y = y
         this.width = width
-        this.height = width
-        this.collision
+        this.height = height
+        this.collision = collision
+        this.deadly = deadly
+
+        this.look = this.scene.add.graphics();
+
+        entities.push(this)
     }
 
+    move(mx,my){
+
+        let move = true
+        
+        for (let i = 0 ; i < entities.length ; i++){
+
+            if( entities[i].collision == true ){
+                
+                //check upper left corner
+                if ( (this.x + mx > entities[i].x && this.x + mx < (entities[i].x + entities[i].width ) ) || (this.y + my > entities[i].y && this.y + my < (entities[i].y + entities[i].height)))
+                    move = false;
+                
+                //check upper right corner
+                if ( (this.x + mx + this.width > entities[i].x && this.x + mx + this.width < (entities[i].x + entities[i].width ) ) || (this.y + my > entities[i].y && this.y + my < (entities[i].y + entities[i].height)))
+                    move = false;
+
+                //check bottom left corner
+                if ( (this.x + mx > entities[i].x && this.x + mx < (entities[i].x + entities[i].width ) ) || (this.y + my + this.height > entities[i].y && this.y + my + this.height < (entities[i].y + entities[i].height)))
+                    move = false;
+
+                //check bottom right corner
+                if ( (this.x + mx + this.width > entities[i].x && this.x + mx + this.width < (entities[i].x + entities[i].width ) ) || (this.y + my + this.height > entities[i].y && this.y + my + this.height < (entities[i].y + entities[i].height)))
+                    move = false;
+
+            }
+        }
+
+        if( move == true) {
+            this.x += mx
+            this.y -= my
+            this.look.moveTo(mx,my)
+        }
+
+
+    }
 }
 
 class player extends Entity{
-    constructor(x,y,scene){
-        super()
-        
-        this.x = x
-        this.y = y
-        this.width = 10
-        this.height = 10
-        this.collision = false
+    constructor(scene,x,y){
+        super(scene,x,y,playerSize,playerSize,false)
 
-        this.scene = scene
+        this.dead = false
 
-        var player_graphics = this.scene.add.graphics();
-        player_graphics.fillStyle(0x00FF00);
-        player_graphics.fillRect(x , y , this.width, this.height);
+        this.look.fillStyle(0x00FF00);
+        this.look.fillRect(x , y , this.width, this.height);
+    }
+
+    checkIfDead(){
+
+        for (let i = 0; i < entities.length ; i++){
+            
+            if(entities[i].deadly == true){
+
+                //check upper left corner moved by 1 in each direction towards the player's centre
+                if ( (this.x + 1 > entities[i].x && this.x + 1 < (entities[i].x + entities[i].width ) ) || (this.y + 1 > entities[i].y && this.y + 1 < (entities[i].y + entities[i].height)))
+                    this.dead = true;
+                
+                //check upper right corner
+                if ( (this.x - 1 + this.width > entities[i].x && this.x - 1 + this.width < (entities[i].x + entities[i].width ) ) || (this.y + 1 > entities[i].y && this.y + 1 < (entities[i].y + entities[i].height)))
+                    this.dead = true;
+
+                //check bottom left corner
+                if ( (this.x + 1 > entities[i].x && this.x + 1 < (entities[i].x + entities[i].width ) ) || (this.y - 1 + this.height > entities[i].y && this.y - 1 + this.height < (entities[i].y + entities[i].height)))
+                    this.dead = true;
+
+                //check bottom right corner
+                if ( (this.x - 1 + this.width > entities[i].x && this.x - 1 + this.width < (entities[i].x + entities[i].width ) ) || (this.y - 1 + this.height > entities[i].y && this.y - 1 + this.height < (entities[i].y + entities[i].height)))
+                    this.dead = true;
+
+                //check center
+                if ( (this.x  + this.width / 2 > entities[i].x && this.x + this.width / 2 < (entities[i].x + entities[i].width ) ) || (this.y + this.height / 2> entities[i].y && this.y + this.height / 2 < (entities[i].y + entities[i].height)))
+                this.dead = true;
+
+
+            }
+        }
+
+        console.log(this.dead)
     }
 }
 
 class wall extends Entity{
-    constructor(x,y,width,height,scene){
-        super()
-        
-        this.x = x
-        this.y = y
-        this.width = width
-        this.height = width
-        this.collision = true
+    constructor(scene,x,y,width,height){
+        super(scene,x,y,width,height,true)
 
-        this.scene = scene
-
-        var wall_graphics = this.scene.add.graphics();
-        wall_graphics.fillStyle(0xFFFFFF);
-        wall_graphics.fillRect(x , y , width, height);
-
+        this.look.fillStyle(0xFFFFFF);
+        this.look.fillRect(x , y , width, height);
 
     }
-
 }
 
 
@@ -84,7 +148,8 @@ class wall extends Entity{
 
 //
 // FUNCTIONS
-// figlio
+//
+
 
 
 
@@ -103,17 +168,19 @@ function preload ()
 function create ()
 {
     var wallThickness = 10
-    var lowerEdge = new wall(0 , dimensione_y - wallThickness ,dimensione_x , wallThickness,this)
-    var upperEdge = new wall(0,0, dimensione_x , wallThickness,this)
-    var rightEdge = new wall(dimensione_x - wallThickness , 0 , wallThickness , dimensione_y ,this)
-    var leftEdge = new wall(0,0, wallThickness , dimensione_y,this)
+    var lowerEdge = new wall(this,0 , dimensione_y - wallThickness ,dimensione_x , wallThickness)
+    var upperEdge = new wall(this,0,0, dimensione_x , wallThickness)
+    var rightEdge = new wall(this,dimensione_x - wallThickness , 0 , wallThickness , dimensione_y)
+    var leftEdge = new wall(this,0,0, wallThickness , dimensione_y)
 
-    var pg = new player(400,400,this)
+    pg = new player(this,400,400);
+
+
 }
 
 function update ()
 {
-    
+    //pg.checkIfDead()
 }
 
 function render ()
