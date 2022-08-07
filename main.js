@@ -22,16 +22,17 @@ var scene
 
 // GAME ELEMENTS
 
-
-var entities = [];
+var entities = []
 var pg
 var keys
+var frameTime = 0
 
 
 
 // GAME VARIABLES
 
-var playerSize = 10;
+var playerSize = 10
+var playerSpeed = 10
 
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -57,12 +58,28 @@ class Entity{
         entities.push(this)
     }
 
-    move(mx,my){
+    move([dx,dy]){
 
+        let mx
+        let my
+        
         let move = true
 
-        //console.log(move)
+
         
+        //normalize and generate step
+        if ( (dx !== 0 || dy !== 0) && this.speed >= 0){
+            mx = ( dx  / Math.sqrt(dx ** 2 + dy ** 2) ) * this.speed
+            my = ( dy  / Math.sqrt(dx ** 2 + dy ** 2) ) * this.speed
+        } 
+        else{
+            move = false
+        }
+
+        let originalSpeed = this.speed
+        this.speed = this.speed - 0.5
+        
+        //check if destination is inside solid entities
         for (let i = 0 ; i < entities.length ; i++){
 
             if( entities[i].collision == true ){
@@ -84,6 +101,13 @@ class Entity{
                     move = false; 
                 
             }
+
+            if(move == false && this.speed > 0.5){
+
+                console.log(this.speed)
+                //this.move([dx,dy])
+
+            }
         }
 
 
@@ -92,20 +116,21 @@ class Entity{
             this.y += my
         }
 
+        this.speed = originalSpeed
+
 
     }
 }
 
 class player extends Entity{
     constructor(x,y){
-        super(x,y,playerSize,playerSize,false,null,1)
+        super(x,y,playerSize,playerSize,false,null,playerSpeed)
 
         this.dead = false
 
         this.look.fillStyle(0x00FF00);
         this.look.fillRect(x , y , this.width, this.height);
     }
-
 
 
     checkIfDead(){
@@ -136,29 +161,26 @@ class player extends Entity{
 
     handler(){
         
-        let mx = 0
-        let my = 0
+        let dx = 0
+        let dy = 0
 
         if(keys.W.isDown)
-            my = -1
+            dy = -1
         if(keys.A.isDown)
-            mx = -1
+            dx = -1
         if(keys.S.isDown)
-            my = 1
+            dy = 1
         if(keys.D.isDown)
-            mx = 1
+            dx = 1
         
-        if (mx !== 0 || my !== 0){
-            let normalizedX = mx  / Math.sqrt(mx ** 2 + my ** 2) 
-            let normalizedY = my  / Math.sqrt(mx ** 2 + my ** 2) 
-
-            this.movePlayer(normalizedX * this.speed, normalizedY * this.speed)
-        }
+        this.velocity = [dx,dy]
+        
+        this.movePlayer(this.velocity)
     }
 
-    movePlayer(mx,my){
+    movePlayer([dx,dy]){
         
-        this.move(mx,my)
+        this.move([dx,dy])
         this.look.clear()
         this.look.fillStyle(0x00FF00);
         this.look.fillRect(this.x , this.y , this.width, this.height);
@@ -191,6 +213,7 @@ class wall extends Entity{
 // GAMELOOP AND STUFF
 //
 
+var fpsCounter
 
 function preload ()
 {
@@ -210,19 +233,27 @@ function create ()
     var upperEdge = new wall(0,0, dimensione_x , wallThickness)
     var rightEdge = new wall(dimensione_x - wallThickness , 0 , wallThickness , dimensione_y)
     var leftEdge = new wall(0,0, wallThickness , dimensione_y)
+    var centerWall = new wall(200,200,30,30)
+
+
+    fpsCounter = this.add.text(20, 15);
+
+
 
 }
 
-function update ()
+
+
+function update (time,delta)
 {
-    
-    pg.handler();
+    frameTime += delta
 
-
-    
-    //console.log(pg.dead)
-    //console.log("W:", keys.W.isDown, "A:", keys.A.isDown, "S:", keys.S.isDown, "D:",keys.D.isDown, "Space:",keys.SPACE.isDown)
-}
+    if (frameTime > 16.5) {  
+        frameTime = 0;
+        pg.handler();
+        fpsCounter.setText(1000 / delta)
+    }
+ }
 
 function render ()
 {
@@ -232,11 +263,8 @@ function render ()
 
 // KNOWN BUGS
 /*
-    -PERCHE NON MI FUNZIONA STO MOVE TO
     -ti accosti al muro continuando a premedere un direzione e ne premi una seconda, non va
-
-
-
+    -
 
 
 
