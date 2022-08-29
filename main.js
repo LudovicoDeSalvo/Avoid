@@ -111,16 +111,33 @@ class Entity{
 
 
                 //UL per mx per leftEdge e poi rightEdge
-                if( ( entities[i].x >= minX && entities[i].x <= maxX) && ( this.y >= entities[i].y && this.y <= entities[i].y + entities[i].width) ){
+                if( ( entities[i].x >= minX && entities[i].x < maxX) && ( this.y >= entities[i].y && this.y < entities[i].y + entities[i].height) ){
                     movex = false;
                     theOneThatBlocked = i
                     blocked = true
                 }
-                /*if( (entities[i].x + entities[i].width > this.x && entities[i].x + entities[i].width < this.x + mx ) && ( this.y > entities[i].y && this.y < entities[i].y + entities[i].width) ){
+                if( ( entities[i].x + entities[i].width >= minX && entities[i].x + entities[i].width < maxX) && ( this.y >= entities[i].y && this.y < entities[i].y + entities[i].height) ){
                     movex = false;
                     theOneThatBlocked = i
                     blocked = true
-                }*/
+                }
+
+
+                //se il punto [leftEdge||rightEdge;player.y] è compreso SIA tra (player.x,player.x+mx) e (En.y+En.y+height)
+                //UR per mx per leftEdge e poi rightEdge
+                if( ( entities[i].x >= minX + this.width && entities[i].x < maxX + this.width) && ( this.y >= entities[i].y && this.y < entities[i].y + entities[i].height) ){
+                    movex = false;
+                    theOneThatBlocked = i
+                    blocked = true
+                }
+                if( ( entities[i].x + entities[i].width >= minX + this.width && entities[i].x + entities[i].width < maxX + this.width) && ( this.y >= entities[i].y && this.y < entities[i].y + entities[i].height) ){
+                    movex = false;
+                    theOneThatBlocked = i
+                    blocked = true
+                }
+                
+
+                
 
                 /*
                 //UR per mx per leftEdge e poi rightEdge
