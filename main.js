@@ -1,10 +1,12 @@
+"use strict"
+
 // UI
-var dimensione_x = 600
-var dimensione_y = 600
+let dimensione_x = 600
+let dimensione_y = 600
 
 
 // Config Game
-var config = {
+let config = {
     type: Phaser.AUTO,
     width: dimensione_x,
     height: dimensione_y,
@@ -18,25 +20,25 @@ var config = {
     }
 }
 
-var game = new Phaser.Game(config);
+let game = new Phaser.Game(config);
 
 
 
-var scene
+let scene
 
 // GAME ELEMENTS
 
-var entities = []
-var pg
-var keys
-var frameTime = 0
+let entities = []
+let pg
+let keys
+let frameTime = 0
 
 
 
 // GAME VARIABLES
 
-var playerSize = 10
-var playerSpeed = 10
+let playerSize = 10
+let playerSpeed = 10
 
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -45,8 +47,10 @@ var playerSpeed = 10
 // CLASSES
 //
 
-class Entity{
+class Entity extends Phaser.GameObjects.Image{
     constructor(x,y,width,height,collision,deadly,speed,velocity){
+        
+        super(scene)
         
         this.x = x
         this.y = y
@@ -66,6 +70,7 @@ class Entity{
         
     }
 
+    /*
     parser(){
 
         let identical = true
@@ -79,25 +84,21 @@ class Entity{
         }
 
         return identical
-    }
+    }*/
     
     selfDestruct(){
-        console.log(entities)
         
-        this.look.clear()
+        let index = entities.indexOf(this)
+        entities.splice(index,1)
 
-        //let index = entities.findIndex(parser())
-        //entities.splice(index)
+        this.look.clear()
         
         for( const i in this){
-            console.log("meow")
             delete this[i]
         }
 
-        console.log(this)
-
-        console.log(entities)
-    }
+        //this = undefined
+    } 
 
     
 
@@ -131,7 +132,7 @@ class Entity{
 
         for (let i = 0 ; i < entities.length ; i++){
 
-            if( entities[i].collision == true){
+            if( entities[i].collision === true){
 
                 let blocked = this.checkCollision( entities[i] , mx , my)
 
@@ -140,14 +141,14 @@ class Entity{
     
                     let theOneThatBlocked
                     
-                    if ( blocked[0] == true){
+                    if ( blocked[0] === true){
                         movex = false;
                         theOneThatBlocked = i
                         xBlocked = true
                     }
 
                     //Cover remaining Gap
-                    if (xBlocked == true && dx !== 0){
+                    if (xBlocked === true && dx !== 0){
                         let gap = 0
     
                         if(dx > 0){
@@ -165,7 +166,7 @@ class Entity{
                 }
 
                 //Y
-                if( yBlocked == false){
+                if( yBlocked === false){
 
                     let theOneThatBlocked
                     
@@ -176,7 +177,7 @@ class Entity{
                     }
 
                     //Cover remaining gap
-                    if (yBlocked == true && dy !== 0){
+                    if (yBlocked === true && dy !== 0){
                         let gap = 0
 
                         if(dy > 0){
@@ -193,11 +194,11 @@ class Entity{
                 }
 
                 //Diagonal
-                if( diagonallyBlocked == false){
+                if( diagonallyBlocked === false){
 
                     let theOneThatBlocked
                     
-                    if ( blocked[2] == true){
+                    if ( blocked[2] === true){
                         movey = false;
                         movex = true;
                         theOneThatBlocked = i
@@ -205,7 +206,7 @@ class Entity{
                     }
 
                     //Cover remaining gap
-                    if (diagonallyBlocked == true && dy !== 0){
+                    if (diagonallyBlocked === true && dy !== 0){
                         let gap = 0
 
                         if(dy > 0){
@@ -379,7 +380,8 @@ class player extends Entity{
         if(keys.V.isDown){
             dx=1
             dy=1
-            centerWall.selfDestruct()
+            
+            
         }
         
         this.velocity = [dx,dy]
@@ -405,7 +407,7 @@ class player extends Entity{
 
                 let collision = this.checkCollision(entities[i],0,0)
 
-                if(collision[0] == true || collision[1] == true || collision[2] == true){
+                if(collision[0] === true || collision[1] === true || collision[2] === true){
                     this.dead = true
                 }
             }
@@ -445,67 +447,88 @@ class cannon extends Entity{
 
 
 
-
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 //
 // GAMELOOP AND STUFF
 //
 
-var fpsCounter
-var deltaDisplayer
-var playerPosition
+let fpsCounter
+let deltaDisplayer
+let playerPosition
 
 function preload ()
 {
 
 }
 
-var centerWall
+
 
 function create ()
-{
+{    
     scene = this
     
     keys = this.input.keyboard.addKeys('W,A,S,D,V,SPACE');
     pg = new player(189,189);    
     
-    var wallThickness = 10
-    var lowerEdge = new wall(0 , dimensione_y - wallThickness ,dimensione_x , wallThickness)
-    var upperEdge = new wall(0,0, dimensione_x , wallThickness)
-    var rightEdge = new wall(dimensione_x - wallThickness , 0 , wallThickness , dimensione_y)
-    var leftEdge = new wall(0,0, wallThickness , dimensione_y)
+    let wallThickness = 10
+    let lowerEdge = new wall(0 , dimensione_y - wallThickness ,dimensione_x , wallThickness)
+    let upperEdge = new wall(0,0, dimensione_x , wallThickness)
+    let rightEdge = new wall(dimensione_x - wallThickness , 0 , wallThickness , dimensione_y)
+    let leftEdge = new wall(0,0, wallThickness , dimensione_y)
     centerWall = new wall(200,200,50,30)
-    var thinWall = new wall(100,300,50,4)
-    var thinWall2 = new wall(100,400,4,50)
+    let thinWall = new wall(100,300,50,4)
+    let thinWall2 = new wall(100,400,4,50)    
+
+    fpsCounter = this.add.text(20, 15)
+    playerPosition = this.add.text(20,30)
+    //clockDisplayer = this.add.text(20,45)
+
 
     
-
-    fpsCounter = this.add.text(20, 15);
-    clockDisplayer = this.add.text(20,30)
-    playerPosition = this.add.text(20,45)
 
 }
 
 
-var clock = 0
-var subClock = 0
+let clock = 0
+let subClock = 0
+
+let centerWall
+let doItOnce = true
 
 function update (time,delta)
 {
+    
+    while(doItOnce){
+
+        //let meow = 2
+        //console.log(meow)
+        
+        console.log("Wall: ",centerWall," Entitites: ",entities)
+        centerWall.destroy()
+        console.log("Wall: ",centerWall," Entitites: ",entities) 
+        
+        //meow = undefined
+
+        doItOnce = false
+    }
     
     frameTime += delta
 
     if (frameTime > 16.5) {  
         frameTime = 0;
 
-        pg.handler();
+        pg.handler()
 
         
         fpsCounter.setText(1000 / delta)
         //deltaDisplayer.setText("Delta: " + delta + "  Time: " + time)
         playerPosition.setText("X: " + pg.x + "  Y: " + pg.y)
 
+        //let follia = new wall(100,100,5,5)
+        //let namespace = {};
+        //namespace.follia = {};
+        //delete namespace.follia;
     } 
 
     /*
