@@ -1,4 +1,4 @@
-"use strict"
+//"use strict"
 
 // UI
 let dimensione_x = 600
@@ -47,10 +47,10 @@ let playerSpeed = 10
 // CLASSES
 //
 
-class Entity extends Phaser.GameObjects.Image{
+class Entity{
     constructor(x,y,width,height,collision,deadly,speed,velocity){
         
-        super(scene)
+        //super(scene)
         
         this.x = x
         this.y = y
@@ -349,6 +349,23 @@ class Entity extends Phaser.GameObjects.Image{
         return blocked
 
     }
+
+    checkCollision2TheRevenge(theOtherone, mx , my){
+        
+        let collision = false
+
+        //calculate center
+        let cx = this.x / 2
+        let cy = this.y / 2
+
+        let travelDistance = Math.sqrt((cx + mx)**2 + (cy + my)**2)
+        let numberOfSteps = Math.floor(traveldistance) + 1
+        let step = travelDistance / ( numberOfSteps - 1)
+
+        for( let i = 0 ; i <=  )
+
+
+    }
 }
 
 
@@ -505,7 +522,7 @@ function update (time,delta)
         //console.log(meow)
         
         console.log("Wall: ",centerWall," Entitites: ",entities)
-        centerWall.destroy()
+        //centerWall.destroy()
         console.log("Wall: ",centerWall," Entitites: ",entities) 
         
         //meow = undefined
@@ -525,10 +542,13 @@ function update (time,delta)
         //deltaDisplayer.setText("Delta: " + delta + "  Time: " + time)
         playerPosition.setText("X: " + pg.x + "  Y: " + pg.y)
 
-        //let follia = new wall(100,100,5,5)
-        //let namespace = {};
-        //namespace.follia = {};
-        //delete namespace.follia;
+        let follia = new wall(100,100,5,5)
+        //console.log(follia)
+        follia.selfDestruct()
+        
+        follia = undefined
+        delete follia
+        //console.log(follia)
     } 
 
     /*
