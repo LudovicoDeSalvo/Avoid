@@ -1,4 +1,4 @@
-//"use strict"
+"use strict"
 
 // UI
 let dimensione_x = 600
@@ -14,31 +14,27 @@ let config = {
         preload: preload,
         create: create,
         update: update
-    },
-    fps: {
-        target: 60
     }
 }
 
 let game = new Phaser.Game(config);
 
-
-
 let scene
 
 // GAME ELEMENTS
 
+let higherEntities = []
 let entities = []
 let pg
 let keys
-let frameTime = 0
+let Delta
 
 
 
 // GAME VARIABLES
 
 let playerSize = 10
-let playerSpeed = 10
+let playerSpeed = 160
 
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -47,10 +43,24 @@ let playerSpeed = 10
 // CLASSES
 //
 
+class HigherPlaneEntity{
+    
+    //GRANT US MORE EYES
+    
+    constructor(entity){
+
+        this.entity = entity
+
+
+
+    }
+
+
+}
+
+
 class Entity{
     constructor(x,y,width,height,collision,deadly,speed,velocity){
-        
-        //super(scene)
         
         this.x = x
         this.y = y
@@ -64,27 +74,15 @@ class Entity{
         this.look = scene.add.graphics();
 
         entities.push(this)
+
+
     }
+
 
     handler(){
         
     }
 
-    /*
-    parser(){
-
-        let identical = true
-
-        for(let i = 0 ; i < entities.length; i++){
-            for( const j in this){
-                if(this[j] !== entities[i][j]){
-                    identical = false
-                }
-            }
-        }
-
-        return identical
-    }*/
     
     selfDestruct(){
         
@@ -97,145 +95,65 @@ class Entity{
             delete this[i]
         }
 
-        //this = undefined
+        const allProp = Object.getOwnPropertyNames(this)
+
+        allProp.forEach(propriety => {delete this[propriety];});
+
+        Object.setPrototypeOf(this,null)
     } 
 
-    
 
     move([dx,dy]){
 
-        let mx
-        let my
-        
-        let movex = true
-        let movey = true
+        let mx = 0
+        let my = 0
 
         //normalize and generate step
         if ( dx !== 0 && this.speed > 0){
-            mx = ( dx  / Math.sqrt(dx ** 2 + dy ** 2) ) * this.speed
+            mx = ( dx  / Math.sqrt(dx ** 2 + dy ** 2) ) * this.speed * Delta
         } 
-        else{
-            movex = false
-        }
 
         if ( dy !== 0 && this.speed > 0){
-            my = ( dy  / Math.sqrt(dx ** 2 + dy ** 2) ) * this.speed
+            my = ( dy  / Math.sqrt(dx ** 2 + dy ** 2) ) * this.speed * Delta
         } 
-        else{
-            movey = false
-        }
 
 
-        let xBlocked = false
-        let yBlocked = false
-        let diagonallyBlocked = false
-
+        //Check if collision with "collidable" entities
         for (let i = 0 ; i < entities.length ; i++){
 
             if( entities[i].collision === true){
 
-                let blocked = this.checkCollision( entities[i] , mx , my)
+                //This check properly if there is a collision and the distance to touch the stopping object
+                let collision = this.checkCollision2TheRevenge( entities[i] , mx , my)
 
-                //X
-                if( xBlocked == false){    
-    
-                    let theOneThatBlocked
+                if(collision[0] === true){
+
+                    //If there's a collision, checks if it can still moves on another axis
+                    let blocked = this.checkCollisionXY(entities[i] , mx , my)
                     
                     if ( blocked[0] === true){
-                        movex = false;
-                        theOneThatBlocked = i
-                        xBlocked = true
+                        mx = collision[1]
                     }
-
-                    //Cover remaining Gap
-                    if (xBlocked === true && dx !== 0){
-                        let gap = 0
-    
-                        if(dx > 0){
-                            gap = entities[theOneThatBlocked].x - (this.x + this.width)
-                            this.x += gap 
-                        }
-    
-                        if(dx < 0){
-    
-                            gap = this.x - (entities[theOneThatBlocked].x + entities[theOneThatBlocked].width)
-                            this.x -= gap 
-                        }
+                    if( blocked[1] === true){
+                        my = collision[2]
                     }
-                
-                }
-
-                //Y
-                if( yBlocked === false){
-
-                    let theOneThatBlocked
-                    
-                    if ( blocked[1] == true){
-                        movey = false;
-                        theOneThatBlocked = i
-                        yBlocked = true
-                    }
-
-                    //Cover remaining gap
-                    if (yBlocked === true && dy !== 0){
-                        let gap = 0
-
-                        if(dy > 0){
-                            gap = entities[theOneThatBlocked].y - (this.y + this.height)
-                            this.y += gap
-                        }
-
-                        if(dy < 0){
-
-                            gap = this.y - (entities[theOneThatBlocked].y + entities[theOneThatBlocked].height)
-                            this.y -= gap
-                        }
-                    }
-                }
-
-                //Diagonal
-                if( diagonallyBlocked === false){
-
-                    let theOneThatBlocked
-                    
-                    if ( blocked[2] === true){
-                        movey = false;
-                        movex = true;
-                        theOneThatBlocked = i
-                        diagonallyBlocked = true
-                    }
-
-                    //Cover remaining gap
-                    if (diagonallyBlocked === true && dy !== 0){
-                        let gap = 0
-
-                        if(dy > 0){
-                            gap = entities[theOneThatBlocked].y - (this.y + this.height)
-                            this.y += gap
-                        }
-
-                        if(dy < 0){
-
-                            gap = this.y - (entities[theOneThatBlocked].y + entities[theOneThatBlocked].height)
-                            this.y -= gap
-                        }
+                    //this checks if you're a free both in X and in Y, if you are you can move in X and cover the distance in Y (remember that you already verified that you're blocked diagonally)
+                    if( blocked[0] === false && blocked [1] === false){
+                        my = collision[2]
                     }
                 }
             }
         }
         
-        
-        if( movex == true) {
-            this.x += mx
-        }
-        if( movey == true){
-            this.y += my
-        }
+        this.x += mx
+        this.y += my
+
     }
+
 
     checkCollisionXY(theOtherOne , mx , my){
 
-        //This method generates the region covered from this entity while moving and checks if it overlaps with the other one
+        //This method generates the region covered from this entity while moving and checks if existis a common region between that and the one occupied from the OtherOne
 
         let blocked = [false,false,false]
 
@@ -269,7 +187,6 @@ class Entity{
                         
         }
 
-
         //Y
         commonRegionLeftEdge  = Math.max( theOtherOne.x , this.x)
         commonRegionRightEdge = Math.min( theOtherOne.x + theOtherOne.width - epsilon, this.x + this.width - epsilon)
@@ -283,6 +200,7 @@ class Entity{
                 blocked[1] = true
             }
         }
+
         if( my < 0){
                     
             commonRegionLowerEdge = Math.min(theOtherOne.y + theOtherOne.height - epsilon , this.y + this.height - epsilon)
@@ -290,81 +208,80 @@ class Entity{
 
             if(commonRegionLeftEdge < commonRegionRightEdge  && commonRegionUpperEdge < commonRegionLowerEdge){
                 blocked[1] = true
-            }
-                        
+            }              
         }
 
         return blocked
-
     }
 
-    checkCollision( theOtherOne , mx , my){
 
-        let blocked = [false,false,false]
-        let epsilon = 0.0000000000001
-
-
-        blocked = this.checkCollisionXY(theOtherOne , mx, my)
-        //console.log(blocked)
-
-        if(blocked[0] == false && blocked[1] == false){
-
-            let commonRegionUpperEdge = Math.max(this.y + my, theOtherOne.y)
-            let commonRegionLowerEdge = Math.min(this.y + this.height + my - epsilon, theOtherOne.y + theOtherOne.height - epsilon)
-            let commonRegionRightEdge = Math.min(this.x + this.width + mx - epsilon , theOtherOne.x + theOtherOne.width - epsilon)
-            let commonRegionLeftEdge  = Math.max(this.x + mx, theOtherOne.x)
-            
-            if( commonRegionLeftEdge <= commonRegionRightEdge && commonRegionUpperEdge <= commonRegionLowerEdge){
-                blocked[2] = true
-            }           
-            
-            //Better but yet not working system 
-            /*let step = 0.1
-
-            //mx AND my >0
-
-            for(let x = this.x ; x < this.x + this.width + mx ; x += step){
-
-                //console.log(x,my)
-                
-                let y1 = x + this.height
-                let y2 = x - this.width
-
-                let commonRegionLowerEdge = Math.min(theOtherOne.y + theOtherOne.height - epsilon, y1 - epsilon, this.y + this.height + my - epsilon)
-                let commonRegionUpperEdge = Math.max(this.y , y2 , theOtherOne.y)
-
-                console.log(x, commonRegionLowerEdge, commonRegionUpperEdge)
-                
-                //controlla se il segmento verticale definito da commonRUE e commonRLE coincide con theOtherOne
-                //devo anche controllare se the otherone esiste nella x
-                if( ( ( commonRegionUpperEdge <= theOtherOne.y && theOtherOne.y < commonRegionLowerEdge ) || (commonRegionUpperEdge <= theOtherOne.y + theOtherOne.height && theOtherOne.y + theOtherOne.height < commonRegionLowerEdge) || ( commonRegionUpperEdge < theOtherOne.y + theOtherOne.height && commonRegionUpperEdge >= theOtherOne.y && commonRegionLowerEdge < theOtherOne.y + theOtherOne.height && commonRegionLowerEdge >= theOtherOne.y)   ) && x > theOtherOne.x && x < theOtherOne.x + theOtherOne.width){
-                    blocked[2] = true
-                    console.log("Collision!")
-                }
-
-            }*/
-            
-        }
-
-        return blocked
-
-    }
-
-    checkCollision2TheRevenge(theOtherone, mx , my){
+    checkCollision2TheRevenge(theOtherOne, mx , my){
+        
+        //v0.9
+        //This method checks if the area of this overlaps with theOtherOne's while moving in numberofsteps steps.
+        //It returns true if there's a collision and the distance in X and Y to reach the colliding object
         
         let collision = false
 
-        //calculate center
-        let cx = this.x / 2
-        let cy = this.y / 2
+        let epsilon = 0.0000000000001
 
-        let travelDistance = Math.sqrt((cx + mx)**2 + (cy + my)**2)
-        let numberOfSteps = Math.floor(traveldistance) + 1
-        let step = travelDistance / ( numberOfSteps - 1)
+        let travelDistance = Math.sqrt(mx ** 2 + my ** 2)
+        let numberOfSteps = Math.floor(travelDistance) + 2
+        let stepX = mx / ( numberOfSteps - 1)
+        let stepY = my / ( numberOfSteps - 1)
 
-        for( let i = 0 ; i <=  )
+        let coveredDistanceX = 0
+        let coveredDistanceY = 0
 
+        let continua = true
 
+        for( let i = 0 ; i < numberOfSteps && continua === true; i++ ){
+
+            let commonRegionUpperEdge = Math.max(this.y + stepY * i, theOtherOne.y)
+            let commonRegionLowerEdge = Math.min(this.y + this.height + stepY * i - epsilon, theOtherOne.y + theOtherOne.height - epsilon)
+            let commonRegionRightEdge = Math.min(this.x + this.width + stepX * i - epsilon , theOtherOne.x + theOtherOne.width - epsilon)
+            let commonRegionLeftEdge  = Math.max(this.x + stepX * i , theOtherOne.x)
+
+            if( commonRegionLeftEdge <= commonRegionRightEdge && commonRegionUpperEdge <= commonRegionLowerEdge){
+                
+                collision = true
+                continua = false
+
+                if(i > 0){
+
+                    coveredDistanceX = stepX * (i - 1)
+                    coveredDistanceY = stepY * (i - 1)
+
+                    let gapX = 0
+        
+                    if(mx > 0){
+                        gapX = theOtherOne.x - (this.x + stepX * (i - 1) + this.width)
+                        coveredDistanceX += gapX 
+                    }
+        
+                    if(mx < 0){
+        
+                        gapX = this.x + stepX * (i - 1) - (theOtherOne.x + theOtherOne.width)
+                        coveredDistanceX -= gapX 
+                    }
+
+                    let gapY = 0
+        
+                    if(my > 0){
+                        gapY = theOtherOne.y - (this.y + stepY * (i - 1) + this.height)
+                        coveredDistanceY += gapY 
+                    }
+        
+                    if(my < 0){
+        
+                        gapY = this.y + stepY * (i - 1) - (theOtherOne.y + theOtherOne.height)
+                        coveredDistanceY -= gapY 
+                    }
+                }
+            }   
+        }
+
+        return [collision,coveredDistanceX,coveredDistanceY]
     }
 }
 
@@ -379,6 +296,7 @@ class player extends Entity{
         this.look.fillStyle(0x00FF00);
         this.look.fillRect(x , y , this.width, this.height);
     }
+
 
     handler(){
         
@@ -397,8 +315,6 @@ class player extends Entity{
         if(keys.V.isDown){
             dx=1
             dy=1
-            
-            
         }
         
         this.velocity = [dx,dy]
@@ -408,6 +324,7 @@ class player extends Entity{
 
     }
 
+
     movePlayer([dx,dy]){
         
         this.move([dx,dy])
@@ -416,15 +333,16 @@ class player extends Entity{
         this.look.fillRect(this.x , this.y , this.width, this.height);
     }
 
+
     checkIfDead(){
 
         for (let i = 0; i < entities.length ; i++){
             
             if(entities[i].deadly == true){
 
-                let collision = this.checkCollision(entities[i],0,0)
+                let collision = this.checkCollision2TheRevenge(entities[i],0,0)
 
-                if(collision[0] === true || collision[1] === true || collision[2] === true){
+                if(collision[0]){
                     this.dead = true
                 }
             }
@@ -451,8 +369,6 @@ class cannon extends Entity{
         this.look.fillStyle(0xAA0000);
         this.look.fillRect(x , y , 10, 10);
     }
-
-
 }
 
 
@@ -471,7 +387,6 @@ class cannon extends Entity{
 //
 
 let fpsCounter
-let deltaDisplayer
 let playerPosition
 
 function preload ()
@@ -493,74 +408,50 @@ function create ()
     let upperEdge = new wall(0,0, dimensione_x , wallThickness)
     let rightEdge = new wall(dimensione_x - wallThickness , 0 , wallThickness , dimensione_y)
     let leftEdge = new wall(0,0, wallThickness , dimensione_y)
-    centerWall = new wall(200,200,50,30)
+    let centerWall = new wall(200,200,50,30)
     let thinWall = new wall(100,300,50,4)
     let thinWall2 = new wall(100,400,4,50)    
 
     fpsCounter = this.add.text(20, 15)
     playerPosition = this.add.text(20,30)
-    //clockDisplayer = this.add.text(20,45)
-
-
-    
-
+ 
 }
 
 
-let clock = 0
-let subClock = 0
-
-let centerWall
 let doItOnce = true
+let meow
 
 function update (time,delta)
 {
+    Delta = delta / 1000
+
     
-    while(doItOnce){
+    
+    while(doItOnce){ 
 
-        //let meow = 2
-        //console.log(meow)
+        meow = new wall(40,40,10,10)
         
-        console.log("Wall: ",centerWall," Entitites: ",entities)
-        //centerWall.destroy()
-        console.log("Wall: ",centerWall," Entitites: ",entities) 
-        
-        //meow = undefined
+        const allProp = Object.getOwnPropertyNames(meow)
 
+        allProp.forEach(propriety => {delete meow[propriety];});
+        
+        Object.setPrototypeOf(meow,null)
+
+        //meow.selfDestruct()
+        
         doItOnce = false
     }
-    
-    frameTime += delta
 
-    if (frameTime > 16.5) {  
-        frameTime = 0;
-
-        pg.handler()
-
+    pg.handler()
         
-        fpsCounter.setText(1000 / delta)
-        //deltaDisplayer.setText("Delta: " + delta + "  Time: " + time)
-        playerPosition.setText("X: " + pg.x + "  Y: " + pg.y)
+    fpsCounter.setText(1000 / delta)
+    playerPosition.setText("X: " + pg.x + "  Y: " + pg.y)        
 
-        let follia = new wall(100,100,5,5)
-        //console.log(follia)
-        follia.selfDestruct()
-        
-        follia = undefined
-        delete follia
-        //console.log(follia)
-    } 
+    //var follia = new wall(100,100,5,5)
+    //follia.selfDestruct()
+    //follia = undefined
+    //console.log(follia)
 
-    /*
-    subClock++
-    if( subClock == 59){
-        subClock = 0
-        clock++
-    }
-
-    clockDisplayer.setText(delta)
-    console.log(delta)
-    */
+    console.log(meow)
 
  }
-
