@@ -59,8 +59,10 @@ class HigherPlaneEntity{
 }
 
 
-class Entity{
+class Entity extends Phaser.GameObjects.GameObject{
     constructor(x,y,width,height,collision,deadly,speed,velocity){
+        
+        super(scene)
         
         this.x = x
         this.y = y
@@ -105,6 +107,8 @@ class Entity{
 
     move([dx,dy]){
 
+        //moves and returns if there has been a collision (it saves to call checkCollision again in the handler)
+
         let mx = 0
         let my = 0
 
@@ -148,6 +152,7 @@ class Entity{
         this.x += mx
         this.y += my
 
+        return collision[0]
     }
 
 
@@ -365,9 +370,34 @@ class cannon extends Entity{
         super(x,y,10,10,true,false,0)
 
         this.direction = direction
+        this.Bulletclock = 3  //how many seconds between bullets
+        this.subclock = 0
 
         this.look.fillStyle(0xAA0000);
         this.look.fillRect(x , y , 10, 10);
+    }
+
+    //direction 0:right 1:up 2:left 3:down
+
+    handler(){
+
+        this.subclock += Delta
+
+        if(this.subclock >= this.Bulletclock * 1000){
+            this.subclock = 0 
+
+            
+        }
+
+
+    }
+
+
+}
+
+class bullet extends Entity{
+    constructor(x,y,velocity){
+        super(x,y,)
     }
 }
 
@@ -378,6 +408,11 @@ class cannon extends Entity{
 // FUNCTIONS
 //
 
+function omniHandler(){
+    for(let i = 0 ; i < entities.length ; i++){
+        entities[i].handler()
+    }
+}
 
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -429,20 +464,24 @@ function update (time,delta)
     
     while(doItOnce){ 
 
-        meow = new wall(40,40,10,10)
-        
-        const allProp = Object.getOwnPropertyNames(meow)
+        //meow = new wall(40,40,10,10)
+        //console.log(meow)
+        //meow.destroy()
+        //console.log(meow)
 
-        allProp.forEach(propriety => {delete meow[propriety];});
         
-        Object.setPrototypeOf(meow,null)
+        //const allProp = Object.getOwnPropertyNames(meow)
+
+        //allProp.forEach(propriety => {delete meow[propriety];});
+        
+        //Object.setPrototypeOf(meow,null)
 
         //meow.selfDestruct()
         
         doItOnce = false
     }
 
-    pg.handler()
+    omniHandler()
         
     fpsCounter.setText(1000 / delta)
     playerPosition.setText("X: " + pg.x + "  Y: " + pg.y)        
@@ -452,6 +491,9 @@ function update (time,delta)
     //follia = undefined
     //console.log(follia)
 
-    console.log(meow)
+    //console.log(meow)
+
+    //let follia = new wall(80,80,10,10)
+    //follia.destroy()
 
  }
