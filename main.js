@@ -292,6 +292,15 @@ class Entity extends Phaser.Physics.Arcade.Sprite{
 
         return [collision,coveredDistanceX,coveredDistanceY]
     }
+
+    moveTo(x,y){
+        this.x = x
+        this.y = y
+
+        this.look.clear();
+        this.look.fillStyle(this.color);
+        this.look.fillRect(this.x , this.y , this.width, this.height);
+    }
 }
 
 
@@ -366,13 +375,14 @@ class wall extends Entity{
 }
 
 class cannon extends Entity{
-    constructor(x,y,bulletClock,direction,bulletSpeed,bulletVelocity){
+    constructor(x,y,bulletClock,direction,bulletSpeed,bulletVelocity,bulletSize){
         super(x,y,10,10,true,false,0,[0,0])
 
         this.direction = direction
         this.bulletClock = bulletClock  //how many seconds between bullets
         this.bulletVelocity = bulletVelocity
         this.bulletSpeed = bulletSpeed
+        this.bulletSize = bulletSize
         
         this.subclock = 0
         this.color = 0xAA0000
@@ -392,12 +402,24 @@ class cannon extends Entity{
 
         this.subclock += Delta
         
-
         if(this.subclock >= this.bulletClock){
-            this.subclock = 0 
+            this.subclock = 0
 
-            let pewpew = new bullet(this.x + 10, this.y + (this.height / 2) - 2.5 , 5 , 5 , 150 , [1,0]) 
-            
+            for(let i = 0; i < this.magazine.length; i++){
+
+                if(this.magazine[i].shot === false){
+                    let spawnX = this.bulletVelocity[0] * (Math.sqrt( (this.width / 2) ** 2 + (this.height / 2) ** 2 ) + 
+                        Math.sqrt(2 * (this.bulletSize ** 2))); 
+                    let spawnY = this.bulletVelocity[1] * (Math.sqrt( (this.width / 2) ** 2 + (this.height / 2) ** 2 ) + 
+                        Math.sqrt(2 * (this.bulletSize ** 2)));
+
+                    console.log(spawnX,spawnY)
+
+                    this.magazine[i].x = this.x + spawnX
+                    this.magazine[i].y = this.y + spawnY
+                    this.magazine[i].shot = true
+                }
+            }
         }
     }
 
@@ -409,11 +431,14 @@ class cannon extends Entity{
 
         let maxDiagonal = Math.sqrt(dimensione_x ** 2 + dimensione_y ** 2)
 
+
         //since checkcCollision2 returns the distance in X and Y to reach the collising object, I use it to determine the travel distance of a bullet
-        for (let i = 0; i < entities.lenght && continua === true; i++){
+        for (let i = 0; i < entities.length && continua === true; i++){
             if(entities[i].collision === true){
                 data = this.checkCollision2TheRevenge(entities[i], this.bulletVelocity[0] * maxDiagonal, this.bulletVelocity[1] * maxDiagonal)
-                continua = false
+                if(data[0]===true){
+                    continua = false
+                }
             }
         }
 
@@ -426,12 +451,26 @@ class cannon extends Entity{
 
         
         //I want the bullet to start from a circle in which the cannon is inscribed
-        let spawnX = this.bulletVelocity[0] * (Math.sqrt( (this.width / 2) ** 2 + (this.height / 2) ** 2 ))
-        let spawnY = this.bulletVelocity[1] * (Math.sqrt( (this.width / 2) ** 2 + (this.height / 2) ** 2 ))
-        /*
+        let spawnX = this.bulletVelocity[0] * (Math.sqrt( (this.width / 2) ** 2 + (this.height / 2) ** 2 ) + 
+            Math.sqrt(2 * (this.bulletSize ** 2))); 
+        let spawnY = this.bulletVelocity[1] * (Math.sqrt( (this.width / 2) ** 2 + (this.height / 2) ** 2 ) + 
+            Math.sqrt(2 * (this.bulletSize ** 2)));
+
+ 
+        
+        
         for(let i = 0; i < capacity; i++){
-            this.magazine.push(new bullet(this.x + this.width, ))
-        }*/
+            
+            if( i * bulletGap <= travelDistance - Math.sqrt(2 * (this.bulletSize ** 2))){
+                let pewpew = new bullet(this.x + spawnX + bulletGap * i * this.bulletVelocity[0], this.y + spawnY + bulletGap * i * this.bulletVelocity[1], this.bulletSize , 
+                    this.bulletSize , this.bulletSpeed , this.bulletVelocity, true);
+                this.magazine.push(pewpew) 
+            }else{
+                let pewpew = new bullet(-100, -100 , this.bulletSize , this.bulletSize , this.bulletSpeed , 
+                    this.bulletVelocity, false);
+                this.magazine.push(pewpew)
+            }
+        }
 
         
 
@@ -442,10 +481,10 @@ class cannon extends Entity{
 
 
 class bullet extends Entity{
-    constructor(x,y,width,height,speed,velocity){
+    constructor(x,y,width,height,speed,velocity,shot){
         super(x,y,width,height,false,true,speed,velocity)
 
-        //this.killMePlease = false
+        this.shot = shot
 
         this.color = 0xFF0000
 
@@ -455,8 +494,11 @@ class bullet extends Entity{
 
     handler(){
 
-        if(this.move()){
-            this.selfDestruct()
+        if(this.x >= 0 && this.y >= 0){
+            if(this.move()){
+                this.shot = false
+                this.moveTo(-100,-100) 
+            }
         }
     }
 }
@@ -520,9 +562,7 @@ function create ()
     let thinWall = new wall(100,300,50,4)
     let thinWall2 = new wall(100,400,4,50)  
     
-    let cannone = new cannon(10,100,0.2,[1,0],150,[1,0])
-    let testBullet = new bullet(249,210,5,5,150,[1,0])
-    console.log(testBullet.x, testBullet.y)
+    let cannone = new cannon(10,100,0.1,[1,0],150,[1,0],5)
 
     fpsCounter = this.add.text(20, 15)
     playerPosition = this.add.text(20,30)
