@@ -1,8 +1,8 @@
 "use strict"
 
 // UI
-let dimensione_x = 600
-let dimensione_y = 600
+const dimensione_x = 600
+const dimensione_y = 600
 
 
 // Config Game
@@ -28,6 +28,7 @@ let entities = []
 let pg
 let keys
 let Delta
+const epsilon = 0.0000000000001
 
 
 
@@ -59,7 +60,7 @@ class HigherPlaneEntity{
 }
 
 
-class Entity extends Phaser.GameObjects.GameObject{
+class Entity extends Phaser.Physics.Arcade.Sprite{
     constructor(x,y,width,height,collision,deadly,speed,velocity){
         
         super(scene)
@@ -72,6 +73,7 @@ class Entity extends Phaser.GameObjects.GameObject{
         this.deadly = deadly
         this.speed = speed
         this.velocity = velocity
+        this.color = 0x000000
 
         this.look = scene.add.graphics();
 
@@ -88,6 +90,8 @@ class Entity extends Phaser.GameObjects.GameObject{
     
     selfDestruct(){
         
+        this.destroy()
+        
         let index = entities.indexOf(this)
         entities.splice(index,1)
 
@@ -102,25 +106,23 @@ class Entity extends Phaser.GameObjects.GameObject{
         allProp.forEach(propriety => {delete this[propriety];});
 
         Object.setPrototypeOf(this,null)
+
+        
     } 
 
 
-    move([dx,dy]){
+    move(){
 
         //moves and returns if there has been a collision (it saves to call checkCollision again in the handler)
+        
+        this.velocity = normalizeVector(this.velocity)
 
-        let mx = 0
-        let my = 0
+        //generate step
+        let mx = this.velocity[0] * this.speed * Delta
+        let my = this.velocity[1] * this.speed * Delta
 
-        //normalize and generate step
-        if ( dx !== 0 && this.speed > 0){
-            mx = ( dx  / Math.sqrt(dx ** 2 + dy ** 2) ) * this.speed * Delta
-        } 
-
-        if ( dy !== 0 && this.speed > 0){
-            my = ( dy  / Math.sqrt(dx ** 2 + dy ** 2) ) * this.speed * Delta
-        } 
-
+        let collision = [false]
+        let collided = false
 
         //Check if collision with "collidable" entities
         for (let i = 0 ; i < entities.length ; i++){
@@ -128,9 +130,11 @@ class Entity extends Phaser.GameObjects.GameObject{
             if( entities[i].collision === true){
 
                 //This check properly if there is a collision and the distance to touch the stopping object
-                let collision = this.checkCollision2TheRevenge( entities[i] , mx , my)
+                collision = this.checkCollision2TheRevenge( entities[i] , mx , my)
 
                 if(collision[0] === true){
+
+                    collided = true
 
                     //If there's a collision, checks if it can still moves on another axis
                     let blocked = this.checkCollisionXY(entities[i] , mx , my)
@@ -152,7 +156,11 @@ class Entity extends Phaser.GameObjects.GameObject{
         this.x += mx
         this.y += my
 
-        return collision[0]
+        this.look.clear();
+        this.look.fillStyle(this.color);
+        this.look.fillRect(this.x , this.y , this.width, this.height);
+
+        return collided
     }
 
 
@@ -166,8 +174,6 @@ class Entity extends Phaser.GameObjects.GameObject{
         let commonRegionLowerEdge
         let commonRegionRightEdge
         let commonRegionLeftEdge 
-        
-        let epsilon = 0.0000000000001
 
         commonRegionUpperEdge = Math.max(theOtherOne.y , this.y) 
         commonRegionLowerEdge = Math.min(theOtherOne.y + theOtherOne.height - epsilon , this.y + this.height)
@@ -227,8 +233,6 @@ class Entity extends Phaser.GameObjects.GameObject{
         //It returns true if there's a collision and the distance in X and Y to reach the colliding object
         
         let collision = false
-
-        let epsilon = 0.0000000000001
 
         let travelDistance = Math.sqrt(mx ** 2 + my ** 2)
         let numberOfSteps = Math.floor(travelDistance) + 2
@@ -297,8 +301,9 @@ class player extends Entity{
         super(x,y,playerSize,playerSize,false,null,playerSpeed)
 
         this.dead = false
+        this.color = 0x00FF00
 
-        this.look.fillStyle(0x00FF00);
+        this.look.fillStyle(this.color);
         this.look.fillRect(x , y , this.width, this.height);
     }
 
@@ -324,18 +329,9 @@ class player extends Entity{
         
         this.velocity = [dx,dy]
         
-        this.movePlayer(this.velocity)
+        this.move()
         this.checkIfDead()
 
-    }
-
-
-    movePlayer([dx,dy]){
-        
-        this.move([dx,dy])
-        this.look.clear()
-        this.look.fillStyle(0x00FF00);
-        this.look.fillRect(this.x , this.y , this.width, this.height);
     }
 
 
@@ -349,6 +345,8 @@ class player extends Entity{
 
                 if(collision[0]){
                     this.dead = true
+                    this.color=0xFF0000
+                    this.look.fillStyle(this.color)
                 }
             }
         }
@@ -359,22 +357,33 @@ class wall extends Entity{
     constructor(x,y,width,height){
         super(x,y,width,height,true)
 
-        this.look.fillStyle(0xFFFFFF);
+        this.color = 0xFFFFFF
+
+        this.look.fillStyle(this.color);
         this.look.fillRect(x , y , width, height);
 
     }
 }
 
 class cannon extends Entity{
-    constructor(x,y,direction){
-        super(x,y,10,10,true,false,0)
+    constructor(x,y,bulletClock,direction,bulletSpeed,bulletVelocity){
+        super(x,y,10,10,true,false,0,[0,0])
 
         this.direction = direction
-        this.Bulletclock = 3  //how many seconds between bullets
+        this.bulletClock = bulletClock  //how many seconds between bullets
+        this.bulletVelocity = bulletVelocity
+        this.bulletSpeed = bulletSpeed
+        
         this.subclock = 0
+        this.color = 0xAA0000
+        this.magazine = []
 
-        this.look.fillStyle(0xAA0000);
+        this.look.fillStyle(this.color);
         this.look.fillRect(x , y , 10, 10);
+
+
+        this.generateMagazine()
+        
     }
 
     //direction 0:right 1:up 2:left 3:down
@@ -382,22 +391,73 @@ class cannon extends Entity{
     handler(){
 
         this.subclock += Delta
+        
 
-        if(this.subclock >= this.Bulletclock * 1000){
+        if(this.subclock >= this.bulletClock){
             this.subclock = 0 
 
+            let pewpew = new bullet(this.x + 10, this.y + (this.height / 2) - 2.5 , 5 , 5 , 150 , [1,0]) 
             
         }
+    }
 
+    generateMagazine(){
+        let data = []
+        let continua = true
+
+        this.bulletVelocity = normalizeVector(this.bulletVelocity)
+
+        let maxDiagonal = Math.sqrt(dimensione_x ** 2 + dimensione_y ** 2)
+
+        //since checkcCollision2 returns the distance in X and Y to reach the collising object, I use it to determine the travel distance of a bullet
+        for (let i = 0; i < entities.lenght && continua === true; i++){
+            if(entities[i].collision === true){
+                data = this.checkCollision2TheRevenge(entities[i], this.bulletVelocity[0] * maxDiagonal, this.bulletVelocity[1] * maxDiagonal)
+                continua = false
+            }
+        }
+
+        let travelDistance = Math.sqrt(data[1] ** 2, data[2] ** 2)
+
+        //we need to know the distance between each bullet. bulletSpeed is pixel/second, bulletClock is how many seconds between shots
+        let bulletGap = this.bulletSpeed * this.bulletClock
+
+        let capacity = Math.floor( travelDistance / bulletGap) + 2
+
+        
+        //I want the bullet to start from a circle in which the cannon is inscribed
+        let spawnX = this.bulletVelocity[0] * (Math.sqrt( (this.width / 2) ** 2 + (this.height / 2) ** 2 ))
+        let spawnY = this.bulletVelocity[1] * (Math.sqrt( (this.width / 2) ** 2 + (this.height / 2) ** 2 ))
+        /*
+        for(let i = 0; i < capacity; i++){
+            this.magazine.push(new bullet(this.x + this.width, ))
+        }*/
+
+        
 
     }
 
 
 }
 
+
 class bullet extends Entity{
-    constructor(x,y,velocity){
-        super(x,y,)
+    constructor(x,y,width,height,speed,velocity){
+        super(x,y,width,height,false,true,speed,velocity)
+
+        //this.killMePlease = false
+
+        this.color = 0xFF0000
+
+        this.look.fillStyle(this.color);
+        this.look.fillRect(x , y , 5, 5);
+    }
+
+    handler(){
+
+        if(this.move()){
+            this.selfDestruct()
+        }
     }
 }
 
@@ -412,6 +472,19 @@ function omniHandler(){
     for(let i = 0 ; i < entities.length ; i++){
         entities[i].handler()
     }
+}
+
+function normalizeVector([x,y]){
+    
+    let nx = x
+    let ny = y
+    
+    if(x !== 0 && y !== 0){
+        nx = ( x  / Math.sqrt(x ** 2 + y ** 2) )
+        ny = ( y  / Math.sqrt(x ** 2 + y ** 2) )
+    }
+
+    return [nx,ny]
 }
 
 
@@ -436,7 +509,7 @@ function create ()
     scene = this
     
     keys = this.input.keyboard.addKeys('W,A,S,D,V,SPACE');
-    pg = new player(189,189);    
+    pg = new player(189,189);
     
     let wallThickness = 10
     let lowerEdge = new wall(0 , dimensione_y - wallThickness ,dimensione_x , wallThickness)
@@ -445,7 +518,11 @@ function create ()
     let leftEdge = new wall(0,0, wallThickness , dimensione_y)
     let centerWall = new wall(200,200,50,30)
     let thinWall = new wall(100,300,50,4)
-    let thinWall2 = new wall(100,400,4,50)    
+    let thinWall2 = new wall(100,400,4,50)  
+    
+    let cannone = new cannon(10,100,0.2,[1,0],150,[1,0])
+    let testBullet = new bullet(249,210,5,5,150,[1,0])
+    console.log(testBullet.x, testBullet.y)
 
     fpsCounter = this.add.text(20, 15)
     playerPosition = this.add.text(20,30)
@@ -464,9 +541,9 @@ function update (time,delta)
     
     while(doItOnce){ 
 
-        //meow = new wall(40,40,10,10)
+        meow = new wall(40,40,10,10)
         //console.log(meow)
-        //meow.destroy()
+        meow.selfDestruct()
         //console.log(meow)
 
         
@@ -484,7 +561,8 @@ function update (time,delta)
     omniHandler()
         
     fpsCounter.setText(1000 / delta)
-    playerPosition.setText("X: " + pg.x + "  Y: " + pg.y)        
+    playerPosition.setText("X: " + pg.x + "  Y: " + pg.y)      
+    
 
     //var follia = new wall(100,100,5,5)
     //follia.selfDestruct()
