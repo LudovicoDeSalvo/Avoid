@@ -18,7 +18,6 @@ let config = {
 }
 
 let game = new Phaser.Game(config);
-
 let scene
 
 // GAME ELEMENTS
@@ -29,7 +28,6 @@ let pg
 let keys
 let Delta
 const epsilon = 0.0000000000001
-
 
 
 // GAME VARIABLES
@@ -44,27 +42,9 @@ let playerSpeed = 160
 // CLASSES
 //
 
-class HigherPlaneEntity{
-    
-    //GRANT US MORE EYES
-    
-    constructor(entity){
-
-        this.entity = entity
-
-
-
-    }
-
-
-}
-
-
-class Entity extends Phaser.Physics.Arcade.Sprite{
+class Entity{
     constructor(x,y,width,height,collision,deadly,speed,velocity){
-        
-        super(scene)
-        
+                
         this.x = x
         this.y = y
         this.width = width
@@ -78,19 +58,16 @@ class Entity extends Phaser.Physics.Arcade.Sprite{
         this.look = scene.add.graphics();
 
         entities.push(this)
-
-
     }
-
 
     handler(){
         
     }
 
-    
+    /*
     selfDestruct(){
         
-        this.destroy()
+        //this.destroy()
         
         let index = entities.indexOf(this)
         entities.splice(index,1)
@@ -108,11 +85,10 @@ class Entity extends Phaser.Physics.Arcade.Sprite{
         Object.setPrototypeOf(this,null)
 
         
-    } 
+    }*/
 
 
     move(){
-
         //moves and returns if there has been a collision (it saves to call checkCollision again in the handler)
         
         this.velocity = normalizeVector(this.velocity)
@@ -127,7 +103,10 @@ class Entity extends Phaser.Physics.Arcade.Sprite{
         //Check if collision with "collidable" entities
         for (let i = 0 ; i < entities.length ; i++){
 
-            if( entities[i].collision === true){
+            //you should not check the object with itself
+            let forbidden = entities.indexOf(this)
+
+            if( entities[i].collision === true && i !== forbidden){
 
                 //This check properly if there is a collision and the distance to touch the stopping object
                 collision = this.checkCollision2TheRevenge( entities[i] , mx , my)
@@ -153,19 +132,13 @@ class Entity extends Phaser.Physics.Arcade.Sprite{
             }
         }
         
-        this.x += mx
-        this.y += my
-
-        this.look.clear();
-        this.look.fillStyle(this.color);
-        this.look.fillRect(this.x , this.y , this.width, this.height);
+        this.moveTo(this.x + mx, this.y + my)
 
         return collided
     }
 
 
     checkCollisionXY(theOtherOne , mx , my){
-
         //This method generates the region covered from this entity while moving and checks if existis a common region between that and the one occupied from the OtherOne
 
         let blocked = [false,false,false]
@@ -226,8 +199,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite{
     }
 
 
-    checkCollision2TheRevenge(theOtherOne, mx , my){
-        
+    checkCollision2TheRevenge(theOtherOne, mx , my){        
         //v0.9
         //This method checks if the area of this overlaps with theOtherOne's while moving in numberofsteps steps.
         //It returns true if there's a collision and the distance in X and Y to reach the colliding object
@@ -266,8 +238,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite{
                     if(mx > 0){
                         gapX = theOtherOne.x - (this.x + stepX * (i - 1) + this.width)
                         coveredDistanceX += gapX 
-                    }
-        
+                    }        
                     if(mx < 0){
         
                         gapX = this.x + stepX * (i - 1) - (theOtherOne.x + theOtherOne.width)
@@ -279,8 +250,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite{
                     if(my > 0){
                         gapY = theOtherOne.y - (this.y + stepY * (i - 1) + this.height)
                         coveredDistanceY += gapY 
-                    }
-        
+                    }        
                     if(my < 0){
         
                         gapY = this.y + stepY * (i - 1) - (theOtherOne.y + theOtherOne.height)
@@ -292,6 +262,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite{
 
         return [collision,coveredDistanceX,coveredDistanceY]
     }
+
 
     moveTo(x,y){
         this.x = x
@@ -340,7 +311,6 @@ class player extends Entity{
         
         this.move()
         this.checkIfDead()
-
     }
 
 
@@ -362,6 +332,8 @@ class player extends Entity{
     }
 }
 
+
+//Good luck implementing pushing the player and killing it if crushed
 class wall extends Entity{
     constructor(x,y,width,height){
         super(x,y,width,height,true)
@@ -372,10 +344,16 @@ class wall extends Entity{
         this.look.fillRect(x , y , width, height);
 
     }
+
+    handler(){
+        if(this.speed && this.velocity){
+            this.move()
+        }
+    }
 }
 
 class cannon extends Entity{
-    constructor(x,y,bulletClock,direction,bulletSpeed,bulletVelocity,bulletSize){
+    constructor(x,y,bulletClock,direction,bulletSpeed,bulletVelocity,bulletSize,capacity){
         super(x,y,10,10,true,false,0,[0,0])
 
         this.direction = direction
@@ -383,20 +361,18 @@ class cannon extends Entity{
         this.bulletVelocity = bulletVelocity
         this.bulletSpeed = bulletSpeed
         this.bulletSize = bulletSize
+        this.capacity = capacity
         
         this.subclock = 0
         this.color = 0xAA0000
-        this.magazine = []
+        this.magazine = []        
 
         this.look.fillStyle(this.color);
         this.look.fillRect(x , y , 10, 10);
 
-
-        this.generateMagazine()
-        
+        this.generateMagazine()        
     }
 
-    //direction 0:right 1:up 2:left 3:down
 
     handler(){
 
@@ -405,34 +381,36 @@ class cannon extends Entity{
         if(this.subclock >= this.bulletClock){
             this.subclock = 0
 
-            for(let i = 0; i < this.magazine.length; i++){
+            let continua = true
+            for(let i = 0; i < this.magazine.length && continua === true; i++){
 
-                if(this.magazine[i].shot === false){
+                if(this.magazine[i].active === false){
                     let spawnX = this.bulletVelocity[0] * (Math.sqrt( (this.width / 2) ** 2 + (this.height / 2) ** 2 ) + 
                         Math.sqrt(2 * (this.bulletSize ** 2))); 
                     let spawnY = this.bulletVelocity[1] * (Math.sqrt( (this.width / 2) ** 2 + (this.height / 2) ** 2 ) + 
                         Math.sqrt(2 * (this.bulletSize ** 2)));
 
-                    console.log(spawnX,spawnY)
+                    this.magazine[i].moveTo(this.x + spawnX, this.y + spawnY)
+                    this.magazine[i].active = true
 
-                    this.magazine[i].x = this.x + spawnX
-                    this.magazine[i].y = this.y + spawnY
-                    this.magazine[i].shot = true
+                    continua = false
                 }
             }
         }
     }
 
-    generateMagazine(){
+    generateMagazine(){        
+
         let data = []
         let continua = true
 
         this.bulletVelocity = normalizeVector(this.bulletVelocity)
-
         let maxDiagonal = Math.sqrt(dimensione_x ** 2 + dimensione_y ** 2)
 
-
         //since checkcCollision2 returns the distance in X and Y to reach the collising object, I use it to determine the travel distance of a bullet
+        //PROBLEM! in this way the magazine is calculated based on the distance on the first colliding entity found in the entities array, not the closest.
+        //It is actally ok since the first in the array are the outer walls, ergo the farthest, the important thing is that I do not have less bullets than needed
+        //Check the laser generator to see how it should have been coded
         for (let i = 0; i < entities.length && continua === true; i++){
             if(entities[i].collision === true){
                 data = this.checkCollision2TheRevenge(entities[i], this.bulletVelocity[0] * maxDiagonal, this.bulletVelocity[1] * maxDiagonal)
@@ -440,27 +418,24 @@ class cannon extends Entity{
                     continua = false
                 }
             }
-        }
-
-        let travelDistance = Math.sqrt(data[1] ** 2, data[2] ** 2)
+        }        
 
         //we need to know the distance between each bullet. bulletSpeed is pixel/second, bulletClock is how many seconds between shots
+        let travelDistance = Math.sqrt(data[1] ** 2, data[2] ** 2)
         let bulletGap = this.bulletSpeed * this.bulletClock
+        if(!(this.capacity)){ //calculate capacity if it unspecified (0 or undefinied)
+            this.capacity = Math.floor( travelDistance / bulletGap) + 2
+        }
 
-        let capacity = Math.floor( travelDistance / bulletGap) + 2
-
-        
         //I want the bullet to start from a circle in which the cannon is inscribed
         let spawnX = this.bulletVelocity[0] * (Math.sqrt( (this.width / 2) ** 2 + (this.height / 2) ** 2 ) + 
             Math.sqrt(2 * (this.bulletSize ** 2))); 
         let spawnY = this.bulletVelocity[1] * (Math.sqrt( (this.width / 2) ** 2 + (this.height / 2) ** 2 ) + 
             Math.sqrt(2 * (this.bulletSize ** 2)));
+        
 
- 
-        
-        
-        for(let i = 0; i < capacity; i++){
-            
+        for(let i = 0; i < this.capacity; i++){
+
             if( i * bulletGap <= travelDistance - Math.sqrt(2 * (this.bulletSize ** 2))){
                 let pewpew = new bullet(this.x + spawnX + bulletGap * i * this.bulletVelocity[0], this.y + spawnY + bulletGap * i * this.bulletVelocity[1], this.bulletSize , 
                     this.bulletSize , this.bulletSpeed , this.bulletVelocity, true);
@@ -471,37 +446,188 @@ class cannon extends Entity{
                 this.magazine.push(pewpew)
             }
         }
-
-        
-
     }
-
-
 }
 
 
 class bullet extends Entity{
-    constructor(x,y,width,height,speed,velocity,shot){
+    constructor(x,y,width,height,speed,velocity,active,color){
         super(x,y,width,height,false,true,speed,velocity)
 
-        this.shot = shot
+        this.active = active
 
-        this.color = 0xFF0000
-
+        if(color){this.color = color}else{this.color = 0xFF0000}        
         this.look.fillStyle(this.color);
-        this.look.fillRect(x , y , 5, 5);
+        this.look.fillRect(x , y , width, height);
     }
 
     handler(){
 
-        if(this.x >= 0 && this.y >= 0){
+        if(this.active === true){
             if(this.move()){
-                this.shot = false
-                this.moveTo(-100,-100) 
+                this.deactivate()
             }
         }
     }
+
+    deactivate(){
+        this.look.clear()
+        this.deadly = false
+        this.active = false
+    }
+
+    reactivate(){
+        this.look.fillStyle(this.color)
+        this.look.fillRect(this.x , this.y , this.width, this.height);
+        this.deadly = true
+        this.active = true
+    }
 }
+
+
+
+class trackingCannon extends cannon{
+    constructor(x,y,bulletClock,direction,bulletSpeed,bulletVelocity,bulletSize,capacity){
+        
+        super(x,y,bulletClock,direction,bulletSpeed,bulletVelocity,bulletSize,capacity)
+
+        this.color = 0xAA00AA
+        
+        this.look.clear()
+        this.look.fillStyle(this.color)
+        this.look.fillRect(x , y , 10, 10)    
+    }
+
+    handler(){
+
+        this.subclock += Delta
+        
+        if(this.subclock >= this.bulletClock){
+            this.subclock = 0
+
+            this.bulletVelocity = this.calculateDirection()
+
+            let continua = true
+            for(let i = 0; i < this.magazine.length && continua === true; i++){
+
+                if(this.magazine[i].active === false){
+                    let spawnX = this.bulletVelocity[0] * (Math.sqrt( (this.width / 2) ** 2 + (this.height / 2) ** 2 ) + 
+                        Math.sqrt(2 * (this.bulletSize ** 2))); 
+                    let spawnY = this.bulletVelocity[1] * (Math.sqrt( (this.width / 2) ** 2 + (this.height / 2) ** 2 ) + 
+                        Math.sqrt(2 * (this.bulletSize ** 2)));
+
+                    this.magazine[i].moveTo(this.x + spawnX, this.y + spawnY)
+                    this.magazine[i].active = true
+                    this.magazine[i].velocity = this.bulletVelocity
+
+                    continua = false
+                }
+            }
+        }
+    }
+
+    calculateDirection(){
+        
+        let dx = pg.x - this.x
+        let dy = pg.y - this.y
+
+        return normalizeVector([dx,dy])
+    }
+
+    generateMagazine(){
+        
+        let maxDiagonal = Math.sqrt(dimensione_x ** 2 + dimensione_y ** 2)
+        let bulletGap = this.bulletSpeed * this.bulletClock
+        
+        if(!(this.capacity)){ //calculate capacity if it unspecified (0 or undefinied)
+            this.capacity = Math.floor( maxDiagonal / bulletGap) + 2
+        }        
+
+        for(let i = 0; i < this.capacity; i++){
+
+            let pewpew = new bullet(-100, -100 , this.bulletSize , this.bulletSize , this.bulletSpeed , this.bulletVelocity, false);
+            this.magazine.push(pewpew)
+            
+        }
+    }
+}
+
+
+class nonnoLaser extends Entity{
+    constructor(x,y,offTime,onTime,direction){
+        super(x,y,10,10,true,false,0)
+
+        this.onTime = onTime
+        this.offTime = offTime
+        this.direction = direction
+
+        this.laser = undefined
+        this.laserThickness = 4
+        this.subClock = 0
+
+        this.color = 0x0000FF
+        this.look.fillStyle(this.color);
+        this.look.fillRect(x , y , 10, 10);
+
+        this.generateLaser()
+    }
+
+    handler(){
+
+        this.subClock += Delta
+        
+        if(this.subClock > this.offTime && this.subClock <= this.offTime + this.onTime && this.laser.active === false){
+            this.generateLaser()
+            this.laser.reactivate()
+        }
+        if(this.subClock > this.offTime + this.onTime && this.laser.active === true){
+            this.subClock = 0
+            this.laser.deactivate()
+        }
+    }
+
+    
+    generateLaser(){
+        
+        let data = []
+        
+        let minimunX = dimensione_x
+        let minimunY = dimensione_y
+
+        //since checkcCollision2 returns the distance in X and Y to reach the collising object, I use it to determine the travel distance of a bullet
+        for (let i = 0; i < entities.length; i++){
+            
+            let forbidden = entities.indexOf(this)
+            
+            if(entities[i].collision === true && i !== forbidden){
+
+                data = this.checkCollision2TheRevenge(entities[i], this.direction[0] * dimensione_x, this.direction[1] * dimensione_y)
+                if(Math.abs(data[1]) < minimunX && this.direction[1] === 0 && data[0] === true){                    
+                    minimunX = Math.abs(data[1])
+                }
+                if(Math.abs(data[2]) < minimunY && this.direction[0] === 0 && data[0] === true){
+                    minimunY = Math.abs(data[2])
+                }
+            }
+        }
+
+        if(areArraysEqual(this.direction , [1,0])){
+            this.laser = new bullet(this.x + this.width, this.y + this.height / 4, minimunX , this.laserThickness ,0,[0,0],true)
+        }
+        if(areArraysEqual(this.direction , [-1,0])){
+            this.laser = new bullet(this.x - minimunX, this.y + this.height / 4, minimunX , this.laserThickness ,0,[0,0],true)
+        }
+        if(areArraysEqual(this.direction , [0,1])){
+            this.laser = new bullet(this.x + this.width / 4, this.y + this.height, this.laserThickness , minimunY ,0,[0,0],true)
+        }
+        if(areArraysEqual(this.direction , [0,-1])){
+            this.laser = new bullet(this.x + this.width / 4, this.y - minimunY, this.laserThickness , minimunY ,0,[0,0],true)
+        }
+
+        this.laser.deactivate()
+    }
+}
+
 
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -521,12 +647,23 @@ function normalizeVector([x,y]){
     let nx = x
     let ny = y
     
-    if(x !== 0 && y !== 0){
+    if(!(x === 0 && y === 0)){
         nx = ( x  / Math.sqrt(x ** 2 + y ** 2) )
         ny = ( y  / Math.sqrt(x ** 2 + y ** 2) )
     }
 
     return [nx,ny]
+}
+
+function areArraysEqual(a, b) {
+    if (a === b) return true;
+    if (a == null || b == null) return false;
+    if (a.length !== b.length) return false;
+  
+    for (var i = 0; i < a.length; ++i) {
+      if (a[i] !== b[i]) return false;
+    }
+    return true;
 }
 
 
@@ -544,74 +681,52 @@ function preload ()
 
 }
 
-
+//IMPORTANT!!! WALLS HAVE TO BE DECLARED FIRST. Resolving this would meaning recalculate the laser form each frame, but in this way I can use moving walls
 
 function create ()
 {    
     scene = this
     
     keys = this.input.keyboard.addKeys('W,A,S,D,V,SPACE');
-    pg = new player(189,189);
+    pg = new player(65,495);
     
     let wallThickness = 10
+     
     let lowerEdge = new wall(0 , dimensione_y - wallThickness ,dimensione_x , wallThickness)
     let upperEdge = new wall(0,0, dimensione_x , wallThickness)
     let rightEdge = new wall(dimensione_x - wallThickness , 0 , wallThickness , dimensione_y)
     let leftEdge = new wall(0,0, wallThickness , dimensione_y)
-    let centerWall = new wall(200,200,50,30)
-    let thinWall = new wall(100,300,50,4)
-    let thinWall2 = new wall(100,400,4,50)  
+    let centerWall = new wall(80,510,50,30)
+    let thinWall = new wall(50,480,50,4)
+    let thinWall2 = new wall(50,500,4,50)
+    let laserWallTest = new wall(535,85,40,40)
+    laserWallTest.speed = 50
+    laserWallTest.velocity = [-1,1]
+     
     
-    let cannone = new cannon(10,100,0.1,[1,0],150,[1,0],5)
+    let cannone = new cannon(10,100,0.2,[1,0],150,[1,0],5)
+    console.log(cannone.magazine)
+    let Tcannon = new trackingCannon(200,250,0.2,[1,0],150,[1,0],5)
+    let laser = new nonnoLaser(10,120,3,0.5,[1,0])
+    let laser2 = new nonnoLaser(580,140,2,5,[-1,0])
+    let laser3 = new nonnoLaser(540,10,0.5,0.5,[0,1])
+    let laser4 = new nonnoLaser(560,580,5,2,[0,-1])    
+
+    //let testBullet = new bullet(100,100,5,5,5,[1,0])
+    //testBullet.deactivate()
 
     fpsCounter = this.add.text(20, 15)
-    playerPosition = this.add.text(20,30)
- 
+    playerPosition = this.add.text(20,30) 
 }
 
 
-let doItOnce = true
-let meow
 
 function update (time,delta)
 {
     Delta = delta / 1000
 
-    
-    
-    while(doItOnce){ 
-
-        meow = new wall(40,40,10,10)
-        //console.log(meow)
-        meow.selfDestruct()
-        //console.log(meow)
-
-        
-        //const allProp = Object.getOwnPropertyNames(meow)
-
-        //allProp.forEach(propriety => {delete meow[propriety];});
-        
-        //Object.setPrototypeOf(meow,null)
-
-        //meow.selfDestruct()
-        
-        doItOnce = false
-    }
-
     omniHandler()
         
     fpsCounter.setText(1000 / delta)
-    playerPosition.setText("X: " + pg.x + "  Y: " + pg.y)      
-    
-
-    //var follia = new wall(100,100,5,5)
-    //follia.selfDestruct()
-    //follia = undefined
-    //console.log(follia)
-
-    //console.log(meow)
-
-    //let follia = new wall(80,80,10,10)
-    //follia.destroy()
-
+    playerPosition.setText("X: " + pg.x + "  Y: " + pg.y)
  }
