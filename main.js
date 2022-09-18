@@ -391,7 +391,7 @@ class cannon extends Entity{
                         Math.sqrt(2 * (this.bulletSize ** 2)));
 
                     this.magazine[i].moveTo(this.x + spawnX, this.y + spawnY)
-                    this.magazine[i].active = true
+                    this.magazine[i].activate()
 
                     continua = false
                 }
@@ -476,7 +476,7 @@ class bullet extends Entity{
         this.active = false
     }
 
-    reactivate(){
+    activate(){
         this.look.fillStyle(this.color)
         this.look.fillRect(this.x , this.y , this.width, this.height);
         this.deadly = true
@@ -517,7 +517,7 @@ class trackingCannon extends cannon{
                         Math.sqrt(2 * (this.bulletSize ** 2)));
 
                     this.magazine[i].moveTo(this.x + spawnX, this.y + spawnY)
-                    this.magazine[i].active = true
+                    this.magazine[i].activate()
                     this.magazine[i].velocity = this.bulletVelocity
 
                     continua = false
@@ -578,7 +578,7 @@ class nonnoLaser extends Entity{
         
         if(this.subClock > this.offTime && this.subClock <= this.offTime + this.onTime && this.laser.active === false){
             this.generateLaser()
-            this.laser.reactivate()
+            this.laser.activate()
         }
         if(this.subClock > this.offTime + this.onTime && this.laser.active === true){
             this.subClock = 0
@@ -629,6 +629,57 @@ class nonnoLaser extends Entity{
 }
 
 
+class stalker extends Entity{
+    constructor(x,y){
+        super(x,y,10,10,false,true,100,[0,0])
+
+
+        
+        
+    }
+
+    handler(){
+    
+    }
+
+    
+    pathFinding(){
+
+        let open = []
+        let closed = []
+        
+       
+        
+    
+    
+    }
+        
+}
+
+
+class node{
+    constructor(x,y){
+        this.x = x
+        this.y = y
+        
+        this.sCost = Number.MAX_SAFE_INTEGER
+        this.tCost = Number.MAX_SAFE_INTEGER
+        this.parent = null
+    }
+}
+
+
+class nodeGrid{
+    constructor(){
+
+        for(let i = 0; i < dimensione_x/10; i++){
+            for(let j = 0; j < dimensione_y/10; j++){
+                let node = new node(i * 10 , i * 10)
+            }
+        }
+    }
+}
+
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -665,6 +716,13 @@ function areArraysEqual(a, b) {
     }
     return true;
 }
+
+function getDistance(x,y,ax,ay){
+
+    return Math.sqrt( (x-ax) ** 2 + (y - ay) ** 2)
+}
+
+
 
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -705,12 +763,12 @@ function create ()
      
     
     let cannone = new cannon(10,100,0.2,[1,0],150,[1,0],5)
-    console.log(cannone.magazine)
     let Tcannon = new trackingCannon(200,250,0.2,[1,0],150,[1,0],5)
     let laser = new nonnoLaser(10,120,3,0.5,[1,0])
     let laser2 = new nonnoLaser(580,140,2,5,[-1,0])
     let laser3 = new nonnoLaser(540,10,0.5,0.5,[0,1])
-    let laser4 = new nonnoLaser(560,580,5,2,[0,-1])    
+    let laser4 = new nonnoLaser(560,580,5,2,[0,-1])
+    let cumbare = new stalker(400,400)    
 
     //let testBullet = new bullet(100,100,5,5,5,[1,0])
     //testBullet.deactivate()
