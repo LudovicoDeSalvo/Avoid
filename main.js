@@ -21,19 +21,24 @@ let game = new Phaser.Game(config);
 let scene
 
 // GAME ELEMENTS
-
-let higherEntities = []
 let entities = []
 let pg
 let keys
 let Delta
+let masterSubClock = 0
 const epsilon = 0.0000000000001
+const gridNodeSize = 10
 
 
 // GAME VARIABLES
-
 let playerSize = 10
 let playerSpeed = 160
+
+
+// DEBUG
+let fpsCounter
+let playerPosition
+let grid
 
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -43,7 +48,7 @@ let playerSpeed = 160
 //
 
 class Entity{
-    constructor(x,y,width,height,collision,deadly,speed,velocity){
+    constructor(x,y,width,height,collision,deadly,speed,velocity,toProcess){
                 
         this.x = x
         this.y = y
@@ -55,16 +60,19 @@ class Entity{
         this.velocity = velocity
         this.color = 0x000000
 
-        this.look = scene.add.graphics();
+        if(toProcess == undefined){toProcess = true}else{this.toProcess = toProcess}
 
-        entities.push(this)
+        this.look = scene.add.graphics()
+
+        if(toProcess){entities.push(this)}
+        
     }
 
     handler(){
         
     }
 
-    /*
+    /* //Self destruct
     selfDestruct(){
         
         //this.destroy()
@@ -88,8 +96,7 @@ class Entity{
     }*/
 
 
-    move(){
-        //moves and returns if there has been a collision (it saves to call checkCollision again in the handler)
+    move(){  //moves and returns if there has been a collision (it saves to call checkCollision again in the handler)        
         
         this.velocity = normalizeVector(this.velocity)
 
@@ -124,7 +131,8 @@ class Entity{
                     if( blocked[1] === true){
                         my = collision[2]
                     }
-                    //this checks if you're a free both in X and in Y, if you are you can move in X and cover the distance in Y (remember that you already verified that you're blocked diagonally)
+                    //this checks if you're a free both in X and in Y, if you are you can move in X and cover the distance in Y (remember that you already verified 
+                    // that you're blocked diagonally)
                     if( blocked[0] === false && blocked [1] === false){
                         my = collision[2]
                     }
@@ -199,10 +207,10 @@ class Entity{
     }
 
 
-    checkCollision2TheRevenge(theOtherOne, mx , my){        
+    checkCollision2TheRevenge(theOtherOne, mx , my){ //It returns true if there's a collision and the distance in X and Y to reach the colliding object
         //v0.9
         //This method checks if the area of this overlaps with theOtherOne's while moving in numberofsteps steps.
-        //It returns true if there's a collision and the distance in X and Y to reach the colliding object
+        
         
         let collision = false
 
@@ -264,7 +272,7 @@ class Entity{
     }
 
 
-    moveTo(x,y){
+    moveTo(x,y){  //move the entity to a location
         this.x = x
         this.y = y
 
@@ -333,7 +341,6 @@ class player extends Entity{
 }
 
 
-//Good luck implementing pushing the player and killing it if crushed
 class wall extends Entity{
     constructor(x,y,width,height){
         super(x,y,width,height,true)
@@ -441,8 +448,7 @@ class cannon extends Entity{
                     this.bulletSize , this.bulletSpeed , this.bulletVelocity, true);
                 this.magazine.push(pewpew) 
             }else{
-                let pewpew = new bullet(-100, -100 , this.bulletSize , this.bulletSize , this.bulletSpeed , 
-                    this.bulletVelocity, false);
+                let pewpew = new bullet(-100, -100 , this.bulletSize , this.bulletSize , this.bulletSpeed , this.bulletVelocity, false);
                 this.magazine.push(pewpew)
             }
         }
@@ -553,7 +559,7 @@ class trackingCannon extends cannon{
 }
 
 
-class nonnoLaser extends Entity{
+class nonnoLaser extends Entity{ //ACTIVATE GENERATELASER() IN THE LASER IF YOU IMPLEMENT MOVING WALLS
     constructor(x,y,offTime,onTime,direction){
         super(x,y,10,10,true,false,0)
 
@@ -577,7 +583,7 @@ class nonnoLaser extends Entity{
         this.subClock += Delta
         
         if(this.subClock > this.offTime && this.subClock <= this.offTime + this.onTime && this.laser.active === false){
-            this.generateLaser()
+            //this.generateLaser()
             this.laser.activate()
         }
         if(this.subClock > this.offTime + this.onTime && this.laser.active === true){
@@ -633,12 +639,20 @@ class stalker extends Entity{
     constructor(x,y){
         super(x,y,10,10,false,true,100,[0,0])
 
-
+        this.subClock = 0
         
         
     }
 
     handler(){
+
+        this.subClock += Delta
+
+        if(this.subClock > 1){
+            this.subClock = 0
+            this.pathFinding()
+
+        }
     
     }
 
@@ -647,6 +661,61 @@ class stalker extends Entity{
 
         let open = []
         let closed = []
+        
+
+        //first I need to find the node in which "this" is
+        let startingNodeX = this.x - this.x % 10
+        let startingNodeY = this.y - this.y % 10
+
+        //and the target node
+        let targetNodeX = this.x - this.x % 10
+        let targetNodeY = this.y - this.y % 10
+
+        
+        grid.grid[startingNodeX/10][startingNodeY/10].calculateCosts(startingNodeX,startingNodeY,targetNodeX,targetNodeY)
+        open.push(grid.grid[startingNodeY/10][startingNodeX/10])
+
+        console.log(open[0].totalCost)
+        
+
+
+        let exit = false
+
+        while(!exit){ // target node is different from searched node
+            
+            let max = Number.MAX_SAFE_INTEGER
+            let maxIndex = 0
+            
+            for(let i = 0; i < open.length ; i++){
+                
+                if(open[i].totalCost < max){
+                    max = open[i].totalCost
+                    maxIndex = i
+                }
+            }
+
+            let currentNode = open[maxIndex]
+
+            closed.push(currentNode)
+            open.splice(maxIndex,1)
+
+            let neighbours = grid.getNeighbours(currentNode.x , currentNode.y)
+
+            for(let i = 0; i < neighbours.length; i++){
+
+                if( closed.indexOf(neighbours[i]) === -1){
+
+                    //if( grid.calculatePathTo(neighbours[i]) <)
+
+                }
+
+            }
+            
+
+
+
+        }
+
         
        
         
@@ -657,26 +726,125 @@ class stalker extends Entity{
 }
 
 
-class node{
-    constructor(x,y){
+class node extends Entity{
+    constructor(x,y,walkable){
+        super(x,y,gridNodeSize,gridNodeSize,false,false,0,[0,0],false)
+        
         this.x = x
         this.y = y
+        this.walkable = walkable
         
         this.sCost = Number.MAX_SAFE_INTEGER
         this.tCost = Number.MAX_SAFE_INTEGER
+        this.totalCost = Number.MAX_SAFE_INTEGER
         this.parent = null
+
+        this.look = scene.add.graphics();
     }
+
+    calculateCosts(startX,startY,targetX,targetY){
+        this.sCost = getDistance(this.x , this.y , startX , startY)
+        this.tCost = getDistance(this.x , this.y , targetX , targetY)
+        this.totalCost = this.sCost + this.tCost
+    }
+
+    
 }
 
 
 class nodeGrid{
-    constructor(){
+    constructor(gridNodeSize){
 
-        for(let i = 0; i < dimensione_x/10; i++){
-            for(let j = 0; j < dimensione_y/10; j++){
-                let node = new node(i * 10 , i * 10)
+        this.grid = []
+        this.gridNodeSize = gridNodeSize
+        
+        for(let i = 0; i < dimensione_y/gridNodeSize; i++){
+            
+            let row = []
+            for(let j = 0; j < dimensione_x/gridNodeSize; j++){
+
+                let nodo = new node(i * gridNodeSize , j * gridNodeSize, true)
+                row.push(nodo)
+            }
+            this.grid.push(row)
+
+            
+        }
+
+        this.gridUpdater()
+    }
+
+    gridUpdater(){
+        
+        for(let i = 0; i < dimensione_y/ this.gridNodeSize; i++){
+            
+            for(let j = 0; j < dimensione_x/ this.gridNodeSize; j++){
+
+                let continua = true
+                
+                for(let k = 0; k < entities.length && continua; k++){
+
+                    let data = this.grid[i][j].checkCollision2TheRevenge(entities[k],0,0)
+                    
+                    if(data[0]){
+                        
+                        if(entities[k].collision === true){
+                            this.grid[i][j].walkable = false
+                            continua = false
+                        }
+                        else{
+                            this.grid[i][j].walkable = true
+                        }
+                    }
+                    
+                }
+                
+                  //GRID VISUALIZER
+                if(this.grid[i][j].walkable === true){
+
+                    this.grid[i][j].look.fillStyle(0x00FF00);
+                    this.grid[i][j].look.fillRect(this.grid[i][j].x + 4 , this.grid[i][j].y + 4 , 2, 2);
+                }else{
+                    this.grid[i][j].look.fillStyle(0xFF0000);
+                    this.grid[i][j].look.fillRect(this.grid[i][j].x + 4 , this.grid[i][j].y + 4 , 2, 2);
+                }
+
             }
         }
+    }
+
+    getNeighbours(x,y){
+
+        let neighbours = []
+
+        let thisRow = y / 10
+        let thisCol = x / 10
+        
+        if( thisRow - 1 >= 0 && thisCol - 1 >= 0)
+            if(this.grid[thisRow - 1][thisCol - 1].walkable) {neighbours.push(this.grid[thisRow - 1][thisCol - 1])}
+
+        if( thisCol - 1 >= 0)
+            if(this.grid[thisRow][thisCol - 1].walkable) {neighbours.push(this.grid[thisRow][thisCol - 1])}
+
+        if( thisRow + 1 < dimensione_y / 10 && thisCol - 1 >= 0)
+            if(this.grid[thisRow + 1][thisCol - 1].walkable) {neighbours.push(this.grid[thisRow + 1][thisCol - 1])}
+
+        if( thisRow - 1 >= 0)
+            if(this.grid[thisRow - 1][thisCol].walkable) {neighbours.push(this.grid[thisRow - 1][thisCol])}
+
+        if( thisRow + 1 < dimensione_y/10)
+            if(this.grid[thisRow + 1][thisCol].walkable) {neighbours.push(this.grid[thisRow + 1][thisCol])}
+
+        if( thisRow - 1 >= 0 && thisCol + 1 < dimensione_x / 10)
+            if(this.grid[thisRow - 1][thisCol + 1].walkable) {neighbours.push(this.grid[thisRow - 1][thisCol + 1])}
+
+        if(thisCol + 1 < dimensione_x / 10)
+            if(this.grid[thisRow][thisCol + 1].walkable) {neighbours.push(this.grid[thisRow][thisCol + 1])}
+
+        if( thisRow + 1 < dimensione_y / 10 && thisCol + 1 < dimensione_x / 10)
+            if(this.grid[thisRow + 1][thisCol + 1].walkable) {neighbours.push(this.grid[thisRow + 1][thisCol + 1])}
+
+        return neighbours
     }
 }
 
@@ -690,6 +858,11 @@ class nodeGrid{
 function omniHandler(){
     for(let i = 0 ; i < entities.length ; i++){
         entities[i].handler()
+    }
+
+    if(masterSubClock > 1){
+        //grid.gridUpdater()
+        masterSubClock = 0
     }
 }
 
@@ -731,8 +904,7 @@ function getDistance(x,y,ax,ay){
 // GAMELOOP AND STUFF
 //
 
-let fpsCounter
-let playerPosition
+
 
 function preload ()
 {
@@ -744,6 +916,7 @@ function preload ()
 function create ()
 {    
     scene = this
+    masterSubClock = 0
     
     keys = this.input.keyboard.addKeys('W,A,S,D,V,SPACE');
     pg = new player(65,495);
@@ -755,10 +928,10 @@ function create ()
     let rightEdge = new wall(dimensione_x - wallThickness , 0 , wallThickness , dimensione_y)
     let leftEdge = new wall(0,0, wallThickness , dimensione_y)
     let centerWall = new wall(80,510,50,30)
-    let thinWall = new wall(50,480,50,4)
+    let thinWall = new wall(50,481,50,4)
     let thinWall2 = new wall(50,500,4,50)
     let laserWallTest = new wall(535,85,40,40)
-    laserWallTest.speed = 50
+    laserWallTest.speed = 0
     laserWallTest.velocity = [-1,1]
      
     
@@ -768,7 +941,9 @@ function create ()
     let laser2 = new nonnoLaser(580,140,2,5,[-1,0])
     let laser3 = new nonnoLaser(540,10,0.5,0.5,[0,1])
     let laser4 = new nonnoLaser(560,580,5,2,[0,-1])
-    let cumbare = new stalker(400,400)    
+    let cumbare = new stalker(400,400)
+    
+    grid = new nodeGrid(gridNodeSize)
 
     //let testBullet = new bullet(100,100,5,5,5,[1,0])
     //testBullet.deactivate()
@@ -782,6 +957,7 @@ function create ()
 function update (time,delta)
 {
     Delta = delta / 1000
+    masterSubClock += Delta
 
     omniHandler()
         
