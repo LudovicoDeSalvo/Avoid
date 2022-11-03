@@ -64,8 +64,7 @@ class Entity{
 
         this.look = scene.add.graphics()
 
-        if(toProcess){entities.push(this)}
-        
+        if(toProcess){entities.push(this)}        
     }
 
     handler(){
@@ -95,7 +94,7 @@ class Entity{
         
     }*/
 
-
+    //DO NOT PLACE WALLS ON EACH OTHER
     move(){  //moves and returns if there has been a collision (it saves to call checkCollision again in the handler)        
         
         this.velocity = normalizeVector(this.velocity)
@@ -106,6 +105,9 @@ class Entity{
 
         let collision = [false]
         let collided = false
+
+        let howMuchImovedInY = my
+        let withWhich = []
 
         //Check if collision with "collidable" entities
         for (let i = 0 ; i < entities.length ; i++){
@@ -121,26 +123,41 @@ class Entity{
                 if(collision[0] === true){
 
                     collided = true
+                    withWhich.push(i)
 
                     //If there's a collision, checks if it can still moves on another axis
                     let blocked = this.checkCollisionXY(entities[i] , mx , my)
                     
                     if ( blocked[0] === true){
-                        mx = collision[1]
+                        mx = collision[1]                        
                     }
                     if( blocked[1] === true){
                         my = collision[2]
+                        howMuchImovedInY = my
                     }
                     //this checks if you're a free both in X and in Y, if you are you can move in X and cover the distance in Y (remember that you already verified 
                     // that you're blocked diagonally)
                     if( blocked[0] === false && blocked [1] === false){
                         my = collision[2]
+                        howMuchImovedInY = my
                     }
                 }
             }
         }
         
         this.moveTo(this.x + mx, this.y + my)
+
+        /*
+        for(let i = 0; i < withWhich.length; i++){
+
+            let yStep = (this.velocity[1] * this.speed * Delta) - howMuchImovedInY
+
+            let blocked = this.checkCollisionXY(entities[withWhich[i]] , 0 , yStep)
+
+            if( blocked[1] === false){
+                this.moveTo(this.x, this.y + yStep)
+            }
+        }*/
 
         return collided
     }
@@ -149,7 +166,7 @@ class Entity{
     checkCollisionXY(theOtherOne , mx , my){
         //This method generates the region covered from this entity while moving and checks if existis a common region between that and the one occupied from the OtherOne
 
-        let blocked = [false,false,false]
+        let blocked = [false,false]
 
         let commonRegionUpperEdge
         let commonRegionLowerEdge
@@ -209,8 +226,7 @@ class Entity{
 
     checkCollision2TheRevenge(theOtherOne, mx , my){ //It returns true if there's a collision and the distance in X and Y to reach the colliding object
         //v0.9
-        //This method checks if the area of this overlaps with theOtherOne's while moving in numberofsteps steps.
-        
+        //This method checks if the area of this overlaps with theOtherOne's while moving in numberofsteps steps.        
         
         let collision = false
 
@@ -310,9 +326,21 @@ class player extends Entity{
         if(keys.D.isDown)
             dx = 1
 
-        if(keys.V.isDown){
+        if(keys.K.isDown){
             dx=1
             dy=1
+        }
+        if(keys.J.isDown){
+            dx=-1
+            dy=1
+        }
+        if(keys.U.isDown){
+            dx=-1
+            dy=-1
+        }
+        if(keys.I.isDown){
+            dx=1
+            dy=-1
         }
         
         this.velocity = [dx,dy]
@@ -591,7 +619,6 @@ class nonnoLaser extends Entity{ //ACTIVATE GENERATELASER() IN THE LASER IF YOU 
             this.laser.deactivate()
         }
     }
-
     
     generateLaser(){
         
@@ -637,11 +664,14 @@ class nonnoLaser extends Entity{ //ACTIVATE GENERATELASER() IN THE LASER IF YOU 
 
 class stalker extends Entity{
     constructor(x,y){
-        super(x,y,10,10,false,true,100,[0,0])
+        super(x,y,9,9,false,true,playerSpeed*0.75,[0,0])
 
         this.subClock = 0
-        
-        
+        this.path = []
+
+        this.color = 0xFF00FF
+        this.look.fillStyle(this.color);
+        this.look.fillRect(x , y , 10, 10);
     }
 
     handler(){
@@ -650,14 +680,41 @@ class stalker extends Entity{
 
         if(this.subClock > 1){
             this.subClock = 0
+            
             this.pathFinding()
-
+            this.retracePath2()
+            //this.colorPath()
         }
-    
+
+        this.moveStalker(this.move())
     }
 
+    moveStalker(collided){
+        
+        if(collided && !(this.velocity[0] != 0 && this.velocity[1] != 0)){
+
+            this.velocity = [this.path[this.path.length - 1].x - this.x , this.path[this.path.length - 1].y - this.y]
+
+        }else{
+
+            if(this.path.length > 0){
+
+                let LNI = this.findMeInPath()       //Last Node Index
+                let SLNI = LNI - 1                  //Second Last Node Index
+                
+                if(SLNI >= 0 && SLNI < this.path.length)
+                    this.velocity = [this.path[SLNI].x - this.path[LNI].x , this.path[SLNI].y - this.path[LNI].y]
+
+            }else{
+
+                this.velocity = [0,0]
+            }
+        }
+    }
     
     pathFinding(){
+
+        this.path = []
 
         let open = []
         let closed = []
@@ -668,16 +725,14 @@ class stalker extends Entity{
         let startingNodeY = this.y - this.y % 10
 
         //and the target node
-        let targetNodeX = this.x - this.x % 10
-        let targetNodeY = this.y - this.y % 10
+        let targetNodeX = pg.x - pg.x % 10
+        let targetNodeY = pg.y - pg.y % 10
 
         
         grid.grid[startingNodeX/10][startingNodeY/10].calculateCosts(startingNodeX,startingNodeY,targetNodeX,targetNodeY)
         open.push(grid.grid[startingNodeY/10][startingNodeX/10])
 
-        console.log(open[0].totalCost)
-        
-
+        //console.log(open[0].totalCost)
 
         let exit = false
 
@@ -692,37 +747,98 @@ class stalker extends Entity{
                     max = open[i].totalCost
                     maxIndex = i
                 }
-            }
+            }            
 
             let currentNode = open[maxIndex]
 
-            closed.push(currentNode)
+            closed.push(grid.grid[open[maxIndex].y/10][open[maxIndex].x/10])
             open.splice(maxIndex,1)
 
-            let neighbours = grid.getNeighbours(currentNode.x , currentNode.y)
+            if(currentNode.x == grid.grid[targetNodeY/10][targetNodeX/10].x && currentNode.y == grid.grid[targetNodeY/10][targetNodeX/10].y){
+                exit = true
+            }
+
+            let neighbours = grid.getNeighbours(currentNode)
 
             for(let i = 0; i < neighbours.length; i++){
 
-                if( closed.indexOf(neighbours[i]) === -1){
+                if( closed.indexOf(grid.grid[neighbours[i].y/10][neighbours[i].x/10]) == -1){
 
-                    //if( grid.calculatePathTo(neighbours[i]) <)
+                    let newMovementCostToNeighbour = currentNode.sCost + this.calculatePathLenght(currentNode , neighbours[i])
+                    
+                    if( newMovementCostToNeighbour < neighbours[i].sCost ||  open.indexOf(neighbours[i]) == -1){
 
+                        grid.grid[neighbours[i].y/10][neighbours[i].x/10].sCost = newMovementCostToNeighbour
+                        grid.grid[neighbours[i].y/10][neighbours[i].x/10].tCost = this.calculatePathLenght(neighbours[i],grid.grid[targetNodeX/10][targetNodeY/10])
+                        grid.grid[neighbours[i].y/10][neighbours[i].x/10].calculateCostsFromLocal()
+                        grid.grid[neighbours[i].y/10][neighbours[i].x/10].parent = grid.grid[currentNode.y/10][currentNode.x/10]
+
+                        if(open.indexOf(grid.grid[neighbours[i].y/10][neighbours[i].x/10] == -1)){
+                            open.push(grid.grid[neighbours[i].y/10][neighbours[i].x/10])
+                        }
+                    }
+                    
                 }
-
             }
             
+            if(open.length <= 0){
+                exit = true
+            }
+        }
+    }
 
+    retracePath2(){
 
+        let currentNode = grid.grid[(pg.y - pg.y % 10)/10][(pg.x - pg.x % 10)/10]
+
+        while(currentNode != grid.grid[(this.y - this.y % 10)/10][(this.x - this.x % 10)/10]){
+
+            this.path.push(grid.grid[currentNode.y/10][currentNode.x/10])
+            currentNode = grid.grid[currentNode.y/10][currentNode.x/10].parent
 
         }
-
-        
-       
-        
-    
-    
     }
-        
+
+    findMeInPath(){
+
+        let continua = true
+
+        for(let i = this.path.length - 1; i > 0 && continua == true; i--){
+
+            let data = this.checkCollision2TheRevenge(this.path[i],0,0)
+            
+            if(data[0]){
+
+                return i
+            }
+        }
+
+        return this.path.length - 1
+    }
+
+    colorPath(){
+
+        for( let i = 0; i < this.path.length ; i++){
+            this.path[i].look.fillStyle(0xFFFF00);
+            this.path[i].look.fillRect(this.path[i].x + 4, this.path[i].y + 4, 2, 2);
+        }
+    }
+
+    calculatePathLenght(nodeA, nodeB){
+
+        let xDifference = Math.abs( nodeA.x - nodeB.x)
+        let yDifference = Math.abs( nodeA.y - nodeB.y)
+
+        if(xDifference < yDifference){
+
+            return xDifference * Math.sqrt(2) + ( yDifference - xDifference ) 
+
+        }else{
+
+            return yDifference * Math.sqrt(2) + ( xDifference - yDifference ) 
+
+        }
+    }
 }
 
 
@@ -748,7 +864,9 @@ class node extends Entity{
         this.totalCost = this.sCost + this.tCost
     }
 
-    
+    calculateCostsFromLocal(){
+        this.totalCost = this.sCost + this.tCost
+    }    
 }
 
 
@@ -761,14 +879,14 @@ class nodeGrid{
         for(let i = 0; i < dimensione_y/gridNodeSize; i++){
             
             let row = []
+
             for(let j = 0; j < dimensione_x/gridNodeSize; j++){
 
-                let nodo = new node(i * gridNodeSize , j * gridNodeSize, true)
+                let nodo = new node(j * gridNodeSize , i * gridNodeSize, true)
                 row.push(nodo)
             }
-            this.grid.push(row)
 
-            
+            this.grid.push(row)            
         }
 
         this.gridUpdater()
@@ -780,7 +898,7 @@ class nodeGrid{
             
             for(let j = 0; j < dimensione_x/ this.gridNodeSize; j++){
 
-                let continua = true
+                let continua = true                
                 
                 for(let k = 0; k < entities.length && continua; k++){
 
@@ -795,30 +913,30 @@ class nodeGrid{
                         else{
                             this.grid[i][j].walkable = true
                         }
-                    }
-                    
-                }
-                
-                  //GRID VISUALIZER
-                if(this.grid[i][j].walkable === true){
+                    }                    
+                }                
+                /*
+                //GRID VISUALIZER
+                if(this.grid[i][j].walkable){
 
                     this.grid[i][j].look.fillStyle(0x00FF00);
                     this.grid[i][j].look.fillRect(this.grid[i][j].x + 4 , this.grid[i][j].y + 4 , 2, 2);
+
                 }else{
+
                     this.grid[i][j].look.fillStyle(0xFF0000);
                     this.grid[i][j].look.fillRect(this.grid[i][j].x + 4 , this.grid[i][j].y + 4 , 2, 2);
-                }
-
+                }*/
             }
         }
     }
 
-    getNeighbours(x,y){
+    getNeighbours(node){
 
         let neighbours = []
 
-        let thisRow = y / 10
-        let thisCol = x / 10
+        let thisRow = node.y / 10
+        let thisCol = node.x / 10
         
         if( thisRow - 1 >= 0 && thisCol - 1 >= 0)
             if(this.grid[thisRow - 1][thisCol - 1].walkable) {neighbours.push(this.grid[thisRow - 1][thisCol - 1])}
@@ -845,6 +963,18 @@ class nodeGrid{
             if(this.grid[thisRow + 1][thisCol + 1].walkable) {neighbours.push(this.grid[thisRow + 1][thisCol + 1])}
 
         return neighbours
+    }
+
+    cleanPaths(){
+
+        for(let i = 0; i < dimensione_y/gridNodeSize; i++){
+
+            for(let j = 0; j < dimensione_x/gridNodeSize; j++){
+
+                this.grid[i][j].look.clear()
+            }
+        
+        }
     }
 }
 
@@ -918,8 +1048,8 @@ function create ()
     scene = this
     masterSubClock = 0
     
-    keys = this.input.keyboard.addKeys('W,A,S,D,V,SPACE');
-    pg = new player(65,495);
+    keys = this.input.keyboard.addKeys('W,A,S,D,J,K,U,I,SPACE');
+    pg = new player(80,250);
     
     let wallThickness = 10
      
@@ -927,13 +1057,15 @@ function create ()
     let upperEdge = new wall(0,0, dimensione_x , wallThickness)
     let rightEdge = new wall(dimensione_x - wallThickness , 0 , wallThickness , dimensione_y)
     let leftEdge = new wall(0,0, wallThickness , dimensione_y)
-    let centerWall = new wall(80,510,50,30)
-    let thinWall = new wall(50,481,50,4)
-    let thinWall2 = new wall(50,500,4,50)
+    //let centerWall = new wall(80,510,50,30)
+    //let thinWall = new wall(50,481,50,4)
+    //let thinWall2 = new wall(50,500,4,50)
     let laserWallTest = new wall(535,85,40,40)
-    laserWallTest.speed = 0
-    laserWallTest.velocity = [-1,1]
-     
+    let meow = new wall(60,200,20,10)
+    let meow2 = new wall(110,200,20,10)
+    let meow3 = new wall(50,200,10,90)
+    let meow4 = new wall(130,200,10,90)
+    let meow5= new wall(50,290,90,10)
     
     let cannone = new cannon(10,100,0.2,[1,0],150,[1,0],5)
     let Tcannon = new trackingCannon(200,250,0.2,[1,0],150,[1,0],5)
@@ -941,7 +1073,8 @@ function create ()
     let laser2 = new nonnoLaser(580,140,2,5,[-1,0])
     let laser3 = new nonnoLaser(540,10,0.5,0.5,[0,1])
     let laser4 = new nonnoLaser(560,580,5,2,[0,-1])
-    let cumbare = new stalker(400,400)
+    let cumbare = new stalker(100,350)
+
     
     grid = new nodeGrid(gridNodeSize)
 
@@ -949,7 +1082,7 @@ function create ()
     //testBullet.deactivate()
 
     fpsCounter = this.add.text(20, 15)
-    playerPosition = this.add.text(20,30) 
+    playerPosition = this.add.text(20,30)
 }
 
 
