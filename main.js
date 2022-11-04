@@ -1,20 +1,63 @@
 "use strict"
 
 // UI
-const dimensione_x = 600
-const dimensione_y = 600
+const Xdimension = 600
+const Ydimension = 600
 
 
 // Config Game
+
+var sceneDebug = {
+    key: 'debug',
+    preload: preloadDebug,
+    create: createDebug,
+    update: updateDebug,
+};
+
+var sceneTutorial = {
+    key: 'tutorial',
+    preload: preload,
+    create: createTutorial,
+    update: updateTutorial,
+};
+
+var sceneLandsBetween= {
+    key: 'landsBetween',
+    preload: preload,
+    create: createLandsBetween,
+    update: updateLandsBetween,
+};
+
+var sceneDeath = {
+    key: 'death',
+    preload: preload,
+    create: createDeath,
+    update: updateDeath,
+};
+
+var sceneLevel1= {
+    key: 'level1',
+    preload: preload,
+    create: createLevel1,
+    update: update,
+};
+
+var sceneLevel2 = {
+    key: 'level2',
+    preload: preload,
+    create: createLevel2,
+    update: update,
+};
+
+let sceneArray = [sceneTutorial,sceneDebug,sceneLandsBetween, sceneDeath, sceneLevel1, sceneLevel2]
+
+
+
 let config = {
     type: Phaser.AUTO,
-    width: dimensione_x,
-    height: dimensione_y,
-    scene: {
-        preload: preload,
-        create: create,
-        update: update
-    }
+    width: Xdimension,
+    height: Ydimension,
+    scene: sceneArray
 }
 
 let game = new Phaser.Game(config);
@@ -25,6 +68,7 @@ let entities = []
 let pg
 let keys
 let Delta
+let lv = 1
 const epsilon = 0.0000000000001
 const gridNodeSize = 10
 
@@ -32,6 +76,9 @@ const gridNodeSize = 10
 // GAME VARIABLES
 let playerSize = 10
 let playerSpeed = 160
+let playerColor = 0x00FF00
+let wallThickness = 10
+
 
 
 // DEBUG
@@ -289,7 +336,7 @@ class player extends Entity{
         super(x,y,playerSize,playerSize,false,null,playerSpeed,[0,0],true)
 
         this.dead = false
-        this.color = 0x00FF00
+        this.color = playerColor
 
         this.look.fillStyle(this.color);
         this.look.fillRect(x , y , this.width, this.height);
@@ -309,22 +356,22 @@ class player extends Entity{
             dy = 1
         if(keys.D.isDown)
             dx = 1
+        
+        if(keys.K){
+           
+            
+            
+            
+        }
+        if(keys.J){
 
-        if(keys.K.isDown){
-            dx=1
-            dy=1
+            
         }
-        if(keys.J.isDown){
-            dx=-1
-            dy=1
+        if(keys.U){
+            
         }
-        if(keys.U.isDown){
-            dx=-1
-            dy=-1
-        }
-        if(keys.I.isDown){
-            dx=1
-            dy=-1
+        if(keys.I){
+            
         }
         
         this.velocity = [dx,dy]
@@ -344,9 +391,23 @@ class player extends Entity{
 
                 if(collision[0]){
                     this.dead = true
-                    this.color=0xFF0000
-                    this.look.fillStyle(this.color)
+                    var theOtherScene = scene.scene.get("death");            
+                    theOtherScene.scene.restart()            
+                    scene.scene.switch("death")
                 }
+            }
+
+            if(entities[i] != this && entities[i].color == playerColor){
+                
+                let collision = this.checkCollision2TheRevenge(entities[i],0,0)
+
+                if(collision[0]){
+
+                    lv++
+                    var theOtherScene = scene.scene.get("landsBetween");            
+                    theOtherScene.scene.restart()            
+                    scene.scene.switch("landsBetween")
+                } 
             }
         }
     }
@@ -420,7 +481,7 @@ class cannon extends Entity{
         let continua = true
 
         this.bulletVelocity = normalizeVector(this.bulletVelocity)
-        let maxDiagonal = Math.sqrt(dimensione_x ** 2 + dimensione_y ** 2)
+        let maxDiagonal = Math.sqrt(Xdimension ** 2 + Ydimension ** 2)
 
         //since checkcCollision2 returns the distance in X and Y to reach the collising object, I use it to determine the travel distance of a bullet
         //PROBLEM! in this way the magazine is calculated based on the distance on the first colliding entity found in the entities array, not the closest.
@@ -555,7 +616,7 @@ class trackingCannon extends cannon{
 
     generateMagazine(){
         
-        let maxDiagonal = Math.sqrt(dimensione_x ** 2 + dimensione_y ** 2)
+        let maxDiagonal = Math.sqrt(Xdimension ** 2 + Ydimension ** 2)
         let bulletGap = this.bulletSpeed * this.bulletClock
         
         if(!(this.capacity)){ //calculate capacity if it unspecified (0 or undefinied)
@@ -631,7 +692,7 @@ class predictingCannon extends cannon{
 
     generateMagazine(){
         
-        let maxDiagonal = Math.sqrt(dimensione_x ** 2 + dimensione_y ** 2)
+        let maxDiagonal = Math.sqrt(Xdimension ** 2 + Ydimension ** 2)
         let bulletGap = this.bulletSpeed * this.bulletClock
         
         if(!(this.capacity)){ //calculate capacity if it unspecified (0 or undefinied)
@@ -685,8 +746,8 @@ class nonnoLaser extends Entity{ //ACTIVATE GENERATELASER() IN THE LASER IF YOU 
         
         let data = []
         
-        let minimunX = dimensione_x
-        let minimunY = dimensione_y
+        let minimunX = Xdimension
+        let minimunY = Ydimension
 
         //since checkcCollision2 returns the distance in X and Y to reach the collising object, I use it to determine the travel distance of a bullet
         for (let i = 0; i < entities.length; i++){
@@ -695,7 +756,7 @@ class nonnoLaser extends Entity{ //ACTIVATE GENERATELASER() IN THE LASER IF YOU 
             
             if(entities[i].collision === true && i !== forbidden){
 
-                data = this.checkCollision2TheRevenge(entities[i], this.direction[0] * dimensione_x, this.direction[1] * dimensione_y)
+                data = this.checkCollision2TheRevenge(entities[i], this.direction[0] * Xdimension, this.direction[1] * Ydimension)
                 if(Math.abs(data[1]) < minimunX && this.direction[1] === 0 && data[0] === true){                    
                     minimunX = Math.abs(data[1])
                 }
@@ -949,11 +1010,11 @@ class nodeGrid{
         this.grid = []
         this.gridNodeSize = gridNodeSize
         
-        for(let i = 0; i < dimensione_y/gridNodeSize; i++){
+        for(let i = 0; i < Ydimension/gridNodeSize; i++){
             
             let row = []
 
-            for(let j = 0; j < dimensione_x/gridNodeSize; j++){
+            for(let j = 0; j < Xdimension/gridNodeSize; j++){
 
                 let nodo = new node(j * gridNodeSize , i * gridNodeSize, true)
                 row.push(nodo)
@@ -967,9 +1028,9 @@ class nodeGrid{
 
     gridUpdater(){
         
-        for(let i = 0; i < dimensione_y/ this.gridNodeSize; i++){
+        for(let i = 0; i < Ydimension/ this.gridNodeSize; i++){
             
-            for(let j = 0; j < dimensione_x/ this.gridNodeSize; j++){
+            for(let j = 0; j < Xdimension/ this.gridNodeSize; j++){
 
                 let continua = true                
                 
@@ -1015,22 +1076,22 @@ class nodeGrid{
         if( thisCol - 1 >= 0)
             if(this.grid[thisRow][thisCol - 1].walkable) {neighbours.push(this.grid[thisRow][thisCol - 1])}
 
-        if( thisRow + 1 < dimensione_y / 10 && thisCol - 1 >= 0)
+        if( thisRow + 1 < Ydimension / 10 && thisCol - 1 >= 0)
             if(this.grid[thisRow + 1][thisCol - 1].walkable) {neighbours.push(this.grid[thisRow + 1][thisCol - 1])}
 
         if( thisRow - 1 >= 0)
             if(this.grid[thisRow - 1][thisCol].walkable) {neighbours.push(this.grid[thisRow - 1][thisCol])}
 
-        if( thisRow + 1 < dimensione_y/10)
+        if( thisRow + 1 < Ydimension/10)
             if(this.grid[thisRow + 1][thisCol].walkable) {neighbours.push(this.grid[thisRow + 1][thisCol])}
 
-        if( thisRow - 1 >= 0 && thisCol + 1 < dimensione_x / 10)
+        if( thisRow - 1 >= 0 && thisCol + 1 < Xdimension / 10)
             if(this.grid[thisRow - 1][thisCol + 1].walkable) {neighbours.push(this.grid[thisRow - 1][thisCol + 1])}
 
-        if(thisCol + 1 < dimensione_x / 10)
+        if(thisCol + 1 < Xdimension / 10)
             if(this.grid[thisRow][thisCol + 1].walkable) {neighbours.push(this.grid[thisRow][thisCol + 1])}
 
-        if( thisRow + 1 < dimensione_y / 10 && thisCol + 1 < dimensione_x / 10)
+        if( thisRow + 1 < Ydimension / 10 && thisCol + 1 < Xdimension / 10)
             if(this.grid[thisRow + 1][thisCol + 1].walkable) {neighbours.push(this.grid[thisRow + 1][thisCol + 1])}
 
         return neighbours
@@ -1038,9 +1099,9 @@ class nodeGrid{
 
     cleanPaths(){
 
-        for(let i = 0; i < dimensione_y/gridNodeSize; i++){
+        for(let i = 0; i < Ydimension/gridNodeSize; i++){
 
-            for(let j = 0; j < dimensione_x/gridNodeSize; j++){
+            for(let j = 0; j < Xdimension/gridNodeSize; j++){
 
                 this.grid[i][j].look.clear()
             }
@@ -1289,6 +1350,17 @@ class mine extends Entity{
 }
 
 
+class goal extends Entity{
+    constructor(x,y,w,h){
+        super(x,y,w,h,false,false,0,[0,0],true)
+
+        this.color = playerColor
+        this.look.fillStyle(this.color);
+        this.look.fillRect(x , y , w, h);
+    }
+}
+
+
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 //
@@ -1332,40 +1404,44 @@ function getDistance(x,y,ax,ay){
 
 
 
-
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 //
-// GAMELOOP AND STUFF
+// SCENES
 //
-
-
-
-function preload ()
-{
-
-}
 
 //ORDER OF PLACEMENT:   PG  ->  WALLS   ->  LAVA   ->  ENEMIES (BALLS LAST)  ->     SMOKE   ->  GRID  
 
-function create ()
-{    
+function preload (){}
+
+function create(){}
+
+function update(time,delta){
+
+    Delta = delta / 1000
+
+    omniHandler()
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+function preloadDebug (){}
+
+function createDebug (){    
+    
     scene = this
-    entities=[]
-    
+    entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,J,K,U,I,SPACE');
-    pg = new player(80,250);
+    pg = new player(80,250);   
+    let lowerEdge = new wall(0 , Ydimension - wallThickness ,Xdimension , wallThickness)
+    let upperEdge = new wall(0,0, Xdimension , wallThickness)
+    let rightEdge = new wall(Xdimension - wallThickness , 0 , wallThickness , Ydimension)
+    let leftEdge = new wall(0,0, wallThickness , Ydimension) 
     
-    let wallThickness = 10
-     
-    let lowerEdge = new wall(0 , dimensione_y - wallThickness ,dimensione_x , wallThickness)
-    let upperEdge = new wall(0,0, dimensione_x , wallThickness)
-    let rightEdge = new wall(dimensione_x - wallThickness , 0 , wallThickness , dimensione_y)
-    let leftEdge = new wall(0,0, wallThickness , dimensione_y)
-    //let centerWall = new wall(80,510,50,30)
-    //let thinWall = new wall(50,481,50,4)
-    //let thinWall2 = new wall(50,500,4,50)
-    let laserWallTest = new wall(535,85,40,40)
+    let thinWall = new wall(50,481,50,4)
+    let thinWall2 = new wall(50,520,4,50)
+    let laserWallTest = new wall(435,85,40,40)
     let meow = new wall(60,200,20,10)
     let meow2 = new wall(110,200,20,10)
     let meow3 = new wall(50,200,10,90)
@@ -1379,8 +1455,8 @@ function create ()
     let Tcannon = new trackingCannon(200,250,0.2,[1,0],150,[1,0],5)
     let laser = new nonnoLaser(10,120,3,0.5,[1,0])
     let laser2 = new nonnoLaser(580,140,2,5,[-1,0])
-    let laser3 = new nonnoLaser(540,10,0.5,0.5,[0,1])
-    let laser4 = new nonnoLaser(560,580,5,2,[0,-1])
+    let laser3 = new nonnoLaser(440,10,0.5,0.5,[0,1])
+    let laser4 = new nonnoLaser(460,580,5,2,[0,-1])
     let cumbare = new stalker(100,350)    
     let palla = new ball(550,400,[1,1])
     let mina = new mine(80,420,3)
@@ -1394,14 +1470,191 @@ function create ()
     playerPosition = this.add.text(20,30)
 }
 
-
-
-function update (time,delta)
+function updateDebug (time,delta)
 {
     Delta = delta / 1000
-
     omniHandler()
         
     fpsCounter.setText(1000 / delta)
     playerPosition.setText("X: " + pg.x + "  Y: " + pg.y)
- }
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+let spawnText
+function createTutorial(){
+
+    scene = this
+    console.log(this)
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D');
+    pg = new player(285,350);   
+    let lowerEdge = new wall(0 , Ydimension - wallThickness ,Xdimension , wallThickness)
+    let upperEdge = new wall(0,0, Xdimension , wallThickness)
+    let rightEdge = new wall(Xdimension - wallThickness , 0 , wallThickness , Ydimension)
+    let leftEdge = new wall(0,0, wallThickness , Ydimension) 
+
+    let tutorialText = this.add.text(190,60,"WELCOME TO AVOID", { font: '20px' })
+    let tutorialText2 = this.add.text(190,110,"Just use W A S D to move", { font: '14px' })
+    let tutorialText3 = this.add.text(110,130,"The Goal is reach the green zone in each level", { font: '14px' })
+    let tutorialText4 = this.add.text(100,150,"Also, try to avoid whatever the heck comes at you", { font: '14px' })
+    let tutorialText5 = this.add.text(55,170,"Actually you have to, because you'd die otherwhise, y'know?", { font: '14px' })
+    spawnText = this.add.text(270,300)
+
+}
+
+function updateTutorial(time,delta){
+
+    Delta = delta / 1000
+    omniHandler()
+
+    if(time > 9000){
+
+        spawnText.setText("Now Go",{ font: '24px' })
+
+        
+    }
+    if(time > 10000){
+
+        var theOtherScene = scene.scene.get("level1");            
+        theOtherScene.scene.restart()            
+        scene.scene.switch("level1")
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+let LBText3
+let LBClock = 0
+
+function createLandsBetween(){
+
+    LBClock = 0
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D');
+    pg = new player(295,350);   
+    let lowerEdge = new wall(0 , Ydimension - wallThickness ,Xdimension , wallThickness)
+    let upperEdge = new wall(0,0, Xdimension , wallThickness)
+    let rightEdge = new wall(Xdimension - wallThickness , 0 , wallThickness , Ydimension)
+    let leftEdge = new wall(0,0, wallThickness , Ydimension)
+
+    let LBText = this.add.text(100,100,"VICTORY IS YOURS", { font: '44px' })
+    let LBText2 = this.add.text(200,170,"Advancing in:", { font: '20px' })
+    LBText3 = this.add.text(290,200)
+
+
+}
+
+function updateLandsBetween(time,delta){
+
+    Delta = delta / 1000
+    LBClock += delta
+    omniHandler()
+
+    if(LBClock > 0){
+
+        LBText3.setText("3", { font: '24px' })
+        
+    }
+    if(LBClock > 1000){
+
+        LBText3.setText("2", { font: '24px' })
+    }
+    if(LBClock > 2000){
+
+        LBText3.setText("1", { font: '24px' })
+    }
+    if(LBClock > 3000){
+
+        var theOtherScene = scene.scene.get("level" + lv);            
+        theOtherScene.scene.restart()            
+        scene.scene.switch("level" + lv)
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+let deathText3
+let deathClock = 0
+
+function createDeath(){
+
+    deathClock = 0
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D');
+    pg = new player(285,350);   
+    let lowerEdge = new wall(0 , Ydimension - wallThickness ,Xdimension , wallThickness)
+    let upperEdge = new wall(0,0, Xdimension , wallThickness)
+    let rightEdge = new wall(Xdimension - wallThickness , 0 , wallThickness , Ydimension)
+    let leftEdge = new wall(0,0, wallThickness , Ydimension)
+
+    let deathText = this.add.text(190,100,"YOU DIED", { font: '44px' })
+    let deathText2 = this.add.text(220,170,"Respawing in:", { font: '20px' })
+    deathText3 = this.add.text(290,200)
+}
+
+function updateDeath(time,delta){
+
+    Delta = delta / 1000
+    deathClock += delta
+    omniHandler()
+
+    if(deathClock > 0){
+
+        deathText3.setText("3", { font: '24px' })
+        
+    }
+    if(deathClock > 1000){
+
+        deathText3.setText("2", { font: '24px' })
+    }
+    if(deathClock > 2000){
+
+        deathText3.setText("1", { font: '24px' })
+    }
+    if(deathClock > 3000){
+
+        var theOtherScene = scene.scene.get("level" + lv);            
+        theOtherScene.scene.restart()            
+        scene.scene.switch("level" + lv)
+    }
+
+
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+function createLevel1(){
+
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D');
+    pg = new player(295,350);   
+    let lowerEdge = new wall(0 , Ydimension - wallThickness ,Xdimension , wallThickness)
+    let upperEdge = new wall(0,0, Xdimension , wallThickness)
+    let rightEdge = new wall(Xdimension - wallThickness , 0 , wallThickness , Ydimension)
+    let leftEdge = new wall(0,0, wallThickness , Ydimension)
+
+    let cumbare = new stalker(20,20)
+
+    let finish = new goal(500,500,50,50)
+
+    grid = new nodeGrid(gridNodeSize)
+}
+
+function createLevel2(){
+
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D');
+    pg = new player(295,350);   
+    let lowerEdge = new wall(0 , Ydimension - wallThickness ,Xdimension , wallThickness)
+    let upperEdge = new wall(0,0, Xdimension , wallThickness)
+    let rightEdge = new wall(Xdimension - wallThickness , 0 , wallThickness , Ydimension)
+    let leftEdge = new wall(0,0, wallThickness , Ydimension)
+
+    let mina = new mine(50,50,3)
+}
