@@ -41,6 +41,11 @@ let playerPosition
 let grid
 
 
+//LOOKS
+let lavaColor = 0xFF8800
+let smokeColor = 0x555555
+
+
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 //
@@ -67,8 +72,7 @@ class Entity{
         if(toProcess){entities.push(this)}        
     }
 
-    handler(){
-        
+    handler(){        
     }
 
     /* //Self destruct
@@ -95,7 +99,8 @@ class Entity{
     }*/
 
     //DO NOT PLACE WALLS ON EACH OTHER
-    move(){  //moves and returns if there has been a collision (it saves to call checkCollision again in the handler)        
+    move(){  //moves and returns if there has been a collision AND the index of the entities you collided with in the entities array
+             //(it saves from calling checkCollision again in the handler)        
         
         this.velocity = normalizeVector(this.velocity)
 
@@ -106,7 +111,6 @@ class Entity{
         let collision = [false]
         let collided = false
 
-        let howMuchImovedInY = my
         let withWhich = []
 
         //Check if collision with "collidable" entities
@@ -127,19 +131,17 @@ class Entity{
 
                     //If there's a collision, checks if it can still moves on another axis
                     let blocked = this.checkCollisionXY(entities[i] , mx , my)
-                    
+                        
                     if ( blocked[0] === true){
                         mx = collision[1]                        
                     }
                     if( blocked[1] === true){
                         my = collision[2]
-                        howMuchImovedInY = my
                     }
                     //this checks if you're a free both in X and in Y, if you are you can move in X and cover the distance in Y (remember that you already verified 
                     // that you're blocked diagonally)
                     if( blocked[0] === false && blocked [1] === false){
                         my = collision[2]
-                        howMuchImovedInY = my
                     }
                 }
             }
@@ -147,19 +149,7 @@ class Entity{
         
         this.moveTo(this.x + mx, this.y + my)
 
-        /*
-        for(let i = 0; i < withWhich.length; i++){
-
-            let yStep = (this.velocity[1] * this.speed * Delta) - howMuchImovedInY
-
-            let blocked = this.checkCollisionXY(entities[withWhich[i]] , 0 , yStep)
-
-            if( blocked[1] === false){
-                this.moveTo(this.x, this.y + yStep)
-            }
-        }*/
-
-        return collided
+        return [collided , withWhich]
     }
 
 
@@ -302,7 +292,7 @@ class Entity{
 
 class player extends Entity{
     constructor(x,y){
-        super(x,y,playerSize,playerSize,false,null,playerSpeed)
+        super(x,y,playerSize,playerSize,false,null,playerSpeed,[0,0],true)
 
         this.dead = false
         this.color = 0x00FF00
@@ -371,25 +361,21 @@ class player extends Entity{
 
 class wall extends Entity{
     constructor(x,y,width,height){
-        super(x,y,width,height,true)
+        super(x,y,width,height,true,false,0,[0,0],true)
 
         this.color = 0xFFFFFF
 
         this.look.fillStyle(this.color);
         this.look.fillRect(x , y , width, height);
-
     }
 
     handler(){
-        if(this.speed && this.velocity){
-            this.move()
-        }
     }
 }
 
 class cannon extends Entity{
     constructor(x,y,bulletClock,direction,bulletSpeed,bulletVelocity,bulletSize,capacity){
-        super(x,y,10,10,true,false,0,[0,0])
+        super(x,y,10,10,true,false,0,[0,0],true)
 
         this.direction = direction
         this.bulletClock = bulletClock  //how many seconds between bullets
@@ -486,7 +472,7 @@ class cannon extends Entity{
 
 class bullet extends Entity{
     constructor(x,y,width,height,speed,velocity,active,color){
-        super(x,y,width,height,false,true,speed,velocity)
+        super(x,y,width,height,false,true,speed,velocity,true)
 
         this.active = active
 
@@ -498,7 +484,10 @@ class bullet extends Entity{
     handler(){
 
         if(this.active === true){
-            if(this.move()){
+            
+            let data = this.move()
+            
+            if(data[0]){
                 this.deactivate()
             }
         }
@@ -521,8 +510,7 @@ class bullet extends Entity{
 
 
 class trackingCannon extends cannon{
-    constructor(x,y,bulletClock,direction,bulletSpeed,bulletVelocity,bulletSize,capacity){
-        
+    constructor(x,y,bulletClock,direction,bulletSpeed,bulletVelocity,bulletSize,capacity){        
         super(x,y,bulletClock,direction,bulletSpeed,bulletVelocity,bulletSize,capacity)
 
         this.color = 0xAA00AA
@@ -589,7 +577,7 @@ class trackingCannon extends cannon{
 
 class nonnoLaser extends Entity{ //ACTIVATE GENERATELASER() IN THE LASER IF YOU IMPLEMENT MOVING WALLS
     constructor(x,y,offTime,onTime,direction){
-        super(x,y,10,10,true,false,0)
+        super(x,y,10,10,true,false,0,[0,0],true)
 
         this.onTime = onTime
         this.offTime = offTime
@@ -664,7 +652,7 @@ class nonnoLaser extends Entity{ //ACTIVATE GENERATELASER() IN THE LASER IF YOU 
 
 class stalker extends Entity{
     constructor(x,y){
-        super(x,y,9,9,false,true,playerSpeed*0.75,[0,0])
+        super(x,y,9,9,false,true,playerSpeed*0.75,[0,0],true)
 
         this.subClock = 0
         this.path = []
@@ -678,7 +666,7 @@ class stalker extends Entity{
 
         this.subClock += Delta
 
-        if(this.subClock > 1){
+        if(this.subClock > 0.5){
             this.subClock = 0
             
             this.pathFinding()
@@ -686,14 +674,17 @@ class stalker extends Entity{
             //this.colorPath()
         }
 
-        this.moveStalker(this.move())
+        let data = this.move()
+        
+        this.moveStalker(data[0])
     }
 
     moveStalker(collided){
         
         if(collided && !(this.velocity[0] != 0 && this.velocity[1] != 0)){
 
-            this.velocity = [this.path[this.path.length - 1].x - this.x , this.path[this.path.length - 1].y - this.y]
+            if(this.path.length > 0)
+                this.velocity = [this.path[this.path.length - 1].x - this.x , this.path[this.path.length - 1].y - this.y]
 
         }else{
 
@@ -791,10 +782,17 @@ class stalker extends Entity{
 
         let currentNode = grid.grid[(pg.y - pg.y % 10)/10][(pg.x - pg.x % 10)/10]
 
-        while(currentNode != grid.grid[(this.y - this.y % 10)/10][(this.x - this.x % 10)/10]){
+        let continua = true
 
-            this.path.push(grid.grid[currentNode.y/10][currentNode.x/10])
-            currentNode = grid.grid[currentNode.y/10][currentNode.x/10].parent
+        while(currentNode != grid.grid[(this.y - this.y % 10)/10][(this.x - this.x % 10)/10] && continua){
+
+            if(currentNode != null){
+                this.path.push(grid.grid[currentNode.y/10][currentNode.x/10])
+                currentNode = grid.grid[currentNode.y/10][currentNode.x/10].parent
+            }else{
+                continua = false
+                this.velocity = [0,0]
+            }
 
         }
     }
@@ -822,6 +820,8 @@ class stalker extends Entity{
             this.path[i].look.fillStyle(0xFFFF00);
             this.path[i].look.fillRect(this.path[i].x + 4, this.path[i].y + 4, 2, 2);
         }
+
+        //grid.cleanPaths()
     }
 
     calculatePathLenght(nodeA, nodeB){
@@ -906,14 +906,15 @@ class nodeGrid{
                     
                     if(data[0]){
                         
-                        if(entities[k].collision === true){
+                        if(entities[k].collision){
                             this.grid[i][j].walkable = false
                             continua = false
                         }
-                        else{
-                            this.grid[i][j].walkable = true
+
+                        if(entities[k].color == lavaColor || entities[k].color == smokeColor){
+                            this.grid[i][j].walkable = false
                         }
-                    }                    
+                    }
                 }                
                 /*
                 //GRID VISUALIZER
@@ -974,6 +975,147 @@ class nodeGrid{
                 this.grid[i][j].look.clear()
             }
         
+        }
+    }
+}
+
+
+class lava extends Entity{
+    constructor(x,y,w,h){
+        super(x,y,w,h,false,true,0,[0,0],true)
+
+        this.color = lavaColor
+        this.look.fillStyle(this.color);
+        this.look.fillRect(x , y , w, h);
+    }
+}
+
+class smoke extends Entity{
+    constructor(x,y,w,h){
+        super(x,y,w,h,false,false,0,[0,0],true)
+
+        this.color = smokeColor
+        this.look.fillStyle(this.color);
+        this.look.fillRect(x , y , w, h);
+    }
+}
+
+
+class ball extends Entity{
+    constructor(x,y,startingDirection){
+        super(x,y,6,6,false,true,100,startingDirection,true)
+
+        this.color = 0x00FF66
+        this.look.fillStyle(this.color);
+        this.look.fillRect(x , y , 6, 6);
+    }
+
+    handler(){
+
+        let data = this.move()
+        let rotated = false
+        
+        if(data[0]){            
+
+            if(this.velocity[0] >= 0 && this.velocity[1] >= 0 && rotated == false){
+                
+                let foundYObstructed = false
+
+                for (let i = 0; i < data[1].length; i++){
+
+                    let data2 = this.checkCollisionXY(entities[data[1][i]],0,2)
+
+                    if(data2[1]){
+
+                        foundYObstructed = true
+                    }
+                }
+
+                if(foundYObstructed){
+
+                    this.velocity = [1,-1]
+                }else{
+
+                    this.velocity = [-1,1]
+                }                
+                
+                rotated = true
+            }
+
+            if(this.velocity[0] < 0 && this.velocity[1] >= 0 && rotated == false){
+                
+                let foundYObstructed = false
+
+                for (let i = 0; i < data[1].length; i++){
+
+                    let data2 = this.checkCollisionXY(entities[data[1][i]],0,2)
+
+                    if(data2[1]){
+
+                        foundYObstructed = true
+                    }
+                }
+
+                if(foundYObstructed){
+
+                    this.velocity = [-1,-1]
+                }else{
+
+                    this.velocity = [1,1]
+                }  
+
+                rotated = true
+            }
+
+            if(this.velocity[0] < 0 && this.velocity[1] < 0 && rotated == false){
+                
+                let foundYObstructed = false
+
+                for (let i = 0; i < data[1].length; i++){
+
+                    let data2 = this.checkCollisionXY(entities[data[1][i]],0,-2)
+
+                    if(data2[1]){
+
+                        foundYObstructed = true
+                    }
+                }
+
+                if(foundYObstructed){
+
+                    this.velocity = [-1,1]
+                }else{
+
+                    this.velocity = [1,-1]
+                }  
+                
+                rotated = true
+            }
+            
+            if(this.velocity[0] >= 0 && this.velocity[1] < 0 && rotated == false){
+                
+                let foundYObstructed = false
+
+                for (let i = 0; i < data[1].length; i++){
+
+                    let data2 = this.checkCollisionXY(entities[data[1][i]],0,-2)
+
+                    if(data2[1]){
+
+                        foundYObstructed = true
+                    }
+                }
+
+                if(foundYObstructed){
+
+                    this.velocity = [1,1]
+                }else{
+
+                    this.velocity = [-1,-1]
+                }
+                  
+                rotated = true
+            }
         }
     }
 }
@@ -1041,7 +1183,7 @@ function preload ()
 
 }
 
-//IMPORTANT!!! WALLS HAVE TO BE DECLARED FIRST. Resolving this would meaning recalculate the laser form each frame, but in this way I can use moving walls
+//ORDER OF PLACEMENT:   PG  ->  WALLS   ->  LAVA & SMOKE   ->  ENEMIES   ->  GRID  
 
 function create ()
 {    
@@ -1066,6 +1208,11 @@ function create ()
     let meow3 = new wall(50,200,10,90)
     let meow4 = new wall(130,200,10,90)
     let meow5= new wall(50,290,90,10)
+
+    let lava2 = new lava(300,95,30,60)
+    let lavaCreep = new lava(500,500,40,40)
+    let fumo = new smoke(200,450,60,50)
+
     
     let cannone = new cannon(10,100,0.2,[1,0],150,[1,0],5)
     let Tcannon = new trackingCannon(200,250,0.2,[1,0],150,[1,0],5)
@@ -1073,10 +1220,15 @@ function create ()
     let laser2 = new nonnoLaser(580,140,2,5,[-1,0])
     let laser3 = new nonnoLaser(540,10,0.5,0.5,[0,1])
     let laser4 = new nonnoLaser(560,580,5,2,[0,-1])
-    let cumbare = new stalker(100,350)
+    let cumbare = new stalker(100,350)    
+    let palla = new ball(550,400,[1,1])
+
+    grid = new nodeGrid(gridNodeSize)
+    
+    
 
     
-    grid = new nodeGrid(gridNodeSize)
+    
 
     //let testBullet = new bullet(100,100,5,5,5,[1,0])
     //testBullet.deactivate()
@@ -1097,3 +1249,11 @@ function update (time,delta)
     fpsCounter.setText(1000 / delta)
     playerPosition.setText("X: " + pg.x + "  Y: " + pg.y)
  }
+
+
+/*
+ NOTES
+
+ 1)If I transition to sprites I have to changehow the nodeGrid finds lava
+
+ */
