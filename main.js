@@ -25,7 +25,6 @@ let entities = []
 let pg
 let keys
 let Delta
-let masterSubClock = 0
 const epsilon = 0.0000000000001
 const gridNodeSize = 10
 
@@ -82,19 +81,14 @@ class Entity{
         
         let index = entities.indexOf(this)
         entities.splice(index,1)
-
         this.look.clear()
         
         for( const i in this){
             delete this[i]
         }
-
         const allProp = Object.getOwnPropertyNames(this)
-
         allProp.forEach(propriety => {delete this[propriety];});
-
         Object.setPrototypeOf(this,null)
-
         
     }*/
 
@@ -472,13 +466,16 @@ class cannon extends Entity{
 
 class bullet extends Entity{
     constructor(x,y,width,height,speed,velocity,active,color){
-        super(x,y,width,height,false,true,speed,velocity,true)
+        super(x,y,width,height,false,true,speed,velocity,true)        
 
-        this.active = active
+        if(color){this.color = color}else{this.color = 0xFF0000} 
+        
+        this.active = active 
 
-        if(color){this.color = color}else{this.color = 0xFF0000}        
-        this.look.fillStyle(this.color);
-        this.look.fillRect(x , y , width, height);
+        if(this.active)
+            this.activate()
+        else
+            this.deactivate()
     }
 
     handler(){
@@ -554,6 +551,82 @@ class trackingCannon extends cannon{
         let dy = pg.y - this.y
 
         return normalizeVector([dx,dy])
+    }
+
+    generateMagazine(){
+        
+        let maxDiagonal = Math.sqrt(dimensione_x ** 2 + dimensione_y ** 2)
+        let bulletGap = this.bulletSpeed * this.bulletClock
+        
+        if(!(this.capacity)){ //calculate capacity if it unspecified (0 or undefinied)
+            this.capacity = Math.floor( maxDiagonal / bulletGap) + 2
+        }        
+
+        for(let i = 0; i < this.capacity; i++){
+
+            let pewpew = new bullet(-100, -100 , this.bulletSize , this.bulletSize , this.bulletSpeed , this.bulletVelocity, false);
+            this.magazine.push(pewpew)
+            
+        }
+    }
+}
+
+
+class predictingCannon extends cannon{
+    constructor(x,y,bulletClock,direction,bulletSpeed,bulletVelocity,bulletSize,capacity){        
+        super(x,y,bulletClock,direction,bulletSpeed,bulletVelocity,bulletSize,capacity)
+
+        this.tracking = 10
+        
+        this.color = 0x6600AA
+        
+        this.look.clear()
+        this.look.fillStyle(this.color)
+        this.look.fillRect(x , y , 10, 10)    
+    }
+
+    handler(){
+
+        this.subclock += Delta
+        
+        if(this.subclock >= this.bulletClock){
+            this.subclock = 0
+
+            this.bulletVelocity = this.calculateDirection()
+
+            let continua = true
+            for(let i = 0; i < this.magazine.length && continua === true; i++){
+
+                if(this.magazine[i].active === false){
+                    let spawnX = this.bulletVelocity[0] * (Math.sqrt( (this.width / 2) ** 2 + (this.height / 2) ** 2 ) + 
+                        Math.sqrt(2 * (this.bulletSize ** 2))); 
+                    let spawnY = this.bulletVelocity[1] * (Math.sqrt( (this.width / 2) ** 2 + (this.height / 2) ** 2 ) + 
+                        Math.sqrt(2 * (this.bulletSize ** 2)));
+
+                    this.magazine[i].moveTo(this.x + spawnX, this.y + spawnY)
+                    this.magazine[i].activate()
+                    this.magazine[i].velocity = this.bulletVelocity
+
+                    continua = false
+                }
+            }
+        }
+    }
+
+    calculateDirection(){
+        
+        //vector between this and pg
+        let TP = [pg.x - this.x , pg.y - this.y]
+
+        let bulletTravelDistance = getDistance(this.x , this.y , pg.x , pg.y)
+        let timeOfTravel = bulletTravelDistance / this.bulletSpeed
+
+        let pgTravelDistance = playerSpeed * timeOfTravel
+        let playerVector = [pg.velocity[0] * pgTravelDistance , pg.velocity[1] * pgTravelDistance]
+
+        let linkingVector = [TP[0] + playerVector[0] , TP[1] + playerVector[1]]
+
+        return normalizeVector(linkingVector)
     }
 
     generateMagazine(){
@@ -919,12 +992,9 @@ class nodeGrid{
                 /*
                 //GRID VISUALIZER
                 if(this.grid[i][j].walkable){
-
                     this.grid[i][j].look.fillStyle(0x00FF00);
                     this.grid[i][j].look.fillRect(this.grid[i][j].x + 4 , this.grid[i][j].y + 4 , 2, 2);
-
                 }else{
-
                     this.grid[i][j].look.fillStyle(0xFF0000);
                     this.grid[i][j].look.fillRect(this.grid[i][j].x + 4 , this.grid[i][j].y + 4 , 2, 2);
                 }*/
@@ -1005,7 +1075,7 @@ class ball extends Entity{
     constructor(x,y,startingDirection){
         super(x,y,6,6,false,true,100,startingDirection,true)
 
-        this.color = 0x00FF66
+        this.color = 0x009933
         this.look.fillStyle(this.color);
         this.look.fillRect(x , y , 6, 6);
     }
@@ -1121,6 +1191,104 @@ class ball extends Entity{
 }
 
 
+class mine extends Entity{
+    constructor(x,y,timeToBOOM){
+        super(x,y,8,8,false,false,0,[0,0],true)
+
+        this.timeToBOOM = timeToBOOM
+        this.triggered = false
+        this.subClock = 0
+        this.BOOM = false
+        this.complete = false
+
+        let centerX = this.x + this.width/2
+        let centerY = this.y + this.height/2
+        let radius = 20
+
+        this.explosion = new bullet(centerX - radius , centerY - radius, radius * 2 , radius * 2, 0 , [0,0], false , 0xFF0000)
+
+        this.color = 0xFFFF00
+        this.look.fillStyle(this.color);
+        this.look.fillRect(x , y , 8, 8);
+    }
+
+    handler(){
+
+        if(!this.BOOM){
+
+            if(this.triggered){
+
+                this.subClock += Delta
+
+                if(this.subClock < this.timeToBOOM * 0.75){
+
+                    if(Math.floor(this.subClock * 10) % 6 >= 3){
+
+                        this.look.clear()
+                        this.look.fillStyle(this.color);
+                        this.look.fillRect(this.x , this.y , 8, 8);
+
+                    }else{                    
+
+                        this.look.clear()
+                        this.look.fillStyle(0xFF0000);
+                        this.look.fillRect(this.x , this.y , 8, 8);
+                    }
+
+                }else{
+
+                    if(this.subClock < this.timeToBOOM){
+
+                        if(Math.floor(this.subClock * 10) % 2 ){
+
+                            this.look.clear()
+                            this.look.fillStyle(0xFF0000);
+                            this.look.fillRect(this.x , this.y , 8, 8);
+
+                        }else{
+        
+                            this.look.clear()
+                            this.look.fillStyle(this.color);
+                            this.look.fillRect(this.x , this.y , 8, 8);
+                        }
+                    }else{
+
+                        this.look.clear()
+                        this.BOOM = true
+                        this.explosion.activate()
+                    }
+                }
+
+            }else{
+
+                for (let i = 0; i < entities.length ; i++){
+                
+                    if(entities[i] == pg){
+
+                        let collision = this.checkCollision2TheRevenge(pg,0,0)
+
+                        if(collision[0])                        
+                            this.triggered = true
+                    }
+                }
+            }
+        }else{
+
+            if(!this.complete){
+
+                this.subClock += Delta
+
+                if(this.subClock > this.timeToBOOM + 0.5){
+
+                    this.complete = true
+                    this.explosion.deactivate()
+                }
+            }
+        }
+    }
+}
+
+
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 //
@@ -1130,11 +1298,6 @@ class ball extends Entity{
 function omniHandler(){
     for(let i = 0 ; i < entities.length ; i++){
         entities[i].handler()
-    }
-
-    if(masterSubClock > 1){
-        //grid.gridUpdater()
-        masterSubClock = 0
     }
 }
 
@@ -1183,12 +1346,12 @@ function preload ()
 
 }
 
-//ORDER OF PLACEMENT:   PG  ->  WALLS   ->  LAVA & SMOKE   ->  ENEMIES   ->  GRID  
+//ORDER OF PLACEMENT:   PG  ->  WALLS   ->  LAVA   ->  ENEMIES (BALLS LAST)  ->     SMOKE   ->  GRID  
 
 function create ()
 {    
     scene = this
-    masterSubClock = 0
+    entities=[]
     
     keys = this.input.keyboard.addKeys('W,A,S,D,J,K,U,I,SPACE');
     pg = new player(80,250);
@@ -1210,9 +1373,7 @@ function create ()
     let meow5= new wall(50,290,90,10)
 
     let lava2 = new lava(300,95,30,60)
-    let lavaCreep = new lava(500,500,40,40)
-    let fumo = new smoke(200,450,60,50)
-
+    let lavaCreep = new lava(500,500,40,40)    
     
     let cannone = new cannon(10,100,0.2,[1,0],150,[1,0],5)
     let Tcannon = new trackingCannon(200,250,0.2,[1,0],150,[1,0],5)
@@ -1222,17 +1383,13 @@ function create ()
     let laser4 = new nonnoLaser(560,580,5,2,[0,-1])
     let cumbare = new stalker(100,350)    
     let palla = new ball(550,400,[1,1])
+    let mina = new mine(80,420,3)
+    let omg = new predictingCannon(300,350,0.2,[1,0],150,[1,0],5)
+
+    let fumo = new smoke(200,450,60,50)
 
     grid = new nodeGrid(gridNodeSize)
     
-    
-
-    
-    
-
-    //let testBullet = new bullet(100,100,5,5,5,[1,0])
-    //testBullet.deactivate()
-
     fpsCounter = this.add.text(20, 15)
     playerPosition = this.add.text(20,30)
 }
@@ -1242,18 +1399,9 @@ function create ()
 function update (time,delta)
 {
     Delta = delta / 1000
-    masterSubClock += Delta
 
     omniHandler()
         
     fpsCounter.setText(1000 / delta)
     playerPosition.setText("X: " + pg.x + "  Y: " + pg.y)
  }
-
-
-/*
- NOTES
-
- 1)If I transition to sprites I have to changehow the nodeGrid finds lava
-
- */
