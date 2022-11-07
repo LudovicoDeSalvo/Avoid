@@ -1,8 +1,8 @@
 "use strict"
 
 // UI
-const Xdimension = 600
-const Ydimension = 600
+const XDIMENSION = 800
+const YDIMENSION = 800
 
 
 // Config Game
@@ -18,14 +18,14 @@ var sceneTutorial = {
     key: 'tutorial',
     preload: preload,
     create: createTutorial,
-    update: updateTutorial,
+    update: update,
 };
 
 var sceneLandsBetween= {
     key: 'landsBetween',
     preload: preload,
     create: createLandsBetween,
-    update: updateLandsBetween,
+    update: update,
 };
 
 var sceneDeath = {
@@ -49,14 +49,13 @@ var sceneLevel2 = {
     update: update,
 };
 
+
 let sceneArray = [sceneTutorial,sceneDebug,sceneLandsBetween, sceneDeath, sceneLevel1, sceneLevel2]
-
-
 
 let config = {
     type: Phaser.AUTO,
-    width: Xdimension,
-    height: Ydimension,
+    width: XDIMENSION,
+    height: YDIMENSION,
     scene: sceneArray
 }
 
@@ -65,31 +64,34 @@ let scene
 
 // GAME ELEMENTS
 let entities = []
+const PIXELUNIT = 16
 let pg
 let keys
 let Delta
 let lv = 1
+let grid
 const epsilon = 0.0000000000001
-const gridNodeSize = 10
+const gridNodeSize = PIXELUNIT
 
 
 // GAME VARIABLES
-let playerSize = 10
+let playerSize = 16
 let playerSpeed = 160
 let playerColor = 0x00FF00
-let wallThickness = 10
+let wallThickness = 16
 
-
-
-// DEBUG
-let fpsCounter
-let playerPosition
-let grid
 
 
 //LOOKS
 let lavaColor = 0xFF8800
 let smokeColor = 0x555555
+
+
+
+let password = document.getElementById("passwordBox")
+let button = document.getElementById("passwordButton")
+button.addEventListener("click",levelManager)
+let label = document.getElementById("thisLevelPassword")
 
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -335,7 +337,6 @@ class player extends Entity{
     constructor(x,y){
         super(x,y,playerSize,playerSize,false,null,playerSpeed,[0,0],true)
 
-        this.dead = false
         this.color = playerColor
 
         this.look.fillStyle(this.color);
@@ -357,21 +358,29 @@ class player extends Entity{
         if(keys.D.isDown)
             dx = 1
         
-        if(keys.K){
-           
+        if(keys.SPACE){
             
-            
-            
-        }
-        if(keys.J){
+            if(lv == 1 && keys.SPACE.isDown){
 
-            
+                var theOtherScene = scene.scene.get("level1");            
+                theOtherScene.scene.restart()            
+                scene.scene.switch("level1")
+            }
+            if(scene == scene.scene.get("landsBetween")  && keys.SPACE.isDown)
+            {
+                var theOtherScene = scene.scene.get("level" + lv);            
+                theOtherScene.scene.restart()            
+                scene.scene.switch("level" + lv)
+            }
         }
-        if(keys.U){
+        if(keys.P){
             
-        }
-        if(keys.I){
-            
+            if(keys.P.isDown){
+
+                var theOtherScene = scene.scene.get("debug");            
+                theOtherScene.scene.restart()            
+                scene.scene.switch("debug")
+            }            
         }
         
         this.velocity = [dx,dy]
@@ -389,11 +398,22 @@ class player extends Entity{
 
                 let collision = this.checkCollision2TheRevenge(entities[i],0,0)
 
+                var theOtherScene2 = scene.scene.get("debug");  
+                
                 if(collision[0]){
-                    this.dead = true
-                    var theOtherScene = scene.scene.get("death");            
-                    theOtherScene.scene.restart()            
-                    scene.scene.switch("death")
+                    
+                    if(scene == theOtherScene2){
+
+                        this.look.clear()
+                        this.look.fillRect(this.x , this.y , this.width, this.height);
+                        this.look.fillStyle(0xFF0000)
+
+                    }else{
+
+                        var theOtherScene = scene.scene.get("death");            
+                        theOtherScene.scene.restart()            
+                        scene.scene.switch("death")
+                    }
                 }
             }
 
@@ -429,10 +449,9 @@ class wall extends Entity{
 }
 
 class cannon extends Entity{
-    constructor(x,y,bulletClock,direction,bulletSpeed,bulletVelocity,bulletSize,capacity){
-        super(x,y,10,10,true,false,0,[0,0],true)
+    constructor(x,y,bulletClock,bulletSpeed,bulletVelocity,bulletSize,capacity){
+        super(x,y,PIXELUNIT,PIXELUNIT,true,false,0,[0,0],true)
 
-        this.direction = direction
         this.bulletClock = bulletClock  //how many seconds between bullets
         this.bulletVelocity = bulletVelocity
         this.bulletSpeed = bulletSpeed
@@ -444,7 +463,7 @@ class cannon extends Entity{
         this.magazine = []        
 
         this.look.fillStyle(this.color);
-        this.look.fillRect(x , y , 10, 10);
+        this.look.fillRect(x , y , PIXELUNIT, PIXELUNIT);
 
         this.generateMagazine()        
     }
@@ -461,13 +480,24 @@ class cannon extends Entity{
             for(let i = 0; i < this.magazine.length && continua === true; i++){
 
                 if(this.magazine[i].active === false){
-                    let spawnX = this.bulletVelocity[0] * (Math.sqrt( (this.width / 2) ** 2 + (this.height / 2) ** 2 ) + 
-                        Math.sqrt(2 * (this.bulletSize ** 2))); 
-                    let spawnY = this.bulletVelocity[1] * (Math.sqrt( (this.width / 2) ** 2 + (this.height / 2) ** 2 ) + 
-                        Math.sqrt(2 * (this.bulletSize ** 2)));
+
+                    let spawnX = this.bulletVelocity[0] * PIXELUNIT * 2
+                    let spawnY = this.bulletVelocity[1] * PIXELUNIT * 2                 
 
                     this.magazine[i].moveTo(this.x + spawnX, this.y + spawnY)
                     this.magazine[i].activate()
+
+                    this.magazine[i].velocity[0] = this.bulletVelocity[0] * -1
+                    this.magazine[i].velocity[1] = this.bulletVelocity[1] * -1
+
+                    let data = this.magazine[i].checkCollision2TheRevenge(this, this.magazine[i].velocity[0] * PIXELUNIT * 2, this.magazine[i].velocity[1] * PIXELUNIT * 2)
+                    
+                    this.magazine[i].velocity = this.bulletVelocity
+
+                    if(this.bulletVelocity[0] <= Math.sqrt(2) / 2 && this.bulletVelocity[0] > Math.sqrt(2) / -2)
+                        this.magazine[i].moveTo(this.x + spawnX, this.y + spawnY + data[2])
+                    else
+                        this.magazine[i].moveTo(this.x + spawnX + data[1], this.y + spawnY)
 
                     continua = false
                 }
@@ -481,7 +511,7 @@ class cannon extends Entity{
         let continua = true
 
         this.bulletVelocity = normalizeVector(this.bulletVelocity)
-        let maxDiagonal = Math.sqrt(Xdimension ** 2 + Ydimension ** 2)
+        let maxDiagonal = Math.sqrt(XDIMENSION ** 2 + YDIMENSION ** 2)
 
         //since checkcCollision2 returns the distance in X and Y to reach the collising object, I use it to determine the travel distance of a bullet
         //PROBLEM! in this way the magazine is calculated based on the distance on the first colliding entity found in the entities array, not the closest.
@@ -541,7 +571,7 @@ class bullet extends Entity{
 
     handler(){
 
-        if(this.active === true){
+        if(this.active){
             
             let data = this.move()
             
@@ -568,14 +598,14 @@ class bullet extends Entity{
 
 
 class trackingCannon extends cannon{
-    constructor(x,y,bulletClock,direction,bulletSpeed,bulletVelocity,bulletSize,capacity){        
-        super(x,y,bulletClock,direction,bulletSpeed,bulletVelocity,bulletSize,capacity)
+    constructor(x,y,bulletClock,bulletSpeed,bulletVelocity,bulletSize,capacity){        
+        super(x,y,bulletClock,bulletSpeed,bulletVelocity,bulletSize,capacity)
 
         this.color = 0xAA00AA
         
         this.look.clear()
         this.look.fillStyle(this.color)
-        this.look.fillRect(x , y , 10, 10)    
+        this.look.fillRect(x , y , PIXELUNIT, PIXELUNIT)    
     }
 
     handler(){
@@ -591,14 +621,24 @@ class trackingCannon extends cannon{
             for(let i = 0; i < this.magazine.length && continua === true; i++){
 
                 if(this.magazine[i].active === false){
-                    let spawnX = this.bulletVelocity[0] * (Math.sqrt( (this.width / 2) ** 2 + (this.height / 2) ** 2 ) + 
-                        Math.sqrt(2 * (this.bulletSize ** 2))); 
-                    let spawnY = this.bulletVelocity[1] * (Math.sqrt( (this.width / 2) ** 2 + (this.height / 2) ** 2 ) + 
-                        Math.sqrt(2 * (this.bulletSize ** 2)));
+
+                    let spawnX = this.bulletVelocity[0] * PIXELUNIT * 2
+                    let spawnY = this.bulletVelocity[1] * PIXELUNIT * 2                    
 
                     this.magazine[i].moveTo(this.x + spawnX, this.y + spawnY)
                     this.magazine[i].activate()
+
+                    this.magazine[i].velocity[0] = this.bulletVelocity[0] * -1
+                    this.magazine[i].velocity[1] = this.bulletVelocity[1] * -1
+
+                    let data = this.magazine[i].checkCollision2TheRevenge(this, this.magazine[i].velocity[0] * PIXELUNIT * 2, this.magazine[i].velocity[1] * PIXELUNIT * 2)
+                    
                     this.magazine[i].velocity = this.bulletVelocity
+
+                    if(this.bulletVelocity[0] <= Math.sqrt(2) / 2 && this.bulletVelocity[0] > Math.sqrt(2) / -2)
+                        this.magazine[i].moveTo(this.x + spawnX, this.y + spawnY + data[2])
+                    else
+                        this.magazine[i].moveTo(this.x + spawnX + data[1], this.y + spawnY)
 
                     continua = false
                 }
@@ -608,7 +648,7 @@ class trackingCannon extends cannon{
 
     calculateDirection(){
         
-        let dx = pg.x - this.x
+        let dx = pg.x - this.x 
         let dy = pg.y - this.y
 
         return normalizeVector([dx,dy])
@@ -616,7 +656,7 @@ class trackingCannon extends cannon{
 
     generateMagazine(){
         
-        let maxDiagonal = Math.sqrt(Xdimension ** 2 + Ydimension ** 2)
+        let maxDiagonal = Math.sqrt(XDIMENSION ** 2 + YDIMENSION ** 2)
         let bulletGap = this.bulletSpeed * this.bulletClock
         
         if(!(this.capacity)){ //calculate capacity if it unspecified (0 or undefinied)
@@ -634,16 +674,14 @@ class trackingCannon extends cannon{
 
 
 class predictingCannon extends cannon{
-    constructor(x,y,bulletClock,direction,bulletSpeed,bulletVelocity,bulletSize,capacity){        
-        super(x,y,bulletClock,direction,bulletSpeed,bulletVelocity,bulletSize,capacity)
-
-        this.tracking = 10
+    constructor(x,y,bulletClock,bulletSpeed,bulletVelocity,bulletSize,capacity){        
+        super(x,y,bulletClock,bulletSpeed,bulletVelocity,bulletSize,capacity)
         
         this.color = 0x6600AA
         
         this.look.clear()
         this.look.fillStyle(this.color)
-        this.look.fillRect(x , y , 10, 10)    
+        this.look.fillRect(x , y , PIXELUNIT, PIXELUNIT)    
     }
 
     handler(){
@@ -659,14 +697,23 @@ class predictingCannon extends cannon{
             for(let i = 0; i < this.magazine.length && continua === true; i++){
 
                 if(this.magazine[i].active === false){
-                    let spawnX = this.bulletVelocity[0] * (Math.sqrt( (this.width / 2) ** 2 + (this.height / 2) ** 2 ) + 
-                        Math.sqrt(2 * (this.bulletSize ** 2))); 
-                    let spawnY = this.bulletVelocity[1] * (Math.sqrt( (this.width / 2) ** 2 + (this.height / 2) ** 2 ) + 
-                        Math.sqrt(2 * (this.bulletSize ** 2)));
+                    let spawnX = this.bulletVelocity[0] * PIXELUNIT * 2; 
+                    let spawnY = this.bulletVelocity[1] * PIXELUNIT * 2;                    
 
                     this.magazine[i].moveTo(this.x + spawnX, this.y + spawnY)
                     this.magazine[i].activate()
+
+                    this.magazine[i].velocity[0] = this.bulletVelocity[0] * -1
+                    this.magazine[i].velocity[1] = this.bulletVelocity[1] * -1
+
+                    let data = this.magazine[i].checkCollision2TheRevenge(this, this.magazine[i].velocity[0] * PIXELUNIT * 2, this.magazine[i].velocity[1] * PIXELUNIT * 2)
+                    
                     this.magazine[i].velocity = this.bulletVelocity
+
+                    if(this.bulletVelocity[0] <= Math.sqrt(2) / 2 && this.bulletVelocity[0] > Math.sqrt(2) / -2)
+                        this.magazine[i].moveTo(this.x + spawnX, this.y + spawnY + data[2])
+                    else
+                        this.magazine[i].moveTo(this.x + spawnX + data[1], this.y + spawnY)
 
                     continua = false
                 }
@@ -692,7 +739,7 @@ class predictingCannon extends cannon{
 
     generateMagazine(){
         
-        let maxDiagonal = Math.sqrt(Xdimension ** 2 + Ydimension ** 2)
+        let maxDiagonal = Math.sqrt(XDIMENSION ** 2 + YDIMENSION ** 2)
         let bulletGap = this.bulletSpeed * this.bulletClock
         
         if(!(this.capacity)){ //calculate capacity if it unspecified (0 or undefinied)
@@ -711,7 +758,7 @@ class predictingCannon extends cannon{
 
 class nonnoLaser extends Entity{ //ACTIVATE GENERATELASER() IN THE LASER IF YOU IMPLEMENT MOVING WALLS
     constructor(x,y,offTime,onTime,direction){
-        super(x,y,10,10,true,false,0,[0,0],true)
+        super(x,y,PIXELUNIT,PIXELUNIT,true,false,0,[0,0],true)
 
         this.onTime = onTime
         this.offTime = offTime
@@ -723,7 +770,7 @@ class nonnoLaser extends Entity{ //ACTIVATE GENERATELASER() IN THE LASER IF YOU 
 
         this.color = 0x0000FF
         this.look.fillStyle(this.color);
-        this.look.fillRect(x , y , 10, 10);
+        this.look.fillRect(x , y , PIXELUNIT, PIXELUNIT);
 
         this.generateLaser()
     }
@@ -746,8 +793,8 @@ class nonnoLaser extends Entity{ //ACTIVATE GENERATELASER() IN THE LASER IF YOU 
         
         let data = []
         
-        let minimunX = Xdimension
-        let minimunY = Ydimension
+        let minimunX = XDIMENSION
+        let minimunY = YDIMENSION
 
         //since checkcCollision2 returns the distance in X and Y to reach the collising object, I use it to determine the travel distance of a bullet
         for (let i = 0; i < entities.length; i++){
@@ -756,7 +803,7 @@ class nonnoLaser extends Entity{ //ACTIVATE GENERATELASER() IN THE LASER IF YOU 
             
             if(entities[i].collision === true && i !== forbidden){
 
-                data = this.checkCollision2TheRevenge(entities[i], this.direction[0] * Xdimension, this.direction[1] * Ydimension)
+                data = this.checkCollision2TheRevenge(entities[i], this.direction[0] * XDIMENSION, this.direction[1] * YDIMENSION)
                 if(Math.abs(data[1]) < minimunX && this.direction[1] === 0 && data[0] === true){                    
                     minimunX = Math.abs(data[1])
                 }
@@ -786,14 +833,14 @@ class nonnoLaser extends Entity{ //ACTIVATE GENERATELASER() IN THE LASER IF YOU 
 
 class stalker extends Entity{
     constructor(x,y){
-        super(x,y,9,9,false,true,playerSpeed*0.75,[0,0],true)
+        super(x,y,PIXELUNIT - 1, PIXELUNIT - 1,false,true,playerSpeed*0.75,[0,0],true)
 
         this.subClock = 0
         this.path = []
 
         this.color = 0xFF00FF
         this.look.fillStyle(this.color);
-        this.look.fillRect(x , y , 10, 10);
+        this.look.fillRect(x , y , PIXELUNIT, PIXELUNIT);
     }
 
     handler(){
@@ -844,20 +891,17 @@ class stalker extends Entity{
         let open = []
         let closed = []
         
-
         //first I need to find the node in which "this" is
-        let startingNodeX = this.x - this.x % 10
-        let startingNodeY = this.y - this.y % 10
+        let startingNodeX = this.x - this.x % PIXELUNIT
+        let startingNodeY = this.y - this.y % PIXELUNIT
 
         //and the target node
-        let targetNodeX = pg.x - pg.x % 10
-        let targetNodeY = pg.y - pg.y % 10
+        let targetNodeX = pg.x - pg.x % PIXELUNIT
+        let targetNodeY = pg.y - pg.y % PIXELUNIT
 
         
-        grid.grid[startingNodeX/10][startingNodeY/10].calculateCosts(startingNodeX,startingNodeY,targetNodeX,targetNodeY)
-        open.push(grid.grid[startingNodeY/10][startingNodeX/10])
-
-        //console.log(open[0].totalCost)
+        grid.grid[startingNodeX/PIXELUNIT][startingNodeY/PIXELUNIT].calculateCosts(startingNodeX,startingNodeY,targetNodeX,targetNodeY)
+        open.push(grid.grid[startingNodeY/PIXELUNIT][startingNodeX/PIXELUNIT])
 
         let exit = false
 
@@ -876,10 +920,10 @@ class stalker extends Entity{
 
             let currentNode = open[maxIndex]
 
-            closed.push(grid.grid[open[maxIndex].y/10][open[maxIndex].x/10])
+            closed.push(grid.grid[open[maxIndex].y/PIXELUNIT][open[maxIndex].x/PIXELUNIT])
             open.splice(maxIndex,1)
 
-            if(currentNode.x == grid.grid[targetNodeY/10][targetNodeX/10].x && currentNode.y == grid.grid[targetNodeY/10][targetNodeX/10].y){
+            if(currentNode.x == grid.grid[targetNodeY/PIXELUNIT][targetNodeX/PIXELUNIT].x && currentNode.y == grid.grid[targetNodeY/PIXELUNIT][targetNodeX/PIXELUNIT].y){
                 exit = true
             }
 
@@ -887,22 +931,22 @@ class stalker extends Entity{
 
             for(let i = 0; i < neighbours.length; i++){
 
-                if( closed.indexOf(grid.grid[neighbours[i].y/10][neighbours[i].x/10]) == -1){
+                if( closed.indexOf(grid.grid[neighbours[i].y/PIXELUNIT][neighbours[i].x/PIXELUNIT]) == -1){
 
                     let newMovementCostToNeighbour = currentNode.sCost + this.calculatePathLenght(currentNode , neighbours[i])
                     
                     if( newMovementCostToNeighbour < neighbours[i].sCost ||  open.indexOf(neighbours[i]) == -1){
 
-                        grid.grid[neighbours[i].y/10][neighbours[i].x/10].sCost = newMovementCostToNeighbour
-                        grid.grid[neighbours[i].y/10][neighbours[i].x/10].tCost = this.calculatePathLenght(neighbours[i],grid.grid[targetNodeX/10][targetNodeY/10])
-                        grid.grid[neighbours[i].y/10][neighbours[i].x/10].calculateCostsFromLocal()
-                        grid.grid[neighbours[i].y/10][neighbours[i].x/10].parent = grid.grid[currentNode.y/10][currentNode.x/10]
+                        grid.grid[neighbours[i].y/PIXELUNIT][neighbours[i].x/PIXELUNIT].sCost = newMovementCostToNeighbour
+                        grid.grid[neighbours[i].y/PIXELUNIT][neighbours[i].x/PIXELUNIT].tCost = 
+                            this.calculatePathLenght(neighbours[i],grid.grid[targetNodeX/PIXELUNIT][targetNodeY/PIXELUNIT])
+                        grid.grid[neighbours[i].y/PIXELUNIT][neighbours[i].x/PIXELUNIT].calculateCostsFromLocal()
+                        grid.grid[neighbours[i].y/PIXELUNIT][neighbours[i].x/PIXELUNIT].parent = grid.grid[currentNode.y/PIXELUNIT][currentNode.x/PIXELUNIT]
 
-                        if(open.indexOf(grid.grid[neighbours[i].y/10][neighbours[i].x/10] == -1)){
-                            open.push(grid.grid[neighbours[i].y/10][neighbours[i].x/10])
+                        if(open.indexOf(grid.grid[neighbours[i].y/PIXELUNIT][neighbours[i].x/PIXELUNIT] == -1)){
+                            open.push(grid.grid[neighbours[i].y/PIXELUNIT][neighbours[i].x/PIXELUNIT])
                         }
                     }
-                    
                 }
             }
             
@@ -914,20 +958,19 @@ class stalker extends Entity{
 
     retracePath2(){
 
-        let currentNode = grid.grid[(pg.y - pg.y % 10)/10][(pg.x - pg.x % 10)/10]
+        let currentNode = grid.grid[(pg.y - pg.y % PIXELUNIT)/PIXELUNIT][(pg.x - pg.x % PIXELUNIT)/PIXELUNIT]
 
         let continua = true
 
-        while(currentNode != grid.grid[(this.y - this.y % 10)/10][(this.x - this.x % 10)/10] && continua){
+        while(currentNode != grid.grid[(this.y - this.y % PIXELUNIT)/PIXELUNIT][(this.x - this.x % PIXELUNIT)/PIXELUNIT] && continua){
 
             if(currentNode != null){
-                this.path.push(grid.grid[currentNode.y/10][currentNode.x/10])
-                currentNode = grid.grid[currentNode.y/10][currentNode.x/10].parent
+                this.path.push(grid.grid[currentNode.y/PIXELUNIT][currentNode.x/PIXELUNIT])
+                currentNode = grid.grid[currentNode.y/PIXELUNIT][currentNode.x/PIXELUNIT].parent
             }else{
                 continua = false
                 this.velocity = [0,0]
             }
-
         }
     }
 
@@ -1010,11 +1053,11 @@ class nodeGrid{
         this.grid = []
         this.gridNodeSize = gridNodeSize
         
-        for(let i = 0; i < Ydimension/gridNodeSize; i++){
+        for(let i = 0; i < YDIMENSION/gridNodeSize; i++){
             
             let row = []
 
-            for(let j = 0; j < Xdimension/gridNodeSize; j++){
+            for(let j = 0; j < XDIMENSION/gridNodeSize; j++){
 
                 let nodo = new node(j * gridNodeSize , i * gridNodeSize, true)
                 row.push(nodo)
@@ -1028,9 +1071,9 @@ class nodeGrid{
 
     gridUpdater(){
         
-        for(let i = 0; i < Ydimension/ this.gridNodeSize; i++){
+        for(let i = 0; i < YDIMENSION/ this.gridNodeSize; i++){
             
-            for(let j = 0; j < Xdimension/ this.gridNodeSize; j++){
+            for(let j = 0; j < XDIMENSION/ this.gridNodeSize; j++){
 
                 let continua = true                
                 
@@ -1067,8 +1110,8 @@ class nodeGrid{
 
         let neighbours = []
 
-        let thisRow = node.y / 10
-        let thisCol = node.x / 10
+        let thisRow = node.y / PIXELUNIT
+        let thisCol = node.x / PIXELUNIT
         
         if( thisRow - 1 >= 0 && thisCol - 1 >= 0)
             if(this.grid[thisRow - 1][thisCol - 1].walkable) {neighbours.push(this.grid[thisRow - 1][thisCol - 1])}
@@ -1076,22 +1119,22 @@ class nodeGrid{
         if( thisCol - 1 >= 0)
             if(this.grid[thisRow][thisCol - 1].walkable) {neighbours.push(this.grid[thisRow][thisCol - 1])}
 
-        if( thisRow + 1 < Ydimension / 10 && thisCol - 1 >= 0)
+        if( thisRow + 1 < YDIMENSION / PIXELUNIT && thisCol - 1 >= 0)
             if(this.grid[thisRow + 1][thisCol - 1].walkable) {neighbours.push(this.grid[thisRow + 1][thisCol - 1])}
 
         if( thisRow - 1 >= 0)
             if(this.grid[thisRow - 1][thisCol].walkable) {neighbours.push(this.grid[thisRow - 1][thisCol])}
 
-        if( thisRow + 1 < Ydimension/10)
+        if( thisRow + 1 < YDIMENSION/PIXELUNIT)
             if(this.grid[thisRow + 1][thisCol].walkable) {neighbours.push(this.grid[thisRow + 1][thisCol])}
 
-        if( thisRow - 1 >= 0 && thisCol + 1 < Xdimension / 10)
+        if( thisRow - 1 >= 0 && thisCol + 1 < XDIMENSION / PIXELUNIT)
             if(this.grid[thisRow - 1][thisCol + 1].walkable) {neighbours.push(this.grid[thisRow - 1][thisCol + 1])}
 
-        if(thisCol + 1 < Xdimension / 10)
+        if(thisCol + 1 < XDIMENSION / PIXELUNIT)
             if(this.grid[thisRow][thisCol + 1].walkable) {neighbours.push(this.grid[thisRow][thisCol + 1])}
 
-        if( thisRow + 1 < Ydimension / 10 && thisCol + 1 < Xdimension / 10)
+        if( thisRow + 1 < YDIMENSION / PIXELUNIT && thisCol + 1 < XDIMENSION / PIXELUNIT)
             if(this.grid[thisRow + 1][thisCol + 1].walkable) {neighbours.push(this.grid[thisRow + 1][thisCol + 1])}
 
         return neighbours
@@ -1099,9 +1142,9 @@ class nodeGrid{
 
     cleanPaths(){
 
-        for(let i = 0; i < Ydimension/gridNodeSize; i++){
+        for(let i = 0; i < YDIMENSION/gridNodeSize; i++){
 
-            for(let j = 0; j < Xdimension/gridNodeSize; j++){
+            for(let j = 0; j < XDIMENSION/gridNodeSize; j++){
 
                 this.grid[i][j].look.clear()
             }
@@ -1134,11 +1177,11 @@ class smoke extends Entity{
 
 class ball extends Entity{
     constructor(x,y,startingDirection){
-        super(x,y,6,6,false,true,100,startingDirection,true)
+        super(x,y,Math.floor(PIXELUNIT*0.75),Math.floor(PIXELUNIT*0.75),false,true,100,startingDirection,true)
 
         this.color = 0x009933
         this.look.fillStyle(this.color);
-        this.look.fillRect(x , y , 6, 6);
+        this.look.fillRect(x , y , this.width, this.height);
     }
 
     handler(){
@@ -1253,10 +1296,10 @@ class ball extends Entity{
 
 
 class mine extends Entity{
-    constructor(x,y,timeToBOOM){
-        super(x,y,8,8,false,false,0,[0,0],true)
+    constructor(x,y){
+        super(x,y,Math.floor(PIXELUNIT*0.75),Math.floor(PIXELUNIT*0.75),false,false,0,[0,0],true)
 
-        this.timeToBOOM = timeToBOOM
+        this.timeToBOOM = 3
         this.triggered = false
         this.subClock = 0
         this.BOOM = false
@@ -1264,13 +1307,13 @@ class mine extends Entity{
 
         let centerX = this.x + this.width/2
         let centerY = this.y + this.height/2
-        let radius = 20
+        let radius = PIXELUNIT * 2.5
 
-        this.explosion = new bullet(centerX - radius , centerY - radius, radius * 2 , radius * 2, 0 , [0,0], false , 0xFF0000)
+        this.explosionBOOM = new explosion(centerX - radius , centerY - radius , radius * 2 , radius * 2)
 
         this.color = 0xFFFF00
         this.look.fillStyle(this.color);
-        this.look.fillRect(x , y , 8, 8);
+        this.look.fillRect(x , y , this.width, this.height);
     }
 
     handler(){
@@ -1287,13 +1330,13 @@ class mine extends Entity{
 
                         this.look.clear()
                         this.look.fillStyle(this.color);
-                        this.look.fillRect(this.x , this.y , 8, 8);
+                        this.look.fillRect(this.x , this.y , this.width, this.height);
 
                     }else{                    
 
                         this.look.clear()
                         this.look.fillStyle(0xFF0000);
-                        this.look.fillRect(this.x , this.y , 8, 8);
+                        this.look.fillRect(this.x , this.y , this.width, this.height);
                     }
 
                 }else{
@@ -1304,19 +1347,19 @@ class mine extends Entity{
 
                             this.look.clear()
                             this.look.fillStyle(0xFF0000);
-                            this.look.fillRect(this.x , this.y , 8, 8);
+                            this.look.fillRect(this.x , this.y , this.width, this.height);
 
                         }else{
         
                             this.look.clear()
                             this.look.fillStyle(this.color);
-                            this.look.fillRect(this.x , this.y , 8, 8);
+                            this.look.fillRect(this.x , this.y , this.width, this.height);
                         }
                     }else{
 
                         this.look.clear()
                         this.BOOM = true
-                        this.explosion.activate()
+                        this.explosionBOOM.activate()
                     }
                 }
 
@@ -1342,11 +1385,20 @@ class mine extends Entity{
                 if(this.subClock > this.timeToBOOM + 0.5){
 
                     this.complete = true
-                    this.explosion.deactivate()
+                    this.explosionBOOM.deactivate()
                 }
             }
         }
     }
+}
+
+
+class explosion extends bullet{
+    constructor(x,y,width,height){
+        super(x,y,width,height,0,[0,0],false,0xFF0000)
+    }
+
+    handler(){}
 }
 
 
@@ -1402,6 +1454,15 @@ function getDistance(x,y,ax,ay){
     return Math.sqrt( (x-ax) ** 2 + (y - ay) ** 2)
 }
 
+function levelManager(){
+
+    lv = password.value    
+    
+    var theOtherScene = scene.scene.get("level" + password.value);            
+    theOtherScene.scene.restart()            
+    scene.scene.switch("level" + password.value)
+}
+
 
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1419,12 +1480,13 @@ function create(){}
 function update(time,delta){
 
     Delta = delta / 1000
-
     omniHandler()
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------
 
+let fpsCounter
+let playerPosition
 
 function preloadDebug (){}
 
@@ -1434,14 +1496,14 @@ function createDebug (){
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,J,K,U,I,SPACE');
     pg = new player(80,250);   
-    let lowerEdge = new wall(0 , Ydimension - wallThickness ,Xdimension , wallThickness)
-    let upperEdge = new wall(0,0, Xdimension , wallThickness)
-    let rightEdge = new wall(Xdimension - wallThickness , 0 , wallThickness , Ydimension)
-    let leftEdge = new wall(0,0, wallThickness , Ydimension) 
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION) 
     
     let thinWall = new wall(50,481,50,4)
     let thinWall2 = new wall(50,520,4,50)
-    let laserWallTest = new wall(435,85,40,40)
+    let laserWallTest = new wall(435,85,60,80)
     let meow = new wall(60,200,20,10)
     let meow2 = new wall(110,200,20,10)
     let meow3 = new wall(50,200,10,90)
@@ -1451,16 +1513,16 @@ function createDebug (){
     let lava2 = new lava(300,95,30,60)
     let lavaCreep = new lava(500,500,40,40)    
     
-    let cannone = new cannon(10,100,0.2,[1,0],150,[1,0],5)
-    let Tcannon = new trackingCannon(200,250,0.2,[1,0],150,[1,0],5)
-    let laser = new nonnoLaser(10,120,3,0.5,[1,0])
-    let laser2 = new nonnoLaser(580,140,2,5,[-1,0])
-    let laser3 = new nonnoLaser(440,10,0.5,0.5,[0,1])
-    let laser4 = new nonnoLaser(460,580,5,2,[0,-1])
+    let cannone = new cannon(16,100,0.2,150,[1,0],8)
+    let Tcannon = new trackingCannon(400,250,0.2,150,[1,0],8)
+    let laser = new nonnoLaser(16,120,3,0.5,[1,0])
+    let laser2 = new nonnoLaser(768,140,2,5,[-1,0])
+    let laser3 = new nonnoLaser(440,16,0.5,0.5,[0,1])
+    let laser4 = new nonnoLaser(460,768,5,2,[0,-1])
     let cumbare = new stalker(100,350)    
     let palla = new ball(550,400,[1,1])
-    let mina = new mine(80,420,3)
-    let omg = new predictingCannon(300,350,0.2,[1,0],150,[1,0],5)
+    let mina = new mine(20,400)
+    let omg = new predictingCannon(300,350,0.2,150,[1,0],8)
 
     let fumo = new smoke(200,450,60,50)
 
@@ -1470,8 +1532,8 @@ function createDebug (){
     playerPosition = this.add.text(20,30)
 }
 
-function updateDebug (time,delta)
-{
+function updateDebug (time,delta){
+
     Delta = delta / 1000
     omniHandler()
         
@@ -1479,101 +1541,47 @@ function updateDebug (time,delta)
     playerPosition.setText("X: " + pg.x + "  Y: " + pg.y)
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------
 
-let spawnText
 function createTutorial(){
 
     scene = this
-    console.log(this)
     entities=[]    
-    keys = this.input.keyboard.addKeys('W,A,S,D');
-    pg = new player(285,350);   
-    let lowerEdge = new wall(0 , Ydimension - wallThickness ,Xdimension , wallThickness)
-    let upperEdge = new wall(0,0, Xdimension , wallThickness)
-    let rightEdge = new wall(Xdimension - wallThickness , 0 , wallThickness , Ydimension)
-    let leftEdge = new wall(0,0, wallThickness , Ydimension) 
+    keys = this.input.keyboard.addKeys('W,A,S,D,SPACE,P');
+    pg = new player(392,350);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION) 
 
-    let tutorialText = this.add.text(190,60,"WELCOME TO AVOID", { font: '20px' })
-    let tutorialText2 = this.add.text(190,110,"Just use W A S D to move", { font: '14px' })
-    let tutorialText3 = this.add.text(110,130,"The Goal is reach the green zone in each level", { font: '14px' })
-    let tutorialText4 = this.add.text(100,150,"Also, try to avoid whatever the heck comes at you", { font: '14px' })
-    let tutorialText5 = this.add.text(55,170,"Actually you have to, because you'd die otherwhise, y'know?", { font: '14px' })
-    spawnText = this.add.text(270,300)
-
+    let tutorialText = this.add.text(225,60,"WELCOME TO AVOID", { font: '32px' })
+    let tutorialText2 = this.add.text(245,110,"Just use W A S D to move", { font: '18px' })
+    let tutorialText3 = this.add.text(145,130,"The Goal is reach the green zone in each level", { font: '18px' })
+    let tutorialText4 = this.add.text(130,150,"Also, try to avoid whatever the heck comes at you", { font: '18px' })
+    let tutorialText5 = this.add.text(75,170,"Actually you have to, because you'd die otherwhise, y'know?", { font: '18px' })
+    let tutorialText6 = this.add.text(200,210,"Press SPACE to jump into the action", { font: '18px' })
 }
 
-function updateTutorial(time,delta){
 
-    Delta = delta / 1000
-    omniHandler()
-
-    if(time > 9000){
-
-        spawnText.setText("Now Go",{ font: '24px' })
-
-        
-    }
-    if(time > 10000){
-
-        var theOtherScene = scene.scene.get("level1");            
-        theOtherScene.scene.restart()            
-        scene.scene.switch("level1")
-    }
-}
-
-//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-let LBText3
-let LBClock = 0
+//-----------------------------------------------------
 
 function createLandsBetween(){
 
-    LBClock = 0
     scene = this
     entities=[]    
-    keys = this.input.keyboard.addKeys('W,A,S,D');
-    pg = new player(295,350);   
-    let lowerEdge = new wall(0 , Ydimension - wallThickness ,Xdimension , wallThickness)
-    let upperEdge = new wall(0,0, Xdimension , wallThickness)
-    let rightEdge = new wall(Xdimension - wallThickness , 0 , wallThickness , Ydimension)
-    let leftEdge = new wall(0,0, wallThickness , Ydimension)
+    keys = this.input.keyboard.addKeys('W,A,S,D,SPACE');
+    pg = new player(392,350);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
 
-    let LBText = this.add.text(100,100,"VICTORY IS YOURS", { font: '44px' })
-    let LBText2 = this.add.text(200,170,"Advancing in:", { font: '20px' })
-    LBText3 = this.add.text(290,200)
-
-
+    let LBText = this.add.text(120,100,"VICTORY IS YOURS", { font: '58px' })
+    let LBText2 = this.add.text(90,180,"Press SPACE to advance to the next level", { font: '26px' })
 }
 
-function updateLandsBetween(time,delta){
 
-    Delta = delta / 1000
-    LBClock += delta
-    omniHandler()
-
-    if(LBClock > 0){
-
-        LBText3.setText("3", { font: '24px' })
-        
-    }
-    if(LBClock > 1000){
-
-        LBText3.setText("2", { font: '24px' })
-    }
-    if(LBClock > 2000){
-
-        LBText3.setText("1", { font: '24px' })
-    }
-    if(LBClock > 3000){
-
-        var theOtherScene = scene.scene.get("level" + lv);            
-        theOtherScene.scene.restart()            
-        scene.scene.switch("level" + lv)
-    }
-}
-
-//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------
 
 let deathText3
 let deathClock = 0
@@ -1584,15 +1592,15 @@ function createDeath(){
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D');
-    pg = new player(285,350);   
-    let lowerEdge = new wall(0 , Ydimension - wallThickness ,Xdimension , wallThickness)
-    let upperEdge = new wall(0,0, Xdimension , wallThickness)
-    let rightEdge = new wall(Xdimension - wallThickness , 0 , wallThickness , Ydimension)
-    let leftEdge = new wall(0,0, wallThickness , Ydimension)
+    pg = new player(392,450);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
 
-    let deathText = this.add.text(190,100,"YOU DIED", { font: '44px' })
-    let deathText2 = this.add.text(220,170,"Respawing in:", { font: '20px' })
-    deathText3 = this.add.text(290,200)
+    let deathText = this.add.text(250,100,"YOU DIED", { font: '58px' })
+    let deathText2 = this.add.text(290,200,"Respawing in:", { font: '26px' })
+    deathText3 = this.add.text(385,240," ",{ font: '26px' })
 }
 
 function updateDeath(time,delta){
@@ -1601,60 +1609,55 @@ function updateDeath(time,delta){
     deathClock += delta
     omniHandler()
 
-    if(deathClock > 0){
+    if(deathClock > 0)
+        deathText3.setText("3")
+    
+    if(deathClock > 1000)
+        deathText3.setText("2")
 
-        deathText3.setText("3", { font: '24px' })
-        
-    }
-    if(deathClock > 1000){
-
-        deathText3.setText("2", { font: '24px' })
-    }
-    if(deathClock > 2000){
-
-        deathText3.setText("1", { font: '24px' })
-    }
+    if(deathClock > 2000)
+        deathText3.setText("1")
+    
     if(deathClock > 3000){
 
         var theOtherScene = scene.scene.get("level" + lv);            
         theOtherScene.scene.restart()            
         scene.scene.switch("level" + lv)
     }
-
-
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------
 
 
 function createLevel1(){
 
+    label.textContent = "SALVE"    
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D');
-    pg = new player(295,350);   
-    let lowerEdge = new wall(0 , Ydimension - wallThickness ,Xdimension , wallThickness)
-    let upperEdge = new wall(0,0, Xdimension , wallThickness)
-    let rightEdge = new wall(Xdimension - wallThickness , 0 , wallThickness , Ydimension)
-    let leftEdge = new wall(0,0, wallThickness , Ydimension)
+    pg = new player(392,700);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
 
-    let cumbare = new stalker(20,20)
+    let cannone1 = new cannon(16,200,0.5,200,[1,0],8)
+    let cannone2 = new cannon(768,300,0.5,200,[-1,0],8)
+    let cannone3 = new cannon(16,400,0.5,200,[1,0],8)
+    let cannone4 = new cannon(768,500,0.5,200,[-1,0],8)
 
-    let finish = new goal(500,500,50,50)
-
-    grid = new nodeGrid(gridNodeSize)
+    let finish = new goal(16,16,768,40)
 }
 
 function createLevel2(){
 
+    label.textContent = "SALVE2"    
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D');
-    pg = new player(295,350);   
-    let lowerEdge = new wall(0 , Ydimension - wallThickness ,Xdimension , wallThickness)
-    let upperEdge = new wall(0,0, Xdimension , wallThickness)
-    let rightEdge = new wall(Xdimension - wallThickness , 0 , wallThickness , Ydimension)
-    let leftEdge = new wall(0,0, wallThickness , Ydimension)
-
-    let mina = new mine(50,50,3)
+    pg = new player(392,350);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
 }
