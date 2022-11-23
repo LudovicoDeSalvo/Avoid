@@ -124,7 +124,7 @@ var lv15 = {
     key: 'level15',
     preload: preload,
     create: createLevel15,
-    update: update,
+    update: updateLevel15,
 };
 var lv16 = {
     key: 'level16',
@@ -285,6 +285,9 @@ let config = {
     type: Phaser.AUTO,
     width: XDIMENSION,
     height: YDIMENSION,
+    input: {
+        gamepad: true
+    },
     scene: sceneArray
 }
 
@@ -293,14 +296,15 @@ let scene
 
 // GAME ELEMENTS
 let entities = []
-const PIXELUNIT = 16
+const PU = 16
 let pg
 let keys
+let gamepad
 let Delta
 let lv = 1
 let grid
 const epsilon = 0.0000000000001
-const gridNodeSize = PIXELUNIT
+const gridNodeSize = PU
 
 
 // GAME VARIABLES
@@ -322,9 +326,13 @@ let laserColor = 0x00FFFF
 let stalkerColor = 0x009090
 let ballColor = 0x009000
 let mineColor = 0xFFFF00
+let mineColor2 = 0xAAAA00
 let explosionColor = 0xFF2020
 let lavaColor = 0xEE4400//0xFF8800
+let lavaColor2 = 0x8B0000
 let smokeColor = 0x555555
+let upgradeColor = 0x00FFFF
+let upgradeColor2 = 0xAAFFFF
 
 
 
@@ -353,11 +361,9 @@ class Entity{
         this.speed = speed
         this.velocity = velocity
         this.color = 0x000000
-
-        if(toProcess == undefined){toProcess = true}else{this.toProcess = toProcess}
+        this.toProcess = toProcess == undefined ? true : toProcess
 
         this.look = scene.add.graphics()
-
         if(toProcess){entities.push(this)}        
     }
 
@@ -552,16 +558,27 @@ class Entity{
         this.look.fillStyle(this.color);
         this.look.fillRect(this.x , this.y , this.width, this.height);
     }
+
+    changeColorTo(color){
+        this.look.clear()
+        this.look.fillStyle(color);
+        this.look.fillRect(this.x , this.y , this.width, this.height);
+    }
 }
 
 
-
 class player extends Entity{
-    constructor(x,y){
+    constructor(x,y,dash){
         super(x,y,playerSize,playerSize,false,null,playerSpeed,[0,0],true)
 
-        this.color = playerColor
+        this.clock = 0
+        this.clockEnabled = false
+        this.dashAvailable = dash == undefined ? false : dash
+        this.dashClock = 1
+        this.dashing = false
+        this.dashDuration = 0.15
 
+        this.color = playerColor
         this.look.fillStyle(this.color);
         this.look.fillRect(x , y , this.width, this.height);
     }
@@ -569,10 +586,69 @@ class player extends Entity{
 
     handler(){
         
+        //Dash Manager
+        if(this.clockEnabled){
+
+            this.clock += Delta
+
+            if(this.clock >= this.dashDuration && this.clock < this.dashClock - 0.4){
+                this.speed = playerSpeed
+                this.dashing = false
+                this.color = playerColor
+
+            } else if (this.clock >= this.dashClock - 0.3 && this.clock < this.dashClock){
+                this.color = 0x0066FF
+
+            } else if(this.clock >= this.dashClock){
+                this.color = playerColor
+                this.dashAvailable = true
+                this.clock = 0
+                this.clockEnabled = false
+            }
+        }
+        
+        //Direction and Input Manager
         let dx = 0
         let dy = 0
+        let AButton = {value: 0}
+        let BButton = {value: 0}
+        let dPadDown = {value: 0}
+        let dPadUp = {value: 0}
+        let dPadLeft = {value: 0}
+        let dPadRight = {value: 0}
 
-        if(keys.W.isDown || keys.UP.isDown)
+        if(gamepad.length > 0){      //Gamepad Stuff
+            
+            dx = gamepad[0].leftStick.x
+            dy = gamepad[0].leftStick.y
+
+            if(Math.abs(dx) + Math.abs(dy) < 0.7 && Math.abs(dx) + Math.abs(dy) != 0)
+                this.speed = playerSpeed / 4
+            else{ 
+
+                if(this.dashing == false)
+                    this.speed = playerSpeed
+            }
+
+            AButton = gamepad[0].buttons[0]
+            BButton = gamepad[0].buttons[1]
+
+            dPadDown = gamepad[0].buttons[13]
+            dPadUp = gamepad[0].buttons[12]
+            dPadLeft = gamepad[0].buttons[14]
+            dPadRight = gamepad[0].buttons[15]
+
+            if(dPadUp.value == 1)         //DPAD
+                dy = -1
+            if(dPadLeft.value == 1)
+                dx = -1
+            if(dPadDown.value == 1)
+                dy = 1
+            if(dPadRight.value == 1)
+                dx = 1
+        }
+
+        if(keys.W.isDown || keys.UP.isDown)         //Keyboard Stuff
             dy = -1
         if(keys.A.isDown || keys.LEFT.isDown)
             dx = -1
@@ -581,33 +657,41 @@ class player extends Entity{
         if(keys.D.isDown || keys.RIGHT.isDown)
             dx = 1
         
-        if(keys.SPACE){
+        if(keys.SPACE){                            //SPACE / A Button Stuff
             
-            if(lv == 1 && keys.SPACE.isDown){
+            if(scene == scene.scene.get("tutorial") && (keys.SPACE.isDown || AButton.value == 1)){
 
                 var theOtherScene = scene.scene.get("level1");            
                 theOtherScene.scene.restart()            
                 scene.scene.switch("level1")
-            }
-            if(scene == scene.scene.get("landsBetween")  && keys.SPACE.isDown)
-            {
+            } else if(scene == scene.scene.get("landsBetween")  && (keys.SPACE.isDown || AButton.value == 1)){
+
                 var theOtherScene = scene.scene.get("level" + lv);            
                 theOtherScene.scene.restart()            
                 scene.scene.switch("level" + lv)
             }
         }
+
+        if(keys.SHIFT && keys.Z){
+            if(this.dashAvailable && (keys.SHIFT.isDown || keys.Z.isDown || BButton.value == 1) && !(areArraysEqual(this.velocity,[0,0]))){
+                this.speed = playerSpeed * 4
+                this.clockEnabled = true
+                this.dashAvailable = false
+                this.dashing = true
+                this.color = 0xAADDAA
+            }
+        }
+
         if(keys.P){
             
             if(keys.P.isDown){
-
                 var theOtherScene = scene.scene.get("debug");            
                 theOtherScene.scene.restart()            
                 scene.scene.switch("debug")
             }            
         }
         
-        this.velocity = [dx,dy]
-        
+        this.velocity = [dx,dy]     //Vector is normalized in move()
         this.move()
         this.checkIfDead()
     }
@@ -666,38 +750,36 @@ class wall extends Entity{
         this.look.fillRect(x , y , width, height);
     }
 
-    handler(){
-    }
+    handler(){}
 }
 
 class cannon extends Entity{
     constructor(x,y,bulletClock,bulletSpeed,bulletVelocity,bulletSize,capacity){
-        super(x,y,PIXELUNIT,PIXELUNIT,true,false,0,[0,0],true)
+        super(x,y,PU,PU,true,false,0,[0,0],true)
 
         this.bulletClock = bulletClock  //how many seconds between bullets
-        if(bulletVelocity){this.bulletVelocity = bulletVelocity}else{this.bulletVelocity = [1,0]}         
+        this.bulletVelocity = bulletVelocity == undefined ?  [1,0] : bulletVelocity 
         this.bulletSpeed = bulletSpeed
-        if(bulletSize){this.bulletSize = bulletSize}else{this.bulletSize = PIXELUNIT/2} 
+        this.bulletSize = bulletSize == undefined ? PU/2 : bulletSize
         this.capacity = capacity
         
-        this.subclock = 0
+        this.clock = 0
         this.color = cannonColor
         this.magazine = []        
 
         this.look.fillStyle(this.color);
-        this.look.fillRect(x , y , PIXELUNIT, PIXELUNIT);
+        this.look.fillRect(x , y , PU, PU);
 
         this.generateMagazineNEW() 
     }
 
-
     handler(){
 
-        this.subclock += Delta
+        this.clock += Delta
 
-        if(this.subclock >= this.bulletClock){
+        if(this.clock >= this.bulletClock){
             
-            this.subclock = 0
+            this.clock = 0
             let continua = true
 
             for(let i = 0; i < this.magazine.length && continua === true; i++){
@@ -837,8 +919,7 @@ class bullet extends Entity{
     constructor(x,y,width,height,speed,velocity,active,color){
         super(x,y,width,height,false,true,speed,velocity,true)        
 
-        if(color){this.color = color}else{this.color = defaultBulletColor} 
-        
+        this.color = color == undefined ? defaultBulletColor : color
         this.active = active 
 
         if(this.active)
@@ -883,7 +964,7 @@ class trackingCannon extends cannon{
         
         this.look.clear()
         this.look.fillStyle(this.color)
-        this.look.fillRect(x , y , PIXELUNIT, PIXELUNIT)    
+        this.look.fillRect(x , y , PU, PU)    
     }
 
     calculateDirection(){
@@ -893,24 +974,10 @@ class trackingCannon extends cannon{
 
         this.bulletVelocity = normalizeVector([dx,dy])
     }
-
-    generateMagazine(){
-        
-        let maxDiagonal = Math.sqrt(XDIMENSION ** 2 + YDIMENSION ** 2)
-        let bulletGap = this.bulletSpeed * this.bulletClock
-        
-        if(!(this.capacity)){ //calculate capacity if it unspecified (0 or undefinied)
-            this.capacity = Math.floor( maxDiagonal / bulletGap) + 2
-        }        
-
-        for(let i = 0; i < this.capacity; i++){
-            this.magazine.push(new bullet(-100, -100 , this.bulletSize , this.bulletSize , this.bulletSpeed , this.bulletVelocity, false)) 
-        }
-    }
 }
 
 
-class predictingCannon extends trackingCannon{
+class predictingCannon extends cannon{
     constructor(x,y,bulletClock,bulletSpeed,bulletVelocity,bulletSize,capacity){        
         super(x,y,bulletClock,bulletSpeed,bulletVelocity,bulletSize,capacity)
         
@@ -918,7 +985,7 @@ class predictingCannon extends trackingCannon{
         
         this.look.clear()
         this.look.fillStyle(this.color)
-        this.look.fillRect(x , y , PIXELUNIT, PIXELUNIT)    
+        this.look.fillRect(x , y , PU, PU)    
     }
 
     calculateDirection(){
@@ -926,7 +993,7 @@ class predictingCannon extends trackingCannon{
         //vector between this and pg
         let TP = [pg.x - this.x , pg.y - this.y]
 
-        let bulletTravelDistance = getDistance(this.x , this.y , pg.x , pg.y)
+        let bulletTravelDistance = getDistance(this.x , this.y , pg.x , pg.y) - ( (this.width/2 + this.bulletSize) * (1 + (Math.sqrt(2) - 1) / 2) )
         let timeOfTravel = bulletTravelDistance / this.bulletSpeed
 
         let pgTravelDistance = playerSpeed * timeOfTravel
@@ -938,22 +1005,28 @@ class predictingCannon extends trackingCannon{
     }
 }
 
-class circleCannon extends trackingCannon{
-    constructor(x,y,bulletClock,bulletSpeed,bulletVelocity,bulletSize,capacity){        
+class spinnyBoi extends cannon{
+    constructor(x,y,bulletClock,bulletSpeed,anticlockwise,bulletVelocity,bulletSize,capacity){        
         super(x,y,bulletClock,bulletSpeed,bulletVelocity,bulletSize,capacity)
         
         this.color = predictingCannonColor
+        this.anticlockwise = anticlockwise == undefined ? false : anticlockwise
         
         this.look.clear()
         this.look.fillStyle(this.color)
-        this.look.fillRect(x , y , PIXELUNIT, PIXELUNIT)    
+        this.look.fillRect(x , y , PU, PU)    
     }
 
     calculateDirection(){
         
-        //vector between this and pg
-        let vector = [this.bulletVelocity[0] * Math.cos(Math.PI/12) - this.bulletVelocity[1] * Math.sin(Math.PI/12) , 
-                        this.bulletVelocity[0] * Math.sin(Math.PI/12) + this.bulletVelocity[1] * Math.cos(Math.PI/12)]
+
+        
+         //vector between this and pg
+        let vector = this.anticlockwise ? 
+                        [this.bulletVelocity[0] * Math.cos(-Math.PI/12) - this.bulletVelocity[1] * Math.sin(-Math.PI/12) , 
+                        this.bulletVelocity[0] * Math.sin(-Math.PI/12) + this.bulletVelocity[1] * Math.cos(-Math.PI/12)]     :     
+                        [this.bulletVelocity[0] * Math.cos(Math.PI/12) - this.bulletVelocity[1] * Math.sin(Math.PI/12) , 
+                        this.bulletVelocity[0] * Math.sin(Math.PI/12) + this.bulletVelocity[1] * Math.cos(Math.PI/12)] 
 
         this.bulletVelocity = normalizeVector(vector)
     }
@@ -962,35 +1035,35 @@ class circleCannon extends trackingCannon{
 
 class nonnoLaser extends Entity{ //ACTIVATE GENERATELASER() IN THE LASER IF YOU IMPLEMENT MOVING WALLS
     constructor(x,y,offTime,onTime,direction,laserThickness){
-        super(x,y,PIXELUNIT,PIXELUNIT,true,false,0,[0,0],true)
+        super(x,y,PU,PU,true,false,0,[0,0],true)
 
         this.onTime = onTime
         this.offTime = offTime
         this.direction = direction
 
         this.laser = undefined
-        if(laserThickness){this.laserThickness = laserThickness}else{this.laserThickness = (PIXELUNIT * 0.4) } 
-        this.subClock = 0
+        this.laserThickness = laserThickness == undefined ? PU * 0.4 : laserThickness
+        this.clock = 0
 
         this.color = nonnoLaserColor
         this.laserObjColor = laserColor
 
         this.look.fillStyle(this.color);
-        this.look.fillRect(x , y , PIXELUNIT, PIXELUNIT);
+        this.look.fillRect(x , y , PU, PU);
 
         this.generateLaser()
     }
 
     handler(){
 
-        this.subClock += Delta
+        this.clock += Delta
         
-        if(this.subClock > this.offTime && this.subClock <= this.offTime + this.onTime && this.laser.active === false){
+        if(this.clock > this.offTime && this.clock <= this.offTime + this.onTime && this.laser.active === false){
             //this.generateLaser()
             this.laser.activate()
         }
-        if(this.subClock > this.offTime + this.onTime && this.laser.active === true){
-            this.subClock = 0
+        if(this.clock > this.offTime + this.onTime && this.laser.active === true){
+            this.clock = 0
             this.laser.deactivate()
         }
     }
@@ -1039,22 +1112,22 @@ class nonnoLaser extends Entity{ //ACTIVATE GENERATELASER() IN THE LASER IF YOU 
 
 class stalker extends Entity{
     constructor(x,y){
-        super(x,y,PIXELUNIT - 1, PIXELUNIT - 1,false,true,playerSpeed*0.75,[0,0],true)
+        super(x,y,PU - 1, PU - 1,false,true,playerSpeed*0.75,[0,0],true)
 
-        this.subClock = 0
+        this.clock = 0
         this.path = []
 
         this.color = stalkerColor
         this.look.fillStyle(this.color);
-        this.look.fillRect(x , y , PIXELUNIT, PIXELUNIT);
+        this.look.fillRect(x , y , PU, PU);
     }
 
     handler(){
 
-        this.subClock += Delta
+        this.clock += Delta
 
-        if(this.subClock > 0.5){
-            this.subClock = 0
+        if(this.clock > 0.5){
+            this.clock = 0
             
             this.pathFinding()
             this.retracePath2()
@@ -1062,7 +1135,6 @@ class stalker extends Entity{
         }
 
         let data = this.move()
-        
         this.moveStalker(data[0])
     }
 
@@ -1070,12 +1142,21 @@ class stalker extends Entity{
         
         if(collided && !(this.velocity[0] != 0 && this.velocity[1] != 0)){
 
-            if(this.path.length > 0)
+            if(this.path.length > 1)
                 this.velocity = [this.path[this.path.length - 1].x - this.x , this.path[this.path.length - 1].y - this.y]
+            else if(this.path.length > 0){
+                
+                let centerPGX = pg.x + pg.width / 2
+                let centerPGY = pg.y + pg.height / 2
+                let dx = centerPGX - this.x 
+                let dy = centerPGY - this.y
+
+                this.velocity= normalizeVector([dx,dy])
+            }
 
         }else{
 
-            if(this.path.length > 0){
+            if(this.path.length > 1){
 
                 let LNI = this.findMeInPath()       //Last Node Index
                 let SLNI = LNI - 1                  //Second Last Node Index
@@ -1083,8 +1164,16 @@ class stalker extends Entity{
                 if(SLNI >= 0 && SLNI < this.path.length)
                     this.velocity = [this.path[SLNI].x - this.path[LNI].x , this.path[SLNI].y - this.path[LNI].y]
 
-            }else{
+            }else if (this.path.length > 0){
 
+                let centerPGX = pg.x + pg.width / 2
+                let centerPGY = pg.y + pg.height / 2
+                let dx = centerPGX - this.x 
+                let dy = centerPGY - this.y
+
+                this.velocity= normalizeVector([dx,dy])
+                
+            }else{
                 this.velocity = [0,0]
             }
         }
@@ -1098,16 +1187,18 @@ class stalker extends Entity{
         let closed = []
         
         //first I need to find the node in which "this" is
-        let startingNodeX = this.x - this.x % PIXELUNIT
-        let startingNodeY = this.y - this.y % PIXELUNIT
+        let startingNodeX = this.x - this.x % PU
+        let startingNodeY = this.y - this.y % PU
 
         //and the target node
-        let targetNodeX = pg.x - pg.x % PIXELUNIT
-        let targetNodeY = pg.y - pg.y % PIXELUNIT
+        let centerPGX = pg.x + pg.width / 2
+        let centerPGY = pg.y + pg.height / 2
+        let targetNodeX = centerPGX - centerPGX % PU
+        let targetNodeY = centerPGY - centerPGY % PU
 
         
-        grid.grid[startingNodeX/PIXELUNIT][startingNodeY/PIXELUNIT].calculateCosts(startingNodeX,startingNodeY,targetNodeX,targetNodeY)
-        open.push(grid.grid[startingNodeY/PIXELUNIT][startingNodeX/PIXELUNIT])
+        grid.grid[startingNodeX/PU][startingNodeY/PU].calculateCosts(startingNodeX,startingNodeY,targetNodeX,targetNodeY)
+        open.push(grid.grid[startingNodeY/PU][startingNodeX/PU])
 
         let exit = false
 
@@ -1126,10 +1217,10 @@ class stalker extends Entity{
 
             let currentNode = open[maxIndex]
 
-            closed.push(grid.grid[open[maxIndex].y/PIXELUNIT][open[maxIndex].x/PIXELUNIT])
+            closed.push(grid.grid[open[maxIndex].y/PU][open[maxIndex].x/PU])
             open.splice(maxIndex,1)
 
-            if(currentNode.x == grid.grid[targetNodeY/PIXELUNIT][targetNodeX/PIXELUNIT].x && currentNode.y == grid.grid[targetNodeY/PIXELUNIT][targetNodeX/PIXELUNIT].y){
+            if(currentNode.x == grid.grid[targetNodeY/PU][targetNodeX/PU].x && currentNode.y == grid.grid[targetNodeY/PU][targetNodeX/PU].y){
                 exit = true
             }
 
@@ -1137,20 +1228,20 @@ class stalker extends Entity{
 
             for(let i = 0; i < neighbours.length; i++){
 
-                if( closed.indexOf(grid.grid[neighbours[i].y/PIXELUNIT][neighbours[i].x/PIXELUNIT]) == -1){
+                if( closed.indexOf(grid.grid[neighbours[i].y/PU][neighbours[i].x/PU]) == -1){
 
                     let newMovementCostToNeighbour = currentNode.sCost + this.calculatePathLenght(currentNode , neighbours[i])
                     
                     if( newMovementCostToNeighbour < neighbours[i].sCost ||  open.indexOf(neighbours[i]) == -1){
 
-                        grid.grid[neighbours[i].y/PIXELUNIT][neighbours[i].x/PIXELUNIT].sCost = newMovementCostToNeighbour
-                        grid.grid[neighbours[i].y/PIXELUNIT][neighbours[i].x/PIXELUNIT].tCost = 
-                            this.calculatePathLenght(neighbours[i],grid.grid[targetNodeX/PIXELUNIT][targetNodeY/PIXELUNIT])
-                        grid.grid[neighbours[i].y/PIXELUNIT][neighbours[i].x/PIXELUNIT].calculateCostsFromLocal()
-                        grid.grid[neighbours[i].y/PIXELUNIT][neighbours[i].x/PIXELUNIT].parent = grid.grid[currentNode.y/PIXELUNIT][currentNode.x/PIXELUNIT]
+                        grid.grid[neighbours[i].y/PU][neighbours[i].x/PU].sCost = newMovementCostToNeighbour
+                        grid.grid[neighbours[i].y/PU][neighbours[i].x/PU].tCost = 
+                            this.calculatePathLenght(neighbours[i],grid.grid[targetNodeX/PU][targetNodeY/PU])
+                        grid.grid[neighbours[i].y/PU][neighbours[i].x/PU].calculateCostsFromLocal()
+                        grid.grid[neighbours[i].y/PU][neighbours[i].x/PU].parent = grid.grid[currentNode.y/PU][currentNode.x/PU]
 
-                        if(open.indexOf(grid.grid[neighbours[i].y/PIXELUNIT][neighbours[i].x/PIXELUNIT] == -1)){
-                            open.push(grid.grid[neighbours[i].y/PIXELUNIT][neighbours[i].x/PIXELUNIT])
+                        if(open.indexOf(grid.grid[neighbours[i].y/PU][neighbours[i].x/PU] == -1)){
+                            open.push(grid.grid[neighbours[i].y/PU][neighbours[i].x/PU])
                         }
                     }
                 }
@@ -1164,15 +1255,21 @@ class stalker extends Entity{
 
     retracePath2(){
 
-        let currentNode = grid.grid[(pg.y - pg.y % PIXELUNIT)/PIXELUNIT][(pg.x - pg.x % PIXELUNIT)/PIXELUNIT]
+        let centerPGX = pg.x + pg.width / 2
+        let centerPGY = pg.y + pg.height / 2
 
+        let currentNode = null
+        
+        if(grid.grid[(centerPGY - centerPGY % PU)/PU][(centerPGX - centerPGX % PU)/PU].walkable){
+            currentNode = grid.grid[(centerPGY - centerPGY % PU)/PU][(centerPGX - centerPGX % PU)/PU]
+        }
         let continua = true
 
-        while(currentNode != grid.grid[(this.y - this.y % PIXELUNIT)/PIXELUNIT][(this.x - this.x % PIXELUNIT)/PIXELUNIT] && continua){
+        while(currentNode != grid.grid[(this.y - this.y % PU)/PU][(this.x - this.x % PU)/PU] && continua){
 
             if(currentNode != null){
-                this.path.push(grid.grid[currentNode.y/PIXELUNIT][currentNode.x/PIXELUNIT])
-                currentNode = grid.grid[currentNode.y/PIXELUNIT][currentNode.x/PIXELUNIT].parent
+                this.path.push(grid.grid[currentNode.y/PU][currentNode.x/PU])
+                currentNode = grid.grid[currentNode.y/PU][currentNode.x/PU].parent
             }else{
                 continua = false
                 this.velocity = [0,0]
@@ -1187,13 +1284,10 @@ class stalker extends Entity{
         for(let i = this.path.length - 1; i > 0 && continua == true; i--){
 
             let data = this.checkCollision2TheRevenge(this.path[i],0,0)
-            
             if(data[0]){
-
                 return i
             }
         }
-
         return this.path.length - 1
     }
 
@@ -1254,10 +1348,11 @@ class node extends Entity{
 
 
 class nodeGrid{
-    constructor(gridNodeSize){
+    constructor(gridNodeSize,visualize){
 
         this.grid = []
         this.gridNodeSize = gridNodeSize
+        this.visualize = visualize == undefined ? false : visualize
         
         for(let i = 0; i < YDIMENSION/gridNodeSize; i++){
             
@@ -1299,15 +1394,17 @@ class nodeGrid{
                         }
                     }
                 }                
-                /*
+                
                 //GRID VISUALIZER
-                if(this.grid[i][j].walkable){
-                    this.grid[i][j].look.fillStyle(0x00FF00);
-                    this.grid[i][j].look.fillRect(this.grid[i][j].x + 4 , this.grid[i][j].y + 4 , 2, 2);
-                }else{
-                    this.grid[i][j].look.fillStyle(0xFF0000);
-                    this.grid[i][j].look.fillRect(this.grid[i][j].x + 4 , this.grid[i][j].y + 4 , 2, 2);
-                }*/
+                if(this.visualize){
+                    if(this.grid[i][j].walkable){
+                        this.grid[i][j].look.fillStyle(0x00FF00);
+                        this.grid[i][j].look.fillRect(this.grid[i][j].x + 4 , this.grid[i][j].y + 4 , 2, 2);
+                    }else{
+                        this.grid[i][j].look.fillStyle(0xFF0000);
+                        this.grid[i][j].look.fillRect(this.grid[i][j].x + 4 , this.grid[i][j].y + 4 , 2, 2);
+                    }
+                }
             }
         }
     }
@@ -1316,8 +1413,8 @@ class nodeGrid{
 
         let neighbours = []
 
-        let thisRow = node.y / PIXELUNIT
-        let thisCol = node.x / PIXELUNIT
+        let thisRow = node.y / PU
+        let thisCol = node.x / PU
         
         if( thisRow - 1 >= 0 && thisCol - 1 >= 0)
             if(this.grid[thisRow - 1][thisCol - 1].walkable) {neighbours.push(this.grid[thisRow - 1][thisCol - 1])}
@@ -1325,22 +1422,22 @@ class nodeGrid{
         if( thisCol - 1 >= 0)
             if(this.grid[thisRow][thisCol - 1].walkable) {neighbours.push(this.grid[thisRow][thisCol - 1])}
 
-        if( thisRow + 1 < YDIMENSION / PIXELUNIT && thisCol - 1 >= 0)
+        if( thisRow + 1 < YDIMENSION / PU && thisCol - 1 >= 0)
             if(this.grid[thisRow + 1][thisCol - 1].walkable) {neighbours.push(this.grid[thisRow + 1][thisCol - 1])}
 
         if( thisRow - 1 >= 0)
             if(this.grid[thisRow - 1][thisCol].walkable) {neighbours.push(this.grid[thisRow - 1][thisCol])}
 
-        if( thisRow + 1 < YDIMENSION/PIXELUNIT)
+        if( thisRow + 1 < YDIMENSION/PU)
             if(this.grid[thisRow + 1][thisCol].walkable) {neighbours.push(this.grid[thisRow + 1][thisCol])}
 
-        if( thisRow - 1 >= 0 && thisCol + 1 < XDIMENSION / PIXELUNIT)
+        if( thisRow - 1 >= 0 && thisCol + 1 < XDIMENSION / PU)
             if(this.grid[thisRow - 1][thisCol + 1].walkable) {neighbours.push(this.grid[thisRow - 1][thisCol + 1])}
 
-        if(thisCol + 1 < XDIMENSION / PIXELUNIT)
+        if(thisCol + 1 < XDIMENSION / PU)
             if(this.grid[thisRow][thisCol + 1].walkable) {neighbours.push(this.grid[thisRow][thisCol + 1])}
 
-        if( thisRow + 1 < YDIMENSION / PIXELUNIT && thisCol + 1 < XDIMENSION / PIXELUNIT)
+        if( thisRow + 1 < YDIMENSION / PU && thisCol + 1 < XDIMENSION / PU)
             if(this.grid[thisRow + 1][thisCol + 1].walkable) {neighbours.push(this.grid[thisRow + 1][thisCol + 1])}
 
         return neighbours
@@ -1364,9 +1461,42 @@ class lava extends Entity{
     constructor(x,y,w,h){
         super(x,y,w,h,false,true,0,[0,0],true)
 
+        this.clock = 0
+        this.timeToChange = false
+
         this.color = lavaColor
         this.look.fillStyle(this.color);
         this.look.fillRect(x , y , w, h);
+    }
+
+    handler(){
+
+        this.clock += Delta
+
+        if(this.clock > 2){
+            this.timeToChange = true
+            this.clock = 0
+        }
+
+        if(this.timeToChange){
+
+            if(this.color == lavaColor){
+
+                this.color = lavaColor2
+                this.look.clear()
+                this.look.fillStyle(lavaColor2);
+                this.look.fillRect(this.x , this.y , this.width, this.height);
+                this.timeToChange = false
+
+            }else{
+
+                this.color = lavaColor
+                this.look.clear()
+                this.look.fillStyle(lavaColor);
+                this.look.fillRect(this.x , this.y , this.width, this.height);
+                this.timeToChange = false
+            }
+        }
     }
 }
 
@@ -1383,7 +1513,7 @@ class smoke extends Entity{
 
 class ball extends Entity{
     constructor(x,y,startingDirection){
-        super(x,y,Math.floor(PIXELUNIT*0.75),Math.floor(PIXELUNIT*0.75),false,true,150,startingDirection,true)
+        super(x,y,Math.floor(PU*0.75),Math.floor(PU*0.75),false,true,220,startingDirection,true)
 
         this.color = ballColor
         this.look.fillStyle(this.color);
@@ -1502,36 +1632,34 @@ class ball extends Entity{
 
 
 class mine extends Entity{
-    constructor(x,y,proximityRadius,explosionRadius){
+    constructor(x,y,timeToBOOM,proximityRadius,explosionRadius,playerTriggerable){
 
-        if(proximityRadius){
-            super(x - proximityRadius + Math.floor(PIXELUNIT*0.75/2), y - proximityRadius + Math.floor(PIXELUNIT*0.75/2), proximityRadius * 2 , proximityRadius * 2,
+        if(proximityRadius != undefined){
+            super(x - proximityRadius + Math.floor(PU*0.75/2), y - proximityRadius + Math.floor(PU*0.75/2), proximityRadius * 2 , proximityRadius * 2,
                 false,false,0,[0,0],true)
             this.proximityRadius = proximityRadius
         }
         else{
-            super(x - PIXELUNIT * 2 + Math.floor(PIXELUNIT*0.75/2), y - PIXELUNIT * 2 + Math.floor(PIXELUNIT*0.75/2), PIXELUNIT * 2* 2 , PIXELUNIT * 2 * 2,
+            super(x - PU * 2 + Math.floor(PU*0.75/2), y - PU * 2 + Math.floor(PU*0.75/2), PU * 2* 2 , PU * 2 * 2,
                 false,false,0,[0,0],true)
-            this.proximityRadius = PIXELUNIT * 2
+            this.proximityRadius = PU * 2
         }
 
-        this.timeToBOOM = 3
+        this.timeToBOOM = timeToBOOM == undefined ? 2: timeToBOOM
+        this.playerTriggerable = playerTriggerable == undefined ? true : playerTriggerable 
         this.triggered = false
-        this.subClock = 0
+        this.clock = 0
         this.BOOM = false
         this.complete = false
 
         let centerX = this.x + this.width/2
         let centerY = this.y + this.height/2
         
-        let radius = 0
-        if(explosionRadius){radius = explosionRadius}else{radius = PIXELUNIT * 3 } 
-
+        let radius = explosionRadius == undefined ? PU * 3 : explosionRadius
         this.explosionBOOM = new explosion(centerX - radius , centerY - radius , radius * 2 , radius * 2 , explosionColor)
+        this.side = Math.floor(PU*0.75)
 
-        this.side = Math.floor(PIXELUNIT*0.75)
-
-        this.color = mineColor
+        this.color = this.playerTriggerable ? mineColor : mineColor2
         this.look.fillStyle(this.color);
         this.look.fillRect(x , y , this.side , this.side);
     }
@@ -1542,41 +1670,41 @@ class mine extends Entity{
 
             if(this.triggered){
 
-                this.subClock += Delta
+                this.clock += Delta
 
-                if(this.subClock < this.timeToBOOM * 0.75){
+                if(this.clock < this.timeToBOOM * 0.75){
 
-                    if(Math.floor(this.subClock * 10) % 6 >= 3){
+                    if(Math.floor(this.clock * 10) % 6 >= 3){
 
                         this.look.clear()
                         this.look.fillStyle(this.color);
-                        this.look.fillRect(this.x + this.proximityRadius - Math.floor(PIXELUNIT*0.75/2), this.y + this.proximityRadius - Math.floor(PIXELUNIT*0.75/2),
+                        this.look.fillRect(this.x + this.proximityRadius - Math.floor(PU*0.75/2), this.y + this.proximityRadius - Math.floor(PU*0.75/2),
                             this.side, this.side);
 
                     }else{                    
 
                         this.look.clear()
                         this.look.fillStyle(0xFF0000);
-                        this.look.fillRect(this.x +this.proximityRadius - Math.floor(PIXELUNIT*0.75/2), this.y + this.proximityRadius - Math.floor(PIXELUNIT*0.75/2),
+                        this.look.fillRect(this.x +this.proximityRadius - Math.floor(PU*0.75/2), this.y + this.proximityRadius - Math.floor(PU*0.75/2),
                             this.side, this.side);
                     }
 
                 }else{
 
-                    if(this.subClock < this.timeToBOOM){
+                    if(this.clock < this.timeToBOOM){
 
-                        if(Math.floor(this.subClock * 10) % 2 ){
+                        if(Math.floor(this.clock * 10) % 2 ){
 
                             this.look.clear()
                             this.look.fillStyle(0xFF0000);
-                            this.look.fillRect(this.x + this.proximityRadius - Math.floor(PIXELUNIT*0.75/2), this.y + this.proximityRadius - Math.floor(PIXELUNIT*0.75/2),
+                            this.look.fillRect(this.x + this.proximityRadius - Math.floor(PU*0.75/2), this.y + this.proximityRadius - Math.floor(PU*0.75/2),
                                 this.side, this.side);
 
                         }else{
         
                             this.look.clear()
                             this.look.fillStyle(this.color);
-                            this.look.fillRect(this.x + this.proximityRadius - Math.floor(PIXELUNIT*0.75/2), this.y + this.proximityRadius - Math.floor(PIXELUNIT*0.75/2),
+                            this.look.fillRect(this.x + this.proximityRadius - Math.floor(PU*0.75/2), this.y + this.proximityRadius - Math.floor(PU*0.75/2),
                                 this.side, this.side);
                         }
                     }else{
@@ -1589,14 +1717,17 @@ class mine extends Entity{
 
             }else{
 
-                for (let i = 0; i < entities.length ; i++){
+                if(this.playerTriggerable){
                 
-                    if(entities[i] == pg){
+                    for (let i = 0; i < entities.length ; i++){
+                    
+                        if(entities[i] == pg){
 
-                        let collision = this.checkCollision2TheRevenge(pg,0,0)
+                            let collision = this.checkCollision2TheRevenge(pg,0,0)
 
-                        if(collision[0])                        
-                            this.triggered = true
+                            if(collision[0])                        
+                                this.triggered = true
+                        }
                     }
                 }
             }
@@ -1604,9 +1735,9 @@ class mine extends Entity{
 
             if(!this.complete){
 
-                this.subClock += Delta
+                this.clock += Delta
 
-                if(this.subClock > this.timeToBOOM + 0.5){
+                if(this.clock > this.timeToBOOM + 0.5){
 
                     this.complete = true
                     this.explosionBOOM.deactivate()
@@ -1622,7 +1753,28 @@ class explosion extends bullet{
         super(x,y,width,height,0,[0,0],false,color)
     }
 
-    handler(){}
+    handler(){
+
+        if(this.active){
+            
+            for (let i = 0; i < entities.length ; i++){
+            
+                if(entities[i].color == mineColor || entities[i].color == mineColor2){
+
+                    let collision = this.checkCollision2TheRevenge(entities[i],0,0)  
+                    
+                    if(collision[0]){
+                        
+                        if(entities[i].triggered == false){
+
+                            entities[i].triggered = true
+                            entities[i].clock = entities[i].timeToBOOM * 0.75
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 
@@ -1633,6 +1785,77 @@ class goal extends Entity{
         this.color = goalColor
         this.look.fillStyle(this.color);
         this.look.fillRect(x , y , w, h);
+    }
+}
+
+
+class upgrade extends Entity{
+    constructor(x,y,kind){
+        super(x,y,8,8,false,false,0,[0,0],true)
+
+        this.kind = kind
+        this.taken = false
+        this.clock = 0
+        this.timeToChange = false
+        this.done = false
+        this.textSlot = scene.add.text(this.x - 60, this.y + 10 , " " , { font: '12px' })
+        
+        if(kind == "dash")
+            this.text = "   UPGRADE TIME!\n You can Dash now!\n Press SHIFT or Z \nB on the controller"
+
+        this.color = upgradeColor
+        this.look.fillStyle(this.color);
+        this.look.fillRect(x , y , 8, 8);
+    }
+    
+    handler(){
+
+        if(!this.done){
+
+            this.clock += Delta
+
+            if(this.clock > 0.5 && this.taken == false){
+                this.timeToChange = true
+                this.clock = 0
+            } else if(this.clock > 10){
+                this.done = true
+                this.textSlot.setText("")
+            }
+
+            if(this.timeToChange && this.taken == false){
+
+                if(this.color == upgradeColor){
+
+                    this.color = upgradeColor2
+                    this.look.clear()
+                    this.look.fillStyle(this.color);
+                    this.look.fillRect(this.x , this.y , this.width, this.height);
+                    this.timeToChange = false
+
+                }else{
+
+                    this.color = upgradeColor
+                    this.look.clear()
+                    this.look.fillStyle(this.color);
+                    this.look.fillRect(this.x , this.y , this.width, this.height);
+                    this.timeToChange = false
+                }
+            }
+
+            let data = this.checkCollision2TheRevenge(pg,0,0)
+
+            if(data[0]){
+
+                this.taken = true
+                this.clock = 0
+
+                if(this.kind == "dash"){
+                    this.textSlot.setText(this.text)
+                    pg.dashAvailable = true
+                    this.look.clear()
+                }
+            }
+        }   
     }
 }
 
@@ -1726,7 +1949,8 @@ function createDebug (){
     
     scene = this
     entities=[]    
-    keys = this.input.keyboard.addKeys('W,A,S,D,J,K,U,I,SPACE,DOWN,LEFT,RIGHT,UP');
+    keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,SPACE,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
     pg = new player(80,250);   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
@@ -1753,10 +1977,12 @@ function createDebug (){
     let laser4 = new nonnoLaser(460,768,5,2,[0,-1])
     let cumbare = new stalker(100,350)    
     let palla = new ball(550,400,[1,1])
-    let mina = new mine(20,400)
+    let mina = new mine(420,400)
     let mina2 = new mine(400,400)
     let omg = new predictingCannon(300,350,0.2,150,[1,0],8)
-    let spinnyboi = new circleCannon(680,680,0.001,200,undefined,undefined,20)
+    let spinnyboi0 = new spinnyBoi(680,680,0.001,200,false,undefined,undefined,10)
+
+    let testUpgrade = new upgrade(100,350,"dash")
 
     let fumo = new smoke(200,450,60,50)
 
@@ -1782,6 +2008,7 @@ function createTutorial(){
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,SPACE,P,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
     pg = new player(392,350);   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
@@ -1804,6 +2031,7 @@ function createLandsBetween(){
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,SPACE,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
     pg = new player(392,350);   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
@@ -1826,6 +2054,7 @@ function createDeath(){
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
     pg = new player(392,450);   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
@@ -1869,7 +2098,8 @@ function createLevel1(){
     levelName.textContent = "CANNONS!"      
     scene = this
     entities=[]    
-    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
+    gamepad = this.input.gamepad.gamepads
     pg = new player(392,700);   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
@@ -1891,6 +2121,7 @@ function createLevel2(){
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
     pg = new player(150,650);   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
@@ -1898,10 +2129,10 @@ function createLevel2(){
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
 
     let cannon1 = new cannon(16,200,0.75,200,[1,0])
-    let cannon2 = new cannon(16,200 + PIXELUNIT + 4,0.75,200,[1,0])
-    let cannon3 = new cannon(16,200 + PIXELUNIT * 2 + 8,0.75,200,[1,0])
-    let cannon4 = new cannon(768,500 + PIXELUNIT + 4,0.75,200,[-1,0])
-    let cannon5 = new cannon(768,500 + PIXELUNIT * 2 + 8,0.75,200,[-1,0])
+    let cannon2 = new cannon(16,200 + PU + 4,0.75,200,[1,0])
+    let cannon3 = new cannon(16,200 + PU * 2 + 8,0.75,200,[1,0])
+    let cannon4 = new cannon(768,500 + PU + 4,0.75,200,[-1,0])
+    let cannon5 = new cannon(768,500 + PU * 2 + 8,0.75,200,[-1,0])
     let cannon6 = new cannon(768,500,0.75,200,[-1,0])
     let cannon7 = new cannon(392,16,0.35,200,[0,1])
 
@@ -1915,6 +2146,7 @@ function createLevel3(){
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
     pg = new player(40,720);   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
@@ -1937,6 +2169,7 @@ function createLevel4(){
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
     pg = new player(392,50);   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
@@ -1959,6 +2192,7 @@ function createLevel5(){
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
     pg = new player(330,575);   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
@@ -1976,7 +2210,7 @@ function createLevel5(){
 
     let laser5 = new nonnoLaser(640,540,1,3,[1,0])
     let cannon1 = new cannon(640,560,0.8,150,[1,0])
-    let laser6 = new nonnoLaser(768,410,0.75,2,[-1,0])
+    let laser6 = new nonnoLaser(768,410,1,2,[-1,0])
     let cannon2 = new cannon(768,390,1.2,50,[-1,0])
     let laser7 = new nonnoLaser(640,240,2,2,[1,0])
     let cannon3 = new cannon(640,260,0.6,100,[1,0])    
@@ -2005,6 +2239,7 @@ function createLevel6(){
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
     pg = new player(75,67);   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
@@ -2040,6 +2275,7 @@ function createLevel7(){
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
     pg = new player(60,730);   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
@@ -2064,10 +2300,10 @@ function createLevel7(){
     let cannon6 = new cannon(150,390,0.6,250,[1,0])
     let cannon7 = new cannon(634,400,0.6,250,[-1,0])
 
-    let cannon8 = new cannon(150,300,0.6,200,[1,0])
-    let cannon9 = new cannon(634,290,0.6,200,[-1,0])
-    let cannon10 = new cannon(150,280,0.6,200,[1,0])
-    let cannon11 = new cannon(634,270,0.6,200,[-1,0])
+    let cannon8 = new cannon(150,300,0.6,150,[1,0])
+    let cannon9 = new cannon(634,290,0.6,150,[-1,0])
+    let cannon10 = new cannon(150,280,0.6,150,[1,0])
+    let cannon11 = new cannon(634,270,0.6,150,[-1,0])
 
     let cannon12 = new cannon(150,200,0.6,250,[1,0])
     let cannon13 = new cannon(634,200,0.6,250,[-1,0])
@@ -2084,6 +2320,7 @@ function createLevel8(){
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
     pg = new player(250,66);   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
@@ -2113,6 +2350,7 @@ function createLevel9(){
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
     pg = new player(24,740)   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
@@ -2161,6 +2399,7 @@ function createLevel10(){
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
     pg = new player(40,720);   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
@@ -2188,6 +2427,7 @@ function createLevel11(){
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
     pg = new player(100,200);   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
@@ -2218,6 +2458,7 @@ function createLevel12(){
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
     pg = new player(392,720);   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
@@ -2251,13 +2492,25 @@ function createLevel13(){
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
-    pg = new player(392,720);   
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(50,750);   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
 
-    
+    let wall0 = new wall(350,350,100,100)
+
+    let ball0 = new ball( generateRandomIntegerInRange(100,200), generateRandomIntegerInRange(100,200),[-1,1])
+    let ball1 = new ball( generateRandomIntegerInRange(200,300), generateRandomIntegerInRange(500,600),[-1,-1])
+    let ball2 = new ball( generateRandomIntegerInRange(600,700), generateRandomIntegerInRange(400,500),[1,1])
+    let ball3 = new ball( generateRandomIntegerInRange(500,600), generateRandomIntegerInRange(200,300),[-1,-1])
+    let ball4 = new ball( generateRandomIntegerInRange(450,550), generateRandomIntegerInRange(500,600),[-1,1])
+    let ball5 = new ball( generateRandomIntegerInRange(300,400), generateRandomIntegerInRange(450,550),[1,1])
+    let ball6 = new ball( generateRandomIntegerInRange(100,350), generateRandomIntegerInRange(100,700),[1,1])
+    let ball7 = new ball( generateRandomIntegerInRange(100,700), generateRandomIntegerInRange(450,700),[-1,-1])
+
+    let finish = new goal(650,16,134,50)
 }
 
 function createLevel14(){
@@ -2267,6 +2520,7 @@ function createLevel14(){
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
     pg = new player(392,720);   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
@@ -2293,32 +2547,939 @@ function createLevel14(){
     let laser1 = new nonnoLaser(484,768,0,300,[0,-1])
     
     let finish = new goal(200,16,400,50)
-    
 }
 
-function createLevel15(){}
-function createLevel16(){}
-function createLevel17(){}
-function createLevel18(){}
-function createLevel19(){}
-function createLevel20(){}
-function createLevel21(){}
-function createLevel22(){}
-function createLevel23(){}
-function createLevel24(){}
-function createLevel25(){}
-function createLevel26(){}
-function createLevel27(){}
-function createLevel28(){}
-function createLevel29(){}
-function createLevel30(){}
-function createLevel31(){}
-function createLevel32(){}
-function createLevel33(){}
-function createLevel34(){}
-function createLevel35(){}
-function createLevel36(){}
-function createLevel37(){}
+let level15cannon
+let level15coordinates
+let level15clock = 0
+
+function createLevel15(){
+
+    thisLevelPass.textContent = "SALVE2"
+    levelName.textContent = "STORM AND THUNDER!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(60,60);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    let wall0 = new wall(16,100,84,25)
+    let wall1 = new wall(100,75,25,50)
+    let wall2 = new wall(300,16,50,620)
+    let wall3 = new wall(600,100,184,25)
+    let wall5 = new wall(520,220,80,380)
+
+    level15cannon = new trackingCannon(-100,-100,0.125,500)
+    level15coordinates = [[16,250],[16,550],[284,375],[768,750],[350,425],[600,375],[350,50],[100,768],[450,768]]
+
+    let finish = new goal(750,16,34,84)
+}
+
+function updateLevel15(time,delta){
+
+    Delta = delta / 1000
+    omniHandler()
+    
+    level15clock += Delta
+
+    if(level15clock > 0.5){
+        level15clock = 0
+        let index = generateRandomIntegerInRange(0,level15coordinates.length - 1)
+        level15cannon.moveTo(level15coordinates[index][0] , level15coordinates[index][1])
+    }
+}
+
+function createLevel16(){
+
+    thisLevelPass.textContent = "SALVE2"
+    levelName.textContent = "STORM AND THUNDER!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(50,200);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    let wall0 = new wall(100,40,50,744)
+    let wall1 = new wall(650,16,50,744)
+
+    let cannon0 = new cannon(150,250,1,200,[1,0])
+    let cannon1 = new cannon(634,400,1,200,[-1,0])
+    let cannon2 = new cannon(150,550,1,200,[1,0])
+    let cannon3 = new cannon(634,700,1,200,[-1,0])
+
+    let ball0 = new ball( generateRandomIntegerInRange(200,600), generateRandomIntegerInRange(50,750),[-1,1])
+    let ball1 = new ball( generateRandomIntegerInRange(200,600), generateRandomIntegerInRange(50,750),[-1,-1])
+    let ball2 = new ball( generateRandomIntegerInRange(200,600), generateRandomIntegerInRange(50,750),[1,-1])
+    let ball3 = new ball( generateRandomIntegerInRange(200,600), generateRandomIntegerInRange(50,750),[1,1])
+    let ball4 = new ball( generateRandomIntegerInRange(200,600), generateRandomIntegerInRange(50,750),[-1,1])
+    let ball5 = new ball( generateRandomIntegerInRange(200,600), generateRandomIntegerInRange(50,750),[-1,-1])
+    let ball6 = new ball( generateRandomIntegerInRange(200,600), generateRandomIntegerInRange(50,750),[1,-1])
+    let ball7 = new ball( generateRandomIntegerInRange(200,600), generateRandomIntegerInRange(50,750),[1,1])
+    let ball8 = new ball( generateRandomIntegerInRange(200,600), generateRandomIntegerInRange(50,750),[-1,1])
+    let ball9 = new ball( generateRandomIntegerInRange(200,600), generateRandomIntegerInRange(50,750),[-1,-1])
+    let ball10 = new ball( generateRandomIntegerInRange(200,600), generateRandomIntegerInRange(50,750),[1,-1])
+    let ball11 = new ball( generateRandomIntegerInRange(200,600), generateRandomIntegerInRange(50,750),[1,1])
+
+    let finish = new goal(700,16,84,50)
+}
+
+function createLevel17(){
+
+    thisLevelPass.textContent = "SALVE2"
+    levelName.textContent = "STORM AND THUNDER!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(320,86);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    let wall0 = new wall(380,16,40,200)
+    let wall1 = new wall(200,200,400,400)
+
+    let tcannon0 = new trackingCannon(184,392,1,300)
+    let tcannon1 = new trackingCannon(392,600,1,300)
+    let pcannon1 = new predictingCannon(600,392,0.8,320)
+
+    let finish = new goal(420,16,30,184)
+
+}
+
+function createLevel18(){
+
+    thisLevelPass.textContent = "SALVE2"
+    levelName.textContent = "STORM AND THUNDER!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(392,760);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    let wall0 = new wall(16,16,334,768)
+    let wall1 = new wall(450,16,334,768)
+
+    let ball0 = new ball(350,50,[1,1])
+    let ball1 = new ball(434,100,[-1,1])
+    let ball2 = new ball(350,350,[1,1])
+    let ball3 = new ball(434,375,[-1,1])
+
+    let finish = new goal(350,16,100,30)
+}
+
+function createLevel19(){
+
+    thisLevelPass.textContent = "SALVE2"
+    levelName.textContent = "STORM AND THUNDER!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(200,750);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    let wall0 = new wall(100,700,164,20)
+    let wall1 = new wall(460,700,50,20)
+    let wall2 = new wall(710,680,20,40)
+    let wall7 = new wall(710,80,20,40)
+    let wall3 = new wall(710,392,20,16)
+    let wall4 = new wall(80,80,100,20)
+    let wall5 = new wall(380,80,100,20)
+    let wall6 = new wall(680,80,30,20)
+    let wall8 = new wall(80,100,20,30)
+    let wall9 = new wall(80,240,20,160)
+    let wall10 = new wall(80,550,20,170)
+    let wall11 = new wall(160,720,20,64)
+
+    let cannon0 = new cannon(16,16,3.8 * 1.5,80,[1,0])
+    let cannon1 = new cannon(16,40,2.6 * 1.5,80,[1,0])
+    let cannon2 = new cannon(16,64,4.4 * 1.5,80,[1,0])
+    let laser0 = new nonnoLaser(16,300,1,300,[1,0])
+    let sniper = new predictingCannon(392,392,2,2000,undefined,12)
+
+    let finish = new goal(130,720,30,64)
+}
+
+function createLevel20(){
+
+    thisLevelPass.textContent = "SALVE"
+    levelName.textContent = "CANNONS!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(392,350);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    let wall0 = new wall(258,50,476,58)
+    let wall10 = new wall(734,54,50,2)
+    let wall1 = new wall(145,10,56,194)
+    let wall2 = new wall(50,50,100,40)
+    let wall3 = new wall(50,160,56,250)
+    let wall4 = new wall(0,450,106,56)
+    let wall5 = new wall(50,560,100,42)
+    let wall6 = new wall(100,256,100,44)
+    let wall7 = new wall(144,300,56,400)
+    let wall8 = new wall(50,656,100,44)
+    let wall9 = new wall(50,700,56,50)
+    let wall11 = new wall(258,100,46,150)
+    let wall12 = new wall(300,160,250,40)
+    let wall13 = new wall(304,200,44,150)
+    let wall14 = new wall(258,304,58,108)
+    let wall15 = new wall(200,354,58,58)
+    let wall16 = new wall(258,450,58,150)
+    let wall17 = new wall(258,656,150,44)
+    let wall18 = new wall(192,738,108,50)
+    let wall19 = new wall(354,700,54,100)
+    let wall20 = new wall(300,544,200,56)
+    let wall21 = new wall(320,600,44,56)
+    let wall22 = new wall(496,450,58,150)
+    let wall23 = new wall(608,100,42,200)
+    let wall24 = new wall(450,256,102,96)
+    let wall25 = new wall(496,352,300,46)
+    let wall26 = new wall(608,450,44,150)
+    let wall27 = new wall(704,450,100,56)
+    let wall28 = new wall(650,560,98,40)
+    let wall29 = new wall(450,656,44,50)
+    let wall30 = new wall(544,656,60,50)
+    let wall31 = new wall(656,656,92,92)
+    let wall32 = new wall(450,706,206,42)
+    let wall33 = new wall(704,600,44,56)
+    let wall34 = new wall(704,160,100,40)
+    let wall35 = new wall(704,200,44,100)
+
+    let stalker0 = new stalker(392,500)
+    stalker0.speed = playerSpeed
+
+    let finish = new goal(734,16,50,38)
+
+    grid = new nodeGrid(gridNodeSize)
+}
+
+function createLevel21(){
+
+    thisLevelPass.textContent = "SALVE"
+    levelName.textContent = "CANNONS!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(30,750);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    for (let i = 0; i<34; i++){
+        let cannon0 = new cannon(16 , 80 + i*18 ,generateRandomInRange(1.2,3.2),generateRandomIntegerInRange(50,100),[1,0])
+    }
+
+    let stalker0 = new stalker(392,500)
+    stalker0.speed = playerSpeed
+
+    let finish = new goal(700,16,84,40)
+
+    grid = new nodeGrid(gridNodeSize)
+
+}
+
+function createLevel22(){
+
+    thisLevelPass.textContent = "SALVE"
+    levelName.textContent = "CANNONS!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(40,300);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    let wall0 = new wall(48,16,768,48)
+    let wall1 = new wall(16,752,768,32)
+    let wall2 = new wall(16,384,600,48)
+
+    let laser0 = new nonnoLaser(208,368,2,5,[0,-1])
+    let laser1 = new nonnoLaser(233,368,2,5,[0,-1])
+    let laser2 = new nonnoLaser(464,64,2,5,[0,1])
+    let laser3 = new nonnoLaser(489,64,2,5,[0,1])
+    let laser4 = new nonnoLaser(208,736,2,5,[0,-1])
+    let laser5 = new nonnoLaser(233,736,2,5,[0,-1])
+    let laser6 = new nonnoLaser(464,432,2,5,[0,1])
+    let laser7 = new nonnoLaser(489,432,2,5,[0,1])
+
+    let ball0 = new ball(generateRandomIntegerInRange(650,750),generateRandomIntegerInRange(50,140),[-1,1])
+    let ball1 = new ball(generateRandomIntegerInRange(650,750),generateRandomIntegerInRange(150,240),[-1,1])
+    let ball5 = new ball(generateRandomIntegerInRange(650,750),generateRandomIntegerInRange(250,340),[-1,1])
+    let ball2 = new ball(generateRandomIntegerInRange(650,750),generateRandomIntegerInRange(400,490),[-1,1])
+    let ball3 = new ball(generateRandomIntegerInRange(650,750),generateRandomIntegerInRange(500,590),[-1,1])
+    let ball6 = new ball(generateRandomIntegerInRange(650,750),generateRandomIntegerInRange(600,690),[-1,1])
+
+    let smoke0 = new smoke(PU * 8,PU*4,PU*4,PU*3)
+    let smoke1 = new smoke(PU*18,PU*11,PU*3,PU*5)
+    let smoke2 = new smoke(PU*43,PU*43,PU*6,PU*4)
+
+    let stalker0 = new stalker(25,20)
+    stalker0.speed = playerSpeed * 0.9
+
+    let finish = new goal(PU,432,PU*3,PU*20)
+
+    grid = new nodeGrid(gridNodeSize)
+
+}
+
+function createLevel23(){
+
+    thisLevelPass.textContent = "SALVE"
+    levelName.textContent = "CANNONS!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(40,750);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    let wall1 = new wall(80,500,630,284)
+    let laser0 = new nonnoLaser(90, 16,generateRandomInRange(2,3.5),0.2,[0,1])
+    
+    for(let i = 1; i<20; i++){
+
+        let dice = Math.random()
+        
+        if(dice > 0.75){
+            let laser0 = new nonnoLaser(90 + i* 32, 16,generateRandomInRange(2,3.5),0.2,[0,1])
+        }else{
+            
+            if(dice < 0.4){
+                let cannone0 = new trackingCannon(90 + i * 32,16,generateRandomInRange(1.2,2.2),generateRandomIntegerInRange(100,300))
+            }
+            else{
+                let cannone0 = new predictingCannon(90 + i * 32,16,generateRandomInRange(1.2,2.2),generateRandomIntegerInRange(100,300))
+            }
+        }
+    }
+
+    let finish = new goal(710,750,74,34)
+}
+
+function createLevel24(){
+
+    thisLevelPass.textContent = "SALVE"
+    levelName.textContent = "CANNONS!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(750,300);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    let wall0 = new wall(16,16,768,184)
+    let wall1 = new wall(16,600,768,184)
+    let wall2 = new wall(650,200,20,300)
+    let wall3 = new wall(475,300,20,300)
+    let wall4 = new wall(312,200,20,300)
+    let wall5 = new wall(150,300,20,300)
+    
+    for(let i = 0; i<4; i++){
+        
+        for(let j = 0; j<generateRandomIntegerInRange(3,5);j++){
+            let mine0 = new mine(30 + 160*i + generateRandomIntegerInRange(0,100),generateRandomIntegerInRange(220,540))
+        }
+    }
+
+    let finish = new goal(16,570,134,30)
+}
+
+function createLevel25(){
+
+    thisLevelPass.textContent = "SALVE"
+    levelName.textContent = "CANNONS!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(734,30);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    let wall0 = new wall(100,16,600,84)
+    let wall1 = new wall(392,100,16,300)
+
+    let p0 = new predictingCannon(392,400,0.6,400)
+
+    for(let i = 0; i<30; i++){
+        let mine0 = new mine(generateRandomIntegerInRange(420,770),generateRandomIntegerInRange(120,770))
+    }
+    for(let i = 0; i<30; i++){
+        let mine0 = new mine(generateRandomIntegerInRange(30,380),generateRandomIntegerInRange(120,770))
+    }
+
+    let finish = new goal(16,16,84,30)
+}
+
+function createLevel26(){
+
+    thisLevelPass.textContent = "SALVE"
+    levelName.textContent = "CANNONS!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(685,85);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    let wall0 = new wall(580,16,20,600)
+    let wall1 = new wall(350,200,20,600)
+    let wall2 = new wall(120,200,230,20)
+
+    let wall3 = new wall(600,180,71,100)
+    let wall4 = new wall(600,320,71,160)
+    let wall5 = new wall(600,520,71,96)
+    let wall6 = new wall(721,180,71,100)
+    let wall7 = new wall(721,320,71,160)
+    let wall8 = new wall(721,520,71,96)
+    let wall9 = new wall(370,200,100,100)
+    let wall10 = new wall(370,316,100,100)
+    let wal11 = new wall(370,432,100,100)
+    let wal12 = new wall(370,548,100,68)
+
+    let laser0 = new nonnoLaser(600,280,0.8,1.6,[1,0])
+    let laser1 = new nonnoLaser(600,304,0.8,1.6,[1,0])
+    let laser2 = new nonnoLaser(600,480,0.8,1.6,[1,0])
+    let laser3 = new nonnoLaser(600,504,0.8,1.6,[1,0])
+    let cannon0 = new cannon(370,300,1,300,[1,0])
+    let cannon1 = new cannon(370,416,0.8,100,[1,0])
+    let cannon2 = new cannon(370,532,1,150,[1,0])
+
+    for(let i = 0; i<6; i++){
+        let dice = Math.random()
+        if(dice > 0.5){
+            let cannon0 = new trackingCannon(334,250 + i*100,generateRandomInRange(0.5,1),generateRandomIntegerInRange(200,300))
+        }else{
+            let cannon0 = new predictingCannon(334,250 + i*100,generateRandomInRange(0.5,1),generateRandomIntegerInRange(200,300))
+        }
+    }
+
+    let smoke0 = new smoke(671,200,50,170)
+    let smoke1 = new smoke(671,400,50,184)
+    let smoke2 = new smoke(470,290,110,34)
+    let smoke3 = new smoke(470,406,110,34)
+    let smoke4 = new smoke(470,522,110,34)
+    let smoke5 = new smoke(120,220,160,564)
+
+    let finish = new goal(16,760,104,24)
+}
+
+function createLevel27(){
+
+    thisLevelPass.textContent = "SALVE"
+    levelName.textContent = "CANNONS!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(50,450);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    let wall0 = new wall(100,450,180,334)
+    let wall1 = new wall(16,16,200,120)
+    let wall2 = new wall(272,80,430,56)
+    let wall3 = new wall(272,136,30,750)
+    let wall4 = new wall(400,136,30,314)
+    let wall5 = new wall(400,450,300,56)
+
+    let spinnyboi0 = new spinnyBoi(PU*9,PU*16,0.3,100)
+    let spinnyboi1 = new spinnyBoi(PU*36,PU*17,0.1,150)
+    let spinnyboi2 = new spinnyBoi(PU*28,PU*41,0.3,150,true)
+    let spinnyboi3 = new spinnyBoi(PU*39,PU*36,0.3,150)
+
+    grid = new nodeGrid(gridNodeSize)
+
+    let stalker0 = new stalker(50,750)
+    stalker0.speed = playerSpeed
+
+    let finish = new goal(302,136,98,30)
+}
+
+function createLevel28(){
+
+    thisLevelPass.textContent = "SALVE"
+    levelName.textContent = "CANNONS!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(80,120);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    let wall0 = new wall(16,80,700,20)
+
+    let wall1 = new wall(150,100,100,150)
+    let wall2 = new wall(150,300,100,100)
+    let wall3 = new wall(150,450,100,100)
+    let wall4 = new wall(150,600,100,200)
+    
+    let dice = generateRandomIntegerInRange(1,3)
+    switch(dice){
+        case 1:
+            let wall13 = new wall(200,250,4,34)
+            let wall14 = new wall(200,400,4,35)
+            let wall15 = new wall(200,550,4,35)
+        break;
+        case 2:
+            let wall16 = new wall(200,250,4,35)
+            let wall17 = new wall(200,400,4,34)
+            let wall18 = new wall(200,550,4,35)
+        break;
+        case 3:
+            let wall19 = new wall(200,250,4,35)
+            let wall20 = new wall(200,400,4,35)
+            let wall21 = new wall(200,550,4,34)
+        break;
+    }
+
+    let wall5 = new wall(350,100,100,150)
+    let wall6 = new wall(350,300,100,100)
+    let wall7 = new wall(350,450,100,100)
+    let wall8 = new wall(350,600,100,200)
+
+    dice = generateRandomIntegerInRange(1,3)
+    switch(dice){
+        case 1:
+            let wall13 = new wall(400,250,4,34)
+            let wall14 = new wall(400,400,4,35)
+            let wall15 = new wall(400,550,4,35)
+        break;
+        case 2:
+            let wall16 = new wall(400,250,4,35)
+            let wall17 = new wall(400,400,4,34)
+            let wall18 = new wall(400,550,4,35)
+        break;
+        case 3:
+            let wall19 = new wall(400,250,4,35)
+            let wall20 = new wall(400,400,4,35)
+            let wall21 = new wall(400,550,4,34)
+        break;
+    }
+
+    let wall9 = new wall(550,100,100,150)
+    let wall10 = new wall(550,300,100,100)
+    let wall11 = new wall(550,450,100,100)
+    let wall12 = new wall(550,600,100,200)
+
+    dice = generateRandomIntegerInRange(1,3)
+    switch(dice){
+        case 1:
+            let wall13 = new wall(600,250,4,34)
+            let wall14 = new wall(600,400,4,35)
+            let wall15 = new wall(600,550,4,35)
+        break;
+        case 2:
+            let wall16 = new wall(600,250,4,35)
+            let wall17 = new wall(600,400,4,34)
+            let wall18 = new wall(600,550,4,35)
+        break;
+        case 3:
+            let wall19 = new wall(600,250,4,35)
+            let wall20 = new wall(600,400,4,35)
+            let wall21 = new wall(600,550,4,34)
+        break;
+    }
+
+    for(let i = 0; i<15; i++){
+        if(i == 0){
+            let mine0 = new mine(50 + i*48,42,undefined,100)
+        }else{
+            let mine0 = new mine(50 + i*48,42,3.5)
+        }
+    }
+
+    let mine2 = new mine(750,80)
+    let mine3 = new mine(190,140,0.4,undefined,150)
+    let mine4 = new mine(390,140,0.4,undefined,150)
+    let mine5 = new mine(590,140,0.4,undefined,150)
+
+    for(let i = 0; i<4; i++){
+        for(let j = 0; j<6; j++){
+            
+            if(i==0 && j==5){
+                let mine0 = new mine(80 + i*210 , 140 + j*120,0.4,undefined,50,false)
+            }else{
+                let mine0 = new mine(80 + i*210 , 140 + j*120,0.4,undefined,120,false)
+            }
+        }
+    }
+
+    let finish = new goal(650,754,134,30)
+}
+
+function createLevel29(){
+
+    thisLevelPass.textContent = "SALVE"
+    levelName.textContent = "CANNONS!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(40,750);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    let wall0 = new wall(80,720,710,64)
+    let wall1 = new wall(16,16,710,64)
+
+    for(let i=0; i<6; i++){
+        for(let j=0; j<4; j++){
+
+            let dice = generateRandomIntegerInRange(-100,100)
+            let mine0 = new mine(150 + i*100 + dice , 220 + j*120 + dice)
+        }
+    }
+
+    let spinnyBoi0 = new spinnyBoi(392,392,0.1,70)
+    let spinnyBoi1 = new spinnyBoi(392,392,0.1,70,true)
+
+    let finish = new goal(726,16,58,30)
+}
+
+function createLevel30(){
+
+    thisLevelPass.textContent = "SALVE"
+    levelName.textContent = "CANNONS!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(40,740);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    let lava0 = new lava(PU,PU,PU*48,PU)
+    let lava1 = new lava(PU,PU*2,PU,PU*47)
+    let lava2 = new lava(PU*48,PU*2,PU,PU*47)
+    let lava3 = new lava(PU*2,PU*48,PU*46,PU)
+
+    let lava4 = new lava(PU*2,PU*8,PU*20,PU*11)
+    let lava5 = new lava(PU*16,PU*38,PU*15,PU*8)
+    let lava6 = new lava(PU*29,PU*14,PU*10,PU*22)
+    let lava7 = new lava(PU*8,PU*30,PU*18,PU*5)
+    let lava8 = new lava(PU*16,PU*21,PU*4,PU*6)
+    let lava9 = new lava(PU*24,PU*4,PU*9,PU*6)
+    let lava10 = new lava(PU*40,PU*6,PU*8,PU*6)
+    let lava11 = new lava(PU*39,PU*22,PU*4,PU*6)
+    let lava12 = new lava(PU*39,PU*40,PU*5,PU*8)
+    let lava13 = new lava(PU*8,PU*5,PU*5,PU*3)
+
+
+    let stalker0 = new stalker(PU*25,PU*20)
+    stalker0.speed = playerSpeed
+
+    grid = new nodeGrid(gridNodeSize)
+
+    let finish = new goal(PU*2,PU*2,PU*2,PU*6)
+
+}
+
+function createLevel31(){
+
+    thisLevelPass.textContent = "SALVE2"
+    levelName.textContent = "STORM AND THUNDER!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(100,200);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    let wall1 = new wall(16,380,600,40)
+
+    let lava0 = new lava(16,100,734,20)
+    let lava1 = new lava(16,300,634,20)
+    let lava2 = new lava(16,500,634,20)
+    let lava3 = new lava(16,700,734,20)
+    let lava4 = new lava(750,100,20,620)
+    let lava5 = new lava(650,300,20,220)
+
+    let lava6 = new lava(220,180,50,40)
+    let lava7 = new lava(320,120,50,60)
+    let lava8 = new lava(320,220,50,80)
+    let lava9 = new lava(420,120,50,140)
+    let lava10 = new lava(520,160,50,140)
+    let lava11 = new lava(620,160,80,100)
+    let lava12 = new lava(700,350,20,100)
+
+    for(let i = 0; i<4; i++){
+
+        let lava13 = new lava(200 + i*100,520,100,80 - i * 10)
+        let lava14 = new lava(200 + i*100,620 + i * 10,100,80 - i * 10)
+    }
+
+    for(let i = 0; i<30; i++){
+       let laser0 = new nonnoLaser(20 + i* 20, 16, i * 0.3 ,300,[0,1])
+    }
+    for(let i = 0; i<8; i++){
+        let laser1 = new nonnoLaser(760 - i* 20, 16, (i + 30) * 0.3 ,300,[0,1])
+    }
+    for(let i = 0; i<30; i++){
+        let laser2 = new nonnoLaser(600 - i* 20, 768, (i + 38) * 0.3 ,300,[0,-1])
+    }
+
+    let finish = new goal(16,520,30,180)
+}
+
+function createLevel32(){
+
+    thisLevelPass.textContent = "SALVE2"
+    levelName.textContent = "STORM AND THUNDER!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(357,760);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    let wall0 = new wall(16,16,84,768)
+    let wall1 = new wall(700,16,84,768)
+
+    let lava0 = new lava(320,16,20,768)
+    let lava1 = new lava(390,100,20,684)
+    let lava2 = new lava(460,16,20,768)
+
+    let ball0 = new ball(generateRandomInRange(120,250),generateRandomIntegerInRange(100,200),[-1,-1])
+    let ball1 = new ball(generateRandomInRange(550,680),generateRandomIntegerInRange(200,300),[1,1])
+    let ball08 = new ball(generateRandomInRange(120,250),generateRandomIntegerInRange(300,400),[-1,1])
+    let ball17 = new ball(generateRandomInRange(550,680),generateRandomIntegerInRange(400,500),[-1,-1])
+    let ball06 = new ball(generateRandomInRange(120,250),generateRandomIntegerInRange(500,600),[1,-1])
+    let ball15 = new ball(generateRandomInRange(550,680),generateRandomIntegerInRange(100,200),[1,-1])
+    let ball04 = new ball(generateRandomInRange(120,250),generateRandomIntegerInRange(200,300),[-1,1])
+    let ball13 = new ball(generateRandomInRange(550,680),generateRandomIntegerInRange(300,400),[1,1])
+    let ball02 = new ball(generateRandomInRange(120,250),generateRandomIntegerInRange(400,500),[1,-1])
+    let ball11 = new ball(generateRandomInRange(550,680),generateRandomIntegerInRange(500,600),[1,-1])
+
+    let finish = new goal(410,750,50,34)
+}
+
+function createLevel33(){
+
+    thisLevelPass.textContent = "SALVE2"
+    levelName.textContent = "STORM AND THUNDER!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(30,730);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    let wall0 = new wall(16,700,84,4)
+    let wall1 = new wall(16,676,500,4)
+    let wall2 = new wall(516,516,4,164)
+    let wall3 = new wall(520,516,160,4)
+    let wall5 = new wall(676,16,4,500)
+
+    let lava0 = new lava(16,760,768,24)
+    let lava3 = new lava(16,680,524,20)
+    let lava4 = new lava(520,520,180,20)
+    let lava1 = new lava(600,600,184,184)
+    let lava2 = new lava(760,16,24,768)
+    let lava6 = new lava(520,540,20,140)
+    let lava7 = new lava(680,16,20,504)
+
+    let track0 = new trackingCannon(250,200,0.2,300)
+    let track1 = new trackingCannon(200,500,0.2,300)
+    let track2 = new trackingCannon(500,150,0.2,300)
+
+    let smoke0 = new smoke(100,700,500,60)
+    let smoke1 = new smoke(540,540,60,160)
+    let smoke3 = new smoke(600,540,100,60)
+    let smoke2 = new smoke(700,120,60,480)
+
+    let finish = new goal(700,16,60,30)
+}
+
+function createLevel34(){
+
+    thisLevelPass.textContent = "SALVE2"
+    levelName.textContent = "STORM AND THUNDER!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,Z,DOWN,SHIFT,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(175,600);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    let wall0 = new wall(350,150,50,634)
+    let wall1 = new wall(575,16,50,634)
+
+    for(let i = 0; i<9; i++){
+        let cannon0 = new cannon(400,200 + 20 * i,1,150,[1,0])
+    }
+    for(let i = 0; i<3; i++){
+        let cannon0 = new cannon(400,500 + 20 * i,0.5,800,[1,0])
+    }
+    for(let i = 0; i<3; i++){
+        let cannon0 = new cannon(400,500 + 20 * i,0.5,800,[1,0])
+    }
+
+    let laser3 = new nonnoLaser(625,500,1 - 0.25,0.5,[1,0],12)
+    let laser4 = new nonnoLaser(625,520,0.875 - 0.25,0.625,[1,0],12)
+    let laser5 = new nonnoLaser(625,540,0.750 - 0.25,0.75,[1,0],12)
+    let laser6 = new nonnoLaser(625,560,0.625 - 0.25,0.875,[1,0],12)
+    let laser7 = new nonnoLaser(625,360,1,0.5,[1,0],12)
+    let laser8 = new nonnoLaser(625,340,0.875,0.625,[1,0],12)
+    let laser9 = new nonnoLaser(625,320,0.750,0.75,[1,0],12)
+    let laser10 = new nonnoLaser(625,300,0.625,0.875,[1,0],12)
+
+    let upgrade0 = new upgrade(180,500,"dash")
+    let finish = new goal(625,16,159,30)
+}
+
+function createLevel35(){
+
+    thisLevelPass.textContent = "SALVE2"
+    levelName.textContent = "STORM AND THUNDER!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,Z,DOWN,Z,SHIFT,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(100,150,true);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    let wall0 = new wall(16,250,634,50)
+    let wall1 = new wall(166,500,650,50)
+
+    for(let i = 0; i<19; i++){
+        for(let j = 0; j<5; j++){
+            let dice = generateRandomIntegerInRange(-5,5)
+            let mine0 = new mine(30 + i*40 + dice,50 + j*40 - dice,1.2)
+        }
+    }
+    for(let i = 0; i<19; i++){
+        for(let j = 0; j<5; j++){
+            let dice = generateRandomIntegerInRange(-5,5)
+            let mine0 = new mine(30 + i*40 + dice,320 + j*40 - dice,1.2)
+        }
+    }
+    for(let i = 0; i<18; i++){
+        for(let j = 0; j<5; j++){
+            let dice = generateRandomIntegerInRange(-5,5)
+            let mine0 = new mine(30 + i*40 + dice,580 + j*40 - dice,1.2)
+        }
+    }
+    for(let i = 0; i<3; i++){
+
+        let dice = generateRandomIntegerInRange(-5,5)
+        let mine0 = new mine(670 + i*40 + dice, 270 - dice,1)
+    }
+    for(let i = 0; i<3; i++){
+
+        let dice = generateRandomIntegerInRange(-5,5)
+        let mine0 = new mine(50 + i*40 + dice, 525 - dice,1)
+    }
+
+    let finish = new goal(750,550,34,234)
+}
+
+function createLevel36(){
+
+    thisLevelPass.textContent = "SALVE2"
+    levelName.textContent = "STORM AND THUNDER!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(200,750,true);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    let wall0 = new wall(100,700,164,20)
+    let wall2 = new wall(710,680,20,40)
+    let wall7 = new wall(710,80,20,40)
+    let wall4 = new wall(80,80,100,20)
+    let wall6 = new wall(680,80,30,20)
+    let wall8 = new wall(80,100,20,30)
+    let wall9 = new wall(80,300,20,16)
+    let wall11 = new wall(160,720,20,64)
+
+    let lava0 = new lava(264,700,446,20)
+    let lava1 = new lava(710,120,20,560)
+    let lava2 = new lava(180,80,500,20)
+    let lava3 = new lava(80,130,20,170)
+    let lava4 = new lava(80,316,20,404)
+
+    let cannon0 = new cannon(16,16,3.8 * 1.5,80,[1,0])
+    let cannon1 = new cannon(16,40,2.6 * 1.5,80,[1,0])
+    let cannon2 = new cannon(16,64,4.4 * 1.5,80,[1,0])
+    let laser0 = new nonnoLaser(16,300,3,1,[1,0])
+    let sniper = new predictingCannon(392,392,2,1500,undefined,12)
+
+    let finish = new goal(130,720,30,64)
+}
+
+function createLevel37(){
+
+    
+
+}
 function createLevel38(){}
 function createLevel39(){}
 function createLevel40(){}
