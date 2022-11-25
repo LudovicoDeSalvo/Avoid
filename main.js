@@ -268,7 +268,7 @@ var lv39 = {
     key: 'level39',
     preload: preload,
     create: createLevel39,
-    update: update,
+    update: updateLevel39,
 };
 var lv40 = {
     key: 'level40',
@@ -276,10 +276,52 @@ var lv40 = {
     create: createLevel40,
     update: update,
 };
+var lv41 = {
+    key: 'level41',
+    preload: preload,
+    create: createLevel41,
+    update: update,
+};
+var lv42 = {
+    key: 'level42',
+    preload: preload,
+    create: createLevel42,
+    update: update,
+};
+var lv43 = {
+    key: 'level43',
+    preload: preload,
+    create: createLevel43,
+    update: update,
+};
+var lv44 = {
+    key: 'level44',
+    preload: preload,
+    create: createLevel44,
+    update: updateLevel44,
+};
+var lv45 = {
+    key: 'level45',
+    preload: preload,
+    create: createLevel45,
+    update: update,
+};
+var lv46 = {
+    key: 'level46',
+    preload: preload,
+    create: createLevel46,
+    update: update,
+};
+var lv47 = {
+    key: 'level47',
+    preload: preload,
+    create: createLevel47,
+    update: update,
+};
 }
 
 let sceneArray = [sceneTutorial,sceneDebug,sceneLandsBetween, sceneDeath, lv1, lv2, lv3,lv4,lv5,lv6,lv7,lv8,lv9,lv10,lv11,lv12,lv13,lv14,lv15,lv16,lv17,lv18,lv19,lv20,
-                    lv21,lv22,lv23,lv24,lv25,lv26,lv27,lv28,lv29,lv30,lv31,lv32,lv33,lv34,lv35,lv36,lv37,lv38,lv39,lv40]
+                    lv21,lv22,lv23,lv24,lv25,lv26,lv27,lv28,lv29,lv30,lv31,lv32,lv33,lv34,lv35,lv36,lv37,lv38,lv39,lv40,lv41,lv42,lv43,lv44,lv45,lv46,lv47]
 
 let config = {
     type: Phaser.AUTO,
@@ -305,6 +347,12 @@ let lv = 1
 let grid
 const epsilon = 0.0000000000001
 const gridNodeSize = PU
+let AButton = {value: 0}
+let BButton = {value: 0}
+let dPadDown = {value: 0}
+let dPadUp = {value: 0}
+let dPadLeft = {value: 0}
+let dPadRight = {value: 0}
 
 
 // GAME VARIABLES
@@ -610,12 +658,7 @@ class player extends Entity{
         //Direction and Input Manager
         let dx = 0
         let dy = 0
-        let AButton = {value: 0}
-        let BButton = {value: 0}
-        let dPadDown = {value: 0}
-        let dPadUp = {value: 0}
-        let dPadLeft = {value: 0}
-        let dPadRight = {value: 0}
+        
 
         if(gamepad.length > 0){      //Gamepad Stuff
             
@@ -659,17 +702,7 @@ class player extends Entity{
         
         if(keys.SPACE){                            //SPACE / A Button Stuff
             
-            if(scene == scene.scene.get("tutorial") && (keys.SPACE.isDown || AButton.value == 1)){
-
-                var theOtherScene = scene.scene.get("level1");            
-                theOtherScene.scene.restart()            
-                scene.scene.switch("level1")
-            } else if(scene == scene.scene.get("landsBetween")  && (keys.SPACE.isDown || AButton.value == 1)){
-
-                var theOtherScene = scene.scene.get("level" + lv);            
-                theOtherScene.scene.restart()            
-                scene.scene.switch("level" + lv)
-            }
+            sceneManager()
         }
 
         if(keys.SHIFT && keys.Z){
@@ -888,6 +921,7 @@ class cannon extends Entity{
             for(let j = 0; j < entities.length && continua == true; j++){
                 
                 if(entities[j] != this.magazine[0] && entities[j].collision == true){
+                    
                     let data = this.magazine[0].checkCollision2TheRevenge(entities[j], bulletGap * i * this.bulletVelocity[0], bulletGap * i * this.bulletVelocity[1])
                     if(data[0]){
                         continua = false
@@ -903,6 +937,7 @@ class cannon extends Entity{
 
         for(let i = 1; i < numberToPlace; i++){
 
+            this.calculateDirection()
             this.magazine[i].moveTo(this.magazine[0].x + this.bulletVelocity[0] * i * bulletGap , this.magazine[0].y + this.bulletVelocity[1] * i * bulletGap)
             this.magazine[i].activate()
             this.magazine[i].velocity = this.bulletVelocity
@@ -1497,6 +1532,10 @@ class lava extends Entity{
                 this.timeToChange = false
             }
         }
+
+        if(this.speed != 0){
+            this.move()
+        }
     }
 }
 
@@ -1513,7 +1552,7 @@ class smoke extends Entity{
 
 class ball extends Entity{
     constructor(x,y,startingDirection){
-        super(x,y,Math.floor(PU*0.75),Math.floor(PU*0.75),false,true,220,startingDirection,true)
+        super(x,y,PU+1,PU+1,false,true,220,startingDirection,true)
 
         this.color = ballColor
         this.look.fillStyle(this.color);
@@ -1916,6 +1955,21 @@ function generateRandomIntegerInRange(min, max) {
 
 function generateRandomInRange(min, max) {
     return (Math.random() * (max - min)) + min;
+}
+
+function sceneManager(){
+
+    if(scene == scene.scene.get("tutorial") && (keys.SPACE.isDown || AButton.value == 1)){
+
+        var theOtherScene = scene.scene.get("level1");            
+        theOtherScene.scene.restart()            
+        scene.scene.switch("level1")
+    } else if(scene == scene.scene.get("landsBetween")  && (keys.SPACE.isDown || AButton.value == 1)){
+
+        var theOtherScene = scene.scene.get("level" + lv);            
+        theOtherScene.scene.restart()            
+        scene.scene.switch("level" + lv)
+    }
 }
 
 
@@ -2607,8 +2661,8 @@ function createLevel16(){
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
 
-    let wall0 = new wall(100,40,50,744)
-    let wall1 = new wall(650,16,50,744)
+    let wall0 = new wall(100,32,50,752)
+    let wall1 = new wall(650,16,50,752)
 
     let cannon0 = new cannon(150,250,1,200,[1,0])
     let cannon1 = new cannon(634,400,1,200,[-1,0])
@@ -2674,9 +2728,9 @@ function createLevel18(){
     let wall1 = new wall(450,16,334,768)
 
     let ball0 = new ball(350,50,[1,1])
-    let ball1 = new ball(434,100,[-1,1])
+    let ball1 = new ball(430,100,[-1,1])
     let ball2 = new ball(350,350,[1,1])
-    let ball3 = new ball(434,375,[-1,1])
+    let ball3 = new ball(430,375,[-1,1])
 
     let finish = new goal(350,16,100,30)
 }
@@ -2821,14 +2875,14 @@ function createLevel22(){
     let wall1 = new wall(16,752,768,32)
     let wall2 = new wall(16,384,600,48)
 
-    let laser0 = new nonnoLaser(208,368,2,5,[0,-1])
-    let laser1 = new nonnoLaser(233,368,2,5,[0,-1])
-    let laser2 = new nonnoLaser(464,64,2,5,[0,1])
-    let laser3 = new nonnoLaser(489,64,2,5,[0,1])
-    let laser4 = new nonnoLaser(208,736,2,5,[0,-1])
-    let laser5 = new nonnoLaser(233,736,2,5,[0,-1])
-    let laser6 = new nonnoLaser(464,432,2,5,[0,1])
-    let laser7 = new nonnoLaser(489,432,2,5,[0,1])
+    let laser0 = new nonnoLaser(208,368,2,4,[0,-1])
+    let laser1 = new nonnoLaser(233,368,2,4,[0,-1])
+    let laser2 = new nonnoLaser(464,64,2,4,[0,1])
+    let laser3 = new nonnoLaser(489,64,2,4,[0,1])
+    let laser4 = new nonnoLaser(208,736,2,4,[0,-1])
+    let laser5 = new nonnoLaser(233,736,2,4,[0,-1])
+    let laser6 = new nonnoLaser(464,432,2,4,[0,1])
+    let laser7 = new nonnoLaser(489,432,2,4,[0,1])
 
     let ball0 = new ball(generateRandomIntegerInRange(650,750),generateRandomIntegerInRange(50,140),[-1,1])
     let ball1 = new ball(generateRandomIntegerInRange(650,750),generateRandomIntegerInRange(150,240),[-1,1])
@@ -3477,9 +3531,452 @@ function createLevel36(){
 
 function createLevel37(){
 
-    
+    thisLevelPass.textContent = "SALVE2"
+    levelName.textContent = "STORM AND THUNDER!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(720,720,true);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
 
+    let wall0 = new wall(PU*7,PU*7,PU*6,PU*6)
+    let wall6 = new wall(PU*21,PU*7,PU*6,PU*6)
+    let wall7 = new wall(PU*35,PU*7,PU*6,PU*6)
+    let wall2 = new wall(PU*7,PU*21,PU*6,PU*6)
+    let wall3 = new wall(PU*21,PU*21,PU*6,PU*6)
+    let wall4 = new wall(PU*35,PU*21,PU*6,PU*6)
+    let wall5 = new wall(PU*7,PU*35,PU*6,PU*6)
+    let wall8 = new wall(PU*21,PU*35,PU*6,PU*6)
+    let wall9 = new wall(PU*35,PU*35,PU*6,PU*6)
+
+    let stalker0 = new stalker(PU*17,PU*17)
+    stalker0.speed = playerSpeed * 1.75
+
+    grid = new nodeGrid(gridNodeSize)
+    let finish = new goal(PU,PU,PU*8,PU*5)
 }
-function createLevel38(){}
-function createLevel39(){}
+
+function createLevel38(){
+
+    thisLevelPass.textContent = "SALVE2"
+    levelName.textContent = "STORM AND THUNDER!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(100,392,true);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    let wall0 = new wall(200,16,60,384)
+    let wall1 = new wall(200,416,60,384)
+    let wall2 = new wall(350,16,60,434)
+    let wall3 = new wall(350,466,60,384)
+    let wall4 = new wall(510,16,60,334)
+    let wall5 = new wall(510,366,60,434)
+
+    for(let i=0 ; i<14; i++){
+        if(i<6){
+            let ball0 = new ball(generateRandomIntegerInRange(260,320),50 + i*50,[-1,1])
+        }else{
+            let ball0 = new ball(generateRandomIntegerInRange(260,320),350 + (i-6)*50,[1,1])
+        }
+    }
+
+    for(let i=0 ; i<13; i++){
+        if(i<6){
+            let ball0 = new ball(generateRandomIntegerInRange(420,490),50 + i*50,[1,1])
+        }else{
+            let ball0 = new ball(generateRandomIntegerInRange(420,490),350 + (i-6)*50,[-1,1])
+        }
+    }
+
+    let finish = new goal(750,300,34,200)
+}
+
+let smokeArray39 = []
+
+function createLevel39(){
+
+    thisLevelPass.textContent = "SALVE2"
+    levelName.textContent = "STORM AND THUNDER!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(40,720,true);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    let wall1 = new lava(80,500,630,284)
+
+    for(let i = 0; i<20; i++){
+
+        if(Math.random() < 0.75){
+            let cannone0 = new cannon(90 + i * 32,16,generateRandomInRange(0.75,1.5),generateRandomIntegerInRange(100,400),[0,1])
+        }else{
+            let laser0 = new nonnoLaser(90 + i* 32, 16,generateRandomInRange(1.5,3),0.2,[0,1])
+        }
+    }
+
+    for(let i=0; i<10; i++){
+        
+        let newSmoke = new smoke(100 + i*60,generateRandomIntegerInRange(100,300),generateRandomIntegerInRange(40,60),generateRandomIntegerInRange(30,50))
+        let newSmoke2 = new smoke(100 + i*60,generateRandomIntegerInRange(300,500),generateRandomIntegerInRange(40,60),generateRandomIntegerInRange(40,60))
+        let newSmoke3 = new smoke(100 + i*60,generateRandomIntegerInRange(500,700),generateRandomIntegerInRange(40,60),generateRandomIntegerInRange(35,55))
+        newSmoke.velocity = [0,-1]
+        newSmoke.speed = generateRandomIntegerInRange(50,100)
+        newSmoke2.velocity = [0,-1]
+        newSmoke2.speed = generateRandomIntegerInRange(50,100)
+        newSmoke3.velocity = [0,-1]
+        newSmoke3.speed = generateRandomIntegerInRange(50,100)
+        smokeArray39.push(newSmoke)
+        smokeArray39.push(newSmoke2)
+        smokeArray39.push(newSmoke3)
+    }
+
+    let finish = new goal(710,750,74,34)
+}
+
+function updateLevel39(time,delta){
+
+    Delta = delta / 1000
+    omniHandler()
+
+    for(let i = 0; i<smokeArray39.length; i++){
+
+        if(smokeArray39[i].y < 33){
+            smokeArray39[i].y = generateRandomIntegerInRange(500,700)
+        }
+        
+        smokeArray39[i].move()
+    }
+}
+
 function createLevel40(){}
+
+
+function createLevel41(){
+
+    thisLevelPass.textContent = "SALVE2"
+    levelName.textContent = "STORM AND THUNDER!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(16,16,true);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION *3, wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION*3)
+
+    for(let i=0; i<16; i++){
+
+        let cannon0 = new cannon(PU,PU*3 + i*PU*3,1,150,[1,0])
+        let cannon1 = new cannon(PU*3 + i*PU*3,PU,1,150,[0,1])
+
+        if( i == 7 ){
+            let cannon2 = new cannon(PU,PU*3 + i*PU*3,1,150,[1,-1])
+            let cannon3 = new cannon(PU*3 + i*PU*3,PU,1,150,[-1,1])
+            let cannon4 = new cannon(PU*3 + i*PU*3,768,1,150,[1,-1])
+            let cannon5 = new cannon(768,PU*3 + i*PU*3,1,150,[-1,1])
+            
+        }
+        if( i == 15 ){
+            let cannon2 = new cannon(PU,PU*3 + i*PU*3,1,150,[1,-1])
+            let cannon3 = new cannon(PU*3 + i*PU*3,PU,1,150,[-1,1])
+        }
+    }
+
+    let finish = new goal(740,740,44,44)
+}
+
+function createLevel42(){
+
+    thisLevelPass.textContent = "SALVE2"
+    levelName.textContent = "STORM AND THUNDER!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(350,50,true);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION *3, wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION*3)
+
+    let wall0 = new wall(16,100,376,50)
+    let wall1 = new wall(408,16,376,134)
+    let wall2 = new wall(408,650,376,50)
+    let wall3 = new wall(16,650,376,134)
+    let wall4 = new wall(16,150,84,500)
+    let wall5 = new wall(700,150,84,500)
+
+    for(let i = 0; i<30; i++){
+        
+        let dice = generateRandomIntegerInRange(1,4)
+
+        if(dice == 1){
+            let ball0 = new ball(generateRandomIntegerInRange(110,670),generateRandomIntegerInRange(160,620),[1,1])
+        }else if(dice == 2){
+            let ball0 = new ball(generateRandomIntegerInRange(110,670),generateRandomIntegerInRange(160,620),[-1,1])
+        }else if(dice == 3){
+            let ball0 = new ball(generateRandomIntegerInRange(110,670),generateRandomIntegerInRange(160,620),[1,-1])
+        }else{
+            let ball0 = new ball(generateRandomIntegerInRange(110,670),generateRandomIntegerInRange(160,620),[-1,-1])
+        }        
+    }
+
+    let finish = new goal(750,700,34,84)
+}
+
+function createLevel43(){
+
+    thisLevelPass.textContent = "SALVE2"
+    levelName.textContent = "STORM AND THUNDER!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(392,760,true);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION *3, wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION*3)
+
+    let wall0 = new wall(350,750,100,4)
+
+    let superSpinnyBoi = new spinnyBoi(392,392,0.05,60)
+
+    for ( let i = 0; i<6; i++){
+
+        if( i % 2 == 0 ){
+
+            let track0 = new trackingCannon(16,100 + i*100 , 2 , 200)
+            let prect0 = new predictingCannon(768,100 + i * 100 , 2 , 200)
+        }else{
+
+            let track0 = new trackingCannon(768,100 + i*100 , 2 , 200)
+            let prect0 = new predictingCannon(16,100 + i * 100 , 2 , 200)
+        }
+    }
+
+    let finish = new goal(370,250,60,30)
+}
+
+let level44Clock = 0
+
+function createLevel44(){
+
+    thisLevelPass.textContent = "SALVE2"
+    levelName.textContent = "STORM AND THUNDER!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(392,760,true);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION *3, wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION*3)
+
+    let wall0 = new wall(16,700,700,60)
+    let wall1 = new wall(100,16,784,40)
+
+    let finish = new goal(16,16,84,40)
+}
+
+function updateLevel44(time,delta){
+
+    Delta = delta / 1000
+    omniHandler()
+
+    level44Clock += Delta
+
+    if(level44Clock > 0.05){
+        
+        let mine1 = new mine(generateRandomInRange(20,760),generateRandomIntegerInRange(60,680),2)
+        mine1.triggered = true
+        level44Clock = 0
+    }
+}
+
+function createLevel45(){
+
+    thisLevelPass.textContent = "SALVE2"
+    levelName.textContent = "STORM AND THUNDER!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(750,660,true);   
+    //let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION *3, wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION*3)
+
+    let lava0 = new lava(16,790,768,800)
+    lava0.speed = 50
+    lava0.velocity = [0,-1]
+
+    let lava1 = new lava(PU , PU*3 , PU*28 , PU*2)
+    let lava2 = new lava(PU*5 , PU*11 , PU*28 , PU*2)
+    let lava3 = new lava(PU*33 , PU , PU*12 , PU*4)
+    let lava4 = new lava(PU*5 , PU*11 , PU*3 , PU*24)
+    let lava6 = new lava(PU*12, PU*7 , PU*36 , PU*2)
+    let lava8 = new lava(PU*20 , PU*27 , PU*29 , PU*2)
+    let lava9 = new lava(PU*24 , PU*38 , PU*25 , PU*2)
+    let lava10 = new lava(PU*8 , PU*32 , PU*30 , PU*3)
+    let lava12 = new lava(PU*42 , PU*33 , PU*7 , PU*3)
+    let lava7 = new lava(PU*10 , PU*20 , PU*24 , PU*4)
+    let lava11 = new lava(PU*20 , PU*16 , PU*29 , PU*2)
+    let lava13 = new lava(PU , PU*8 , PU*2 , PU*4)
+    let lava14 = new lava(PU*2 , PU*16 , PU*3 , PU*4)
+    let lava15 = new lava(PU , PU*24 , PU*2 , PU*4)
+    let lava16 = new lava(PU*3 , PU*32 , PU*2 , PU*3)
+
+    let stalker0 = new stalker(PU,PU*8)
+    stalker0.speed = playerSpeed *1.25
+
+    grid = new nodeGrid(gridNodeSize)
+
+    let finish = new goal(PU,PU,PU*5,PU*2)
+}
+
+function createLevel46(){
+
+    thisLevelPass.textContent = "SALVE2"
+    levelName.textContent = "STORM AND THUNDER!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(16,16,true);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION *3, wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION*3)
+
+    let placed = []
+    let numberToPlace = 100
+    let continua = true
+
+    let wall0 = new wall(PU,PU*3-4,PU/2,4)
+    let wall1 = new wall(PU*3-4,PU,4,PU/2)
+    let wall2 = new wall(PU*48+8,PU*47-4,PU/2,4)
+    let wall3 = new wall(PU*47-4,PU*48+8,4,PU/2)
+
+    while(continua){
+
+        let first = generateRandomIntegerInRange(1,48)
+        let second = generateRandomIntegerInRange(1,48)
+        let goodToGo = true
+
+        for(let i = 0; i<placed.length; i++){
+            if(areArraysEqual(placed[i],[first,second]) || (first >= 47 && second >= 47))
+                goodToGo = false
+            
+            if(first == 1 && second == 1)
+                goodToGo = false
+
+            if(first == 1 && second == 2)
+                goodToGo = false
+            
+            if(first == 2 && second == 1)
+                goodToGo = false
+        }
+
+        if(goodToGo){
+            placed.push([first,second])
+        }
+
+        if(placed.length == numberToPlace){
+            continua = false
+        }
+    }
+
+    for (let i = 0; i < numberToPlace; i++){
+
+        let dice = generateRandomIntegerInRange(1,4)
+
+        if(dice == 1){
+            let laser0 = new nonnoLaser(PU * placed[i][0] , PU * placed[i][1] ,generateRandomInRange(0.5,2),generateRandomInRange(0.5,2),[0,1])
+        }else if(dice == 2){
+            let laser0 = new nonnoLaser(PU * placed[i][0] , PU * placed[i][1] ,generateRandomInRange(0.5,2),generateRandomInRange(0.5,2),[1,0])
+        }else if(dice == 3){
+            let laser0 = new nonnoLaser(PU * placed[i][0] , PU * placed[i][1] ,generateRandomInRange(0.5,2),generateRandomInRange(0.5,2),[-1,0])
+        }else{
+            let laser0 = new nonnoLaser(PU * placed[i][0] , PU * placed[i][1] ,generateRandomInRange(0.5,2),generateRandomInRange(0.5,2),[0,-1])
+        }   
+    }
+
+    let finish = new goal(PU*47 + PU/2 , PU*47 + PU/2,PU*1.5,PU*1.5)
+}
+
+function createLevel47(){
+
+    thisLevelPass.textContent = "SALVE2"
+    levelName.textContent = "STORM AND THUNDER!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(320,750,true);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION *3, wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION*3)
+
+    let wall0 = new wall(16,PU*44,PU*22,30)
+    let wall1 = new wall(PU*27,PU*44,PU*22,84)
+
+    let lava0 = new lava(PU*17,16,PU*2,688)
+    let lava1 = new lava(PU*31,16,PU*2,688)
+
+    let laser0 = new nonnoLaser(PU*20,PU,10,1,[0,1])
+    let laser1 = new nonnoLaser(PU*22+4,PU,10,1,[0,1])
+    //let laser2 = new nonnoLaser(PU*24+8,PU,10,1,[0,1])
+    let laser3 = new nonnoLaser(PU*26+12,PU,10,1,[0,1])
+    let laser4 = new nonnoLaser(PU*28+16,PU,10,1,[0,1])
+
+    let cannon0 = new cannon(16,PU*43,0.5,200,[1,-1])
+    let cannon1 = new cannon(66,PU*43,0.5,200,[1,-1])
+    let cannon3 = new cannon(116,PU*43,0.5,200,[1,-1])
+    let cannon2 = new cannon(166,PU*43,0.5,200,[1,-1])
+    let cannon4 = new cannon(216,PU*43,0.5,200,[1,-1])
+    let cannon5 = new cannon(768,PU*43,0.5,200,[-1,-1])
+    let cannon6 = new cannon(718,PU*43,0.5,200,[-1,-1])
+    let cannon7 = new cannon(668,PU*43,0.5,200,[-1,-1])
+    let cannon8 = new cannon(618,PU*43,0.5,200,[-1,-1])
+    let cannon9 = new cannon(568,PU*43,0.5,200,[-1,-1])
+
+    let track0 = new trackingCannon(16,300,2,200)
+    let track1 = new trackingCannon(768,500,2,200)
+    let track2 = new predictingCannon(16,500,2,200)
+    let track3 = new predictingCannon(768,300,2,200)
+
+    let spin = new spinnyBoi(PU*25,PU*8,0.5,200)
+
+    for(let i = 0; i<8; i++){
+        let mine0 = new mine(generateRandomIntegerInRange(PU*19,PU*30),generateRandomIntegerInRange(PU*3,PU*34))
+    }
+
+    let smoke0 = new smoke(PU*21,PU*40,PU*8,PU*3)
+    let smoke1 = new smoke(PU*20,PU*20,PU*3,PU*5)
+    let smoke2 = new smoke(PU*26,PU*7,PU*5,PU*4)
+
+    let stalker0 = new stalker(PU*2,PU*47)
+    stalker0.speed = playerSpeed *0.5
+
+    grid = new nodeGrid(gridNodeSize)
+
+    let finish = new goal(PU*19 , PU*3 , PU*12,PU*2)
+}
