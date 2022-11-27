@@ -35,293 +35,307 @@ var sceneDeath = {
     update: updateDeath,
 };
 
+var startMenu = {
+    key: 'SM',
+    preload: preloadSM,
+    create: createSM,
+    update: updateSM,
+};
+
+var credits = {
+    key: 'level48',
+    preload: preloadCredits,
+    create: createCredits,
+    update: updateCredits,
+};
+
 {
 var lv1= {
     key: 'level1',
-    preload: preload,
+    preload: preloadLevel1,
     create: createLevel1,
     update: update,
 };
 var lv2 = {
     key: 'level2',
-    preload: preload,
+    preload: preloadLevel2,
     create: createLevel2,
     update: update,
 };
 var lv3 = {
     key: 'level3',
-    preload: preload,
+    preload: preloadLevel3,
     create: createLevel3,
     update: update,
 };
 var lv4 = {
     key: 'level4',
-    preload: preload,
+    preload: preloadLevel4,
     create: createLevel4,
     update: update,
 };
 var lv5 = {
     key: 'level5',
-    preload: preload,
+    preload: preloadLevel5,
     create: createLevel5,
     update: update,
 };
 var lv6 = {
     key: 'level6',
-    preload: preload,
+    preload: preloadLevel6,
     create: createLevel6,
     update: update,
 };
 var lv7 = {
     key: 'level7',
-    preload: preload,
+    preload: preloadLevel7,
     create: createLevel7,
     update: update,
 };
 var lv8 = {
     key: 'level8',
-    preload: preload,
+    preload: preloadLevel8,
     create: createLevel8,
     update: update,
 };
 var lv9 = {
     key: 'level9',
-    preload: preload,
+    preload: preloadLevel9,
     create: createLevel9,
     update: update,
 };
 var lv10 = {
     key: 'level10',
-    preload: preload,
+    preload: preloadLevel10,
     create: createLevel10,
     update: update,
 };
 var lv11 = {
     key: 'level11',
-    preload: preload,
+    preload: preloadLevel11,
     create: createLevel11,
     update: update,
 };
 var lv12 = {
     key: 'level12',
-    preload: preload,
+    preload: preloadLevel12,
     create: createLevel12,
     update: update,
 };
 var lv13 = {
     key: 'level13',
-    preload: preload,
+    preload: preloadLevel13,
     create: createLevel13,
     update: update,
 };
 var lv14 = {
     key: 'level14',
-    preload: preload,
+    preload: preloadLevel14,
     create: createLevel14,
     update: update,
 };
 var lv15 = {
     key: 'level15',
-    preload: preload,
+    preload: preloadLevel15,
     create: createLevel15,
     update: updateLevel15,
 };
 var lv16 = {
     key: 'level16',
-    preload: preload,
+    preload: preloadLevel16,
     create: createLevel16,
     update: update,
 };
 var lv17 = {
     key: 'level17',
-    preload: preload,
+    preload: preloadLevel17,
     create: createLevel17,
     update: update,
 };
 var lv18 = {
     key: 'level18',
-    preload: preload,
+    preload: preloadLevel18,
     create: createLevel18,
     update: update,
 };
 var lv19 = {
     key: 'level19',
-    preload: preload,
+    preload: preloadLevel19,
     create: createLevel19,
     update: update,
 };
 var lv20 = {
     key: 'level20',
-    preload: preload,
+    preload: preloadLevel20,
     create: createLevel20,
     update: update,
 };
 var lv21= {
     key: 'level21',
-    preload: preload,
+    preload: preloadLevel21,
     create: createLevel21,
     update: update,
 };
 var lv22 = {
     key: 'level22',
-    preload: preload,
+    preload: preloadLevel22,
     create: createLevel22,
     update: update,
 };
 var lv23 = {
     key: 'level23',
-    preload: preload,
+    preload: preloadLevel23,
     create: createLevel23,
     update: update,
 };
 var lv24 = {
     key: 'level24',
-    preload: preload,
+    preload: preloadLevel24,
     create: createLevel24,
     update: update,
 };
 var lv25 = {
     key: 'level25',
-    preload: preload,
+    preload: preloadLevel25,
     create: createLevel25,
     update: update,
 };
 var lv26 = {
     key: 'level26',
-    preload: preload,
+    preload: preloadLevel26,
     create: createLevel26,
     update: update,
 };
 var lv27 = {
     key: 'level27',
-    preload: preload,
+    preload: preloadLevel27,
     create: createLevel27,
     update: update,
 };
 var lv28 = {
     key: 'level28',
-    preload: preload,
+    preload: preloadLevel28,
     create: createLevel28,
     update: update,
 };
 var lv29 = {
     key: 'level29',
-    preload: preload,
+    preload: preloadLevel29,
     create: createLevel29,
     update: update,
 };
 var lv30 = {
     key: 'level30',
-    preload: preload,
+    preload: preloadLevel30,
     create: createLevel30,
     update: update,
 };
 var lv31= {
     key: 'level31',
-    preload: preload,
+    preload: preloadLevel31,
     create: createLevel31,
     update: update,
 };
 var lv32 = {
     key: 'level32',
-    preload: preload,
+    preload: preloadLevel32,
     create: createLevel32,
     update: update,
 };
 var lv33 = {
     key: 'level33',
-    preload: preload,
+    preload: preloadLevel33,
     create: createLevel33,
     update: update,
 };
 var lv34 = {
     key: 'level34',
-    preload: preload,
+    preload: preloadLevel34,
     create: createLevel34,
     update: update,
 };
 var lv35 = {
     key: 'level35',
-    preload: preload,
+    preload: preloadLevel35,
     create: createLevel35,
     update: update,
 };
 var lv36 = {
     key: 'level36',
-    preload: preload,
+    preload: preloadLevel36,
     create: createLevel36,
     update: update,
 };
 var lv37 = {
     key: 'level37',
-    preload: preload,
+    preload: preloadLevel37,
     create: createLevel37,
     update: update,
 };
 var lv38 = {
     key: 'level38',
-    preload: preload,
+    preload: preloadLevel38,
     create: createLevel38,
     update: update,
 };
 var lv39 = {
     key: 'level39',
-    preload: preload,
+    preload: preloadLevel39,
     create: createLevel39,
     update: updateLevel39,
 };
 var lv40 = {
     key: 'level40',
-    preload: preload,
+    preload: preloadLevel40,
     create: createLevel40,
     update: update,
 };
 var lv41 = {
     key: 'level41',
-    preload: preload,
+    preload: preloadLevel41,
     create: createLevel41,
     update: update,
 };
 var lv42 = {
     key: 'level42',
-    preload: preload,
+    preload: preloadLevel42,
     create: createLevel42,
     update: update,
 };
 var lv43 = {
     key: 'level43',
-    preload: preload,
+    preload: preloadLevel43,
     create: createLevel43,
     update: update,
 };
 var lv44 = {
     key: 'level44',
-    preload: preload,
+    preload: preloadLevel44,
     create: createLevel44,
     update: updateLevel44,
 };
 var lv45 = {
     key: 'level45',
-    preload: preload,
+    preload: preloadLevel45,
     create: createLevel45,
     update: update,
 };
 var lv46 = {
     key: 'level46',
-    preload: preload,
+    preload: preloadLevel46,
     create: createLevel46,
     update: update,
 };
 var lv47 = {
     key: 'level47',
-    preload: preload,
+    preload: preloadLevel47,
     create: createLevel47,
     update: update,
 };
 }
 
-let sceneArray = [sceneTutorial,sceneDebug,sceneLandsBetween, sceneDeath, lv1, lv2, lv3,lv4,lv5,lv6,lv7,lv8,lv9,lv10,lv11,lv12,lv13,lv14,lv15,lv16,lv17,lv18,lv19,lv20,
-                    lv21,lv22,lv23,lv24,lv25,lv26,lv27,lv28,lv29,lv30,lv31,lv32,lv33,lv34,lv35,lv36,lv37,lv38,lv39,lv40,lv41,lv42,lv43,lv44,lv45,lv46,lv47]
+let sceneArray = [startMenu,sceneTutorial,sceneDebug,sceneLandsBetween, sceneDeath, lv1, lv2, lv3,lv4,lv5,lv6,lv7,lv8,lv9,lv10,lv11,lv12,lv13,lv14,lv15,lv16,lv17,lv18,lv19,lv20,
+                    lv21,lv22,lv23,lv24,lv25,lv26,lv27,lv28,lv29,lv30,lv31,lv32,lv33,lv34,lv35,lv36,lv37,lv38,lv39,lv40,lv41,lv42,lv43,lv44,lv45,lv46,lv47,credits]
 
 let config = {
     type: Phaser.AUTO,
@@ -343,16 +357,25 @@ let pg
 let keys
 let gamepad
 let Delta
-let lv = 1
+var lv = localStorage["specialBoi"] || "1"
 let grid
 const epsilon = 0.0000000000001
 const gridNodeSize = PU
 let AButton = {value: 0}
 let BButton = {value: 0}
+let YButton = {value: 0}
 let dPadDown = {value: 0}
 let dPadUp = {value: 0}
 let dPadLeft = {value: 0}
 let dPadRight = {value: 0}
+let music1
+let music2
+let music3
+let music4
+let musicSM
+let musicBoss
+let musicCredits
+let passUnlocked = true
 
 
 // GAME VARIABLES
@@ -363,11 +386,11 @@ let wallThickness = 16
 
 //LOOKS
 let playerColor = 0x00FF00              
-let goalColor = 0x00EE00                
+let goalColor = 0x00EE00           
 let wallColor = 0xFFFFFF                
 let defaultBulletColor = 0xFF0000       
-let cannonColor = 0x0000FF             
-let trackingCannonColor = 0xFF00FF      
+let cannonColor = 0x0000FF
+let trackingCannonColor = 0xFF00FF
 let predictingCannonColor = 0x8000AA
 let nonnoLaserColor = 0xEE6A00
 let laserColor = 0x00FFFF
@@ -389,6 +412,7 @@ let button = document.getElementById("passwordButton")
 button.addEventListener("click",levelManager)
 let thisLevelPass = document.getElementById("thisLevelPassword")
 let levelName = document.getElementById("levelName")
+let volumeSlider = document.getElementById("sliderHTML");
 
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -419,8 +443,9 @@ class Entity{
     }
 
     //DO NOT PLACE WALLS ON EACH OTHER
-    move(){  //moves and returns if there has been a collision AND the index of the entities you collided with in the entities array
-             //(it saves from calling checkCollision again in the handler)        
+    move(forbiddenEntities){  //moves and returns if there has been a collision AND the index of the entities you collided with in the entities array
+             //(it saves from calling checkCollision again in the handler)
+             //forbideenEntities contains entities colors (IDs) that will be considered collidable even if they're not       
         
         this.velocity = normalizeVector(this.velocity)
 
@@ -462,6 +487,39 @@ class Entity{
                     // that you're blocked diagonally)
                     if( blocked[0] === false && blocked [1] === false){
                         my = collision[2]
+                    }
+                }
+            }
+
+            if(i !== forbidden && forbiddenEntities != undefined){
+
+                for(let j = 0; j<forbiddenEntities.length; j++){
+
+                    if(entities[i].color == forbiddenEntities[j]){
+
+                        //This check properly if there is a collision and the distance to touch the stopping object
+                        collision = this.checkCollision2TheRevenge( entities[i] , mx , my)
+
+                        if(collision[0] === true){
+
+                            collided = true
+                            withWhich.push(i)
+
+                            //If there's a collision, checks if it can still moves on another axis
+                            let blocked = this.checkCollisionXY(entities[i] , mx , my)
+                                
+                            if ( blocked[0] === true){
+                                mx = collision[1]                        
+                            }
+                            if( blocked[1] === true){
+                                my = collision[2]
+                            }
+                            //this checks if you're a free both in X and in Y, if you are you can move in X and cover the distance in Y (remember that you already verified 
+                            // that you're blocked diagonally)
+                            if( blocked[0] === false && blocked [1] === false){
+                                my = collision[2]
+                            }
+                        }
                     }
                 }
             }
@@ -616,7 +674,7 @@ class Entity{
 
 
 class player extends Entity{
-    constructor(x,y,dash){
+    constructor(x,y,dash,canShoot){
         super(x,y,playerSize,playerSize,false,null,playerSpeed,[0,0],true)
 
         this.clock = 0
@@ -625,6 +683,12 @@ class player extends Entity{
         this.dashClock = 1
         this.dashing = false
         this.dashDuration = 0.15
+        this.magazine = []
+        for(let i = 0; i<4; i++){
+            this.magazine.push(new playerBullet())
+        }
+        this.canShoot = canShoot == undefined ? false : canShoot
+        this.inRecovery = false
 
         this.color = playerColor
         this.look.fillStyle(this.color);
@@ -675,6 +739,7 @@ class player extends Entity{
 
             AButton = gamepad[0].buttons[0]
             BButton = gamepad[0].buttons[1]
+            YButton = gamepad[0].buttons[3]
 
             dPadDown = gamepad[0].buttons[13]
             dPadUp = gamepad[0].buttons[12]
@@ -689,6 +754,9 @@ class player extends Entity{
                 dy = 1
             if(dPadRight.value == 1)
                 dx = 1
+        }else{
+            dx = 0
+            dy = 0
         }
 
         if(keys.W.isDown || keys.UP.isDown)         //Keyboard Stuff
@@ -700,9 +768,36 @@ class player extends Entity{
         if(keys.D.isDown || keys.RIGHT.isDown)
             dx = 1
         
-        if(keys.SPACE){                            //SPACE / A Button Stuff
+        if(keys.SPACE){                            //SPACE 
             
-            sceneManager()
+            if(scene == scene.scene.get("level40")){
+
+                
+
+                if((keys.SPACE.isDown || YButton.value == 1) && this.inRecovery == false){
+
+                    
+                    let placed = false
+
+                    for(let i = 0; i<this.magazine.length && placed == false; i++){
+
+                        if(this.magazine[i].active == false && this.magazine[i].canBeShot == true){
+                            this.magazine[i].x = this.x + 4
+                            this.magazine[i].y = this.y + 4
+                            this.magazine[i].activate()
+                            placed = true
+                            this.inRecovery = true
+                        }
+                    }
+                }
+
+                if(keys.SPACE.isUp && YButton.value == 0){
+                    this.inRecovery = false
+                }
+
+            }else{
+                sceneManager()
+            }
         }
 
         if(keys.SHIFT && keys.Z){
@@ -713,15 +808,6 @@ class player extends Entity{
                 this.dashing = true
                 this.color = 0xAADDAA
             }
-        }
-
-        if(keys.P){
-            
-            if(keys.P.isDown){
-                var theOtherScene = scene.scene.get("debug");            
-                theOtherScene.scene.restart()            
-                scene.scene.switch("debug")
-            }            
         }
         
         this.velocity = [dx,dy]     //Vector is normalized in move()
@@ -764,6 +850,7 @@ class player extends Entity{
                 if(collision[0]){
 
                     lv++
+                    localStorage["specialBoi"] = lv
                     var theOtherScene = scene.scene.get("landsBetween");            
                     theOtherScene.scene.restart()            
                     scene.scene.switch("landsBetween")
@@ -990,6 +1077,50 @@ class bullet extends Entity{
 }
 
 
+class playerBullet extends bullet{
+    constructor(){
+        super(-20,-20,8,8,400,[0,-1],false,0x00FFFF)
+        this.deadly = false
+
+        this.recoveryTime = 3
+        this.clockEnabled = false
+        this.clock = 3
+        this.canBeShot = true
+    }
+
+    handler(){
+        
+        this.clock += Delta
+
+        if(this.clock > this.recoveryTime){
+            this.canBeShot = true
+        }
+        
+        if(this.active){
+
+            let data = this.move()
+            
+            if(data[0]){
+                this.deactivate()
+            }
+        }
+    }
+
+    deactivate(){
+        this.look.clear()
+        this.active = false
+    }
+
+    activate(){
+        this.look.fillStyle(this.color)
+        this.look.fillRect(this.x , this.y , this.width, this.height);
+        this.active = true
+        this.clock = 0
+        this.canBeShot = false
+    }
+}
+
+
 
 class trackingCannon extends cannon{
     constructor(x,y,bulletClock,bulletSpeed,bulletVelocity,bulletSize,capacity){        
@@ -1053,10 +1184,7 @@ class spinnyBoi extends cannon{
     }
 
     calculateDirection(){
-        
-
-        
-         //vector between this and pg
+        //vector between this and pg
         let vector = this.anticlockwise ? 
                         [this.bulletVelocity[0] * Math.cos(-Math.PI/12) - this.bulletVelocity[1] * Math.sin(-Math.PI/12) , 
                         this.bulletVelocity[0] * Math.sin(-Math.PI/12) + this.bulletVelocity[1] * Math.cos(-Math.PI/12)]     :     
@@ -1169,7 +1297,7 @@ class stalker extends Entity{
             //this.colorPath()
         }
 
-        let data = this.move()
+        let data = this.move([lavaColor,lavaColor2,smokeColor])
         this.moveStalker(data[0])
     }
 
@@ -1942,11 +2070,290 @@ function getDistance(x,y,ax,ay){
 
 function levelManager(){
 
-    lv = password.value    
-    
-    var theOtherScene = scene.scene.get("level" + password.value);            
-    theOtherScene.scene.restart()            
-    scene.scene.switch("level" + password.value)
+    let letsChangeBaby = false
+
+    switch(password.value){
+        case "VV292Y":
+            localStorage["specialBoi"] = 1
+            lv = 1
+            letsChangeBaby = true
+        break;
+        case "Q4UJE6":
+            localStorage["specialBoi"] = 2
+            lv = 2
+            letsChangeBaby = true
+        break;
+        case "8KPMLN":
+            localStorage["specialBoi"] = 3
+            lv = 3
+            letsChangeBaby = true
+        break;
+        case "HRPH2P":
+            localStorage["specialBoi"] = 4
+            lv = 4
+            letsChangeBaby = true
+        break;
+        case "PG7P5H":
+            localStorage["specialBoi"] = 5
+            lv = 5
+            letsChangeBaby = true
+        break;
+        case "6EVN95":
+            localStorage["specialBoi"] = 6
+            lv = 6
+            letsChangeBaby = true
+        break;
+        case "569Q8Y":
+            localStorage["specialBoi"] = 7
+            lv = 7
+            letsChangeBaby = true
+        break;
+        case "8TL79Q":
+            localStorage["specialBoi"] = 8
+            lv = 8
+            letsChangeBaby = true
+        break;
+        case "86TH7J":
+            localStorage["specialBoi"] = 9
+            lv = 9
+            letsChangeBaby = true
+        break;
+        case "3ZUT4N":
+            localStorage["specialBoi"] = 10
+            lv = 10
+            letsChangeBaby = true
+        break;
+        case "TVVQ2Q":
+            localStorage["specialBoi"] = 11
+            lv = 11
+            letsChangeBaby = true
+        break;
+        case "ZQ4L3E":
+            localStorage["specialBoi"] = 12
+            lv = 12
+            letsChangeBaby = true
+        break;
+        case "7V53SK":
+            localStorage["specialBoi"] = 13
+            lv = 13
+            letsChangeBaby = true
+        break;
+        case "RJ6RLL":
+            localStorage["specialBoi"] = 14
+            lv = 14
+            letsChangeBaby = true
+        break;
+        case "2RQV22":
+            localStorage["specialBoi"] = 15
+            lv = 15
+            letsChangeBaby = true
+        break;
+        case "964Z8M":
+            localStorage["specialBoi"] = 16
+            lv = 16
+            letsChangeBaby = true
+        break;
+        case "87GNVF":
+            localStorage["specialBoi"] = 17
+            lv = 17
+            letsChangeBaby = true
+        break;
+        case "HVZ7ZC":
+            localStorage["specialBoi"] = 18
+            lv = 18
+            letsChangeBaby = true
+        break;
+        case "U256TV":
+            localStorage["specialBoi"] = 19
+            lv = 19
+            letsChangeBaby = true
+        break;
+        case "2NY2EW":
+            localStorage["specialBoi"] = 20
+            lv = 20
+            letsChangeBaby = true
+        break;
+        case "JBMF8J":
+            localStorage["specialBoi"] = 21
+            lv = 21
+            letsChangeBaby = true
+        break;
+        case "U3QM4M":
+            localStorage["specialBoi"] = 22
+            lv = 22
+            letsChangeBaby = true
+        break;
+        case "G4V9P8":
+            localStorage["specialBoi"] = 23
+            lv = 23
+            letsChangeBaby = true
+        break;
+        case "PL4CSR":
+            localStorage["specialBoi"] = 24
+            lv = 24
+            letsChangeBaby = true
+        break;
+        case "Y44FR9":
+            localStorage["specialBoi"] = 25
+            lv = 25
+            letsChangeBaby = true
+        break;
+        case "2Y65Y9":
+            localStorage["specialBoi"] = 26
+            lv = 26
+            letsChangeBaby = true
+        break;
+        case "QG29N9":
+            localStorage["specialBoi"] = 27
+            lv = 27
+            letsChangeBaby = true
+        break;
+        case "5S2KPN":
+            localStorage["specialBoi"] = 28
+            lv = 28
+            letsChangeBaby = true
+        break;
+        case "N9PLL4":
+            localStorage["specialBoi"] = 29
+            lv = 29
+            letsChangeBaby = true
+        break;
+        case "EEH5G9":
+            localStorage["specialBoi"] = 30
+            lv = 30
+            letsChangeBaby = true
+        break;
+        case "ZC8BFM":
+            localStorage["specialBoi"] = 31
+            lv = 31
+            letsChangeBaby = true
+        break;
+        case "7RF7JC":
+            localStorage["specialBoi"] = 32
+            lv = 32
+            letsChangeBaby = true
+        break;
+        case "843KEB":
+            localStorage["specialBoi"] = 33
+            lv = 33
+            letsChangeBaby = true
+        break;
+        case "QBCR3M":
+            localStorage["specialBoi"] = 34
+            lv = 34
+            letsChangeBaby = true
+        break;
+        case "2FP9E9":
+            localStorage["specialBoi"] = 35
+            lv = 35
+            letsChangeBaby = true
+        break;
+        case "635THD":
+            localStorage["specialBoi"] = 36
+            lv = 36
+            letsChangeBaby = true
+        break;
+        case "MQ5UD7":
+            localStorage["specialBoi"] = 37
+            lv = 37
+            letsChangeBaby = true
+        break;
+        case "N6L9VJ":
+            localStorage["specialBoi"] = 38
+            lv = 38
+            letsChangeBaby = true
+        break;
+        case "LB3JTF":
+            localStorage["specialBoi"] = 39
+            lv = 39
+            letsChangeBaby = true
+        break;
+        case "C4WY6J":
+            localStorage["specialBoi"] = 40
+            lv = 40
+            letsChangeBaby = true
+        break;
+        case "CHAY87":
+            localStorage["specialBoi"] = 41
+            lv = 41
+            letsChangeBaby = true
+        break;
+        case "89KZ4V":
+            localStorage["specialBoi"] = 42
+            lv = 42
+            letsChangeBaby = true
+        break;
+        case "QG5KPJ":
+            localStorage["specialBoi"] = 43
+            lv = 43
+            letsChangeBaby = true
+        break;
+        case "7FRCNZ":
+            localStorage["specialBoi"] = 44
+            lv = 44
+            letsChangeBaby = true
+        break;
+        case "PX4588":
+            localStorage["specialBoi"] = 45
+            lv = 45
+            letsChangeBaby = true
+        break;
+        case "Q23B8S":
+            localStorage["specialBoi"] = 46
+            lv = 46
+            letsChangeBaby = true
+        break;
+        case "8499PV":
+            localStorage["specialBoi"] = 47
+            lv = 47
+            letsChangeBaby = true
+        break;
+        case ":AV01D!":
+            passUnlocked = true
+        break;
+    }
+
+    if(passUnlocked && !letsChangeBaby){
+        localStorage["specialBoi"] = password.value
+        lv = password.value
+        letsChangeBaby = true
+    }
+
+    if(letsChangeBaby){
+
+        var theOtherScene = scene.scene.get("level" + lv);            
+        theOtherScene.scene.restart()
+
+        if(music1 != undefined){
+            music1.stop()
+            music1 = undefined
+        }
+        if(music2 != undefined){
+            music2.stop()
+            music2 = undefined
+        } 
+        if(music3 != undefined){
+            music3.stop()
+            music3 = undefined
+        } 
+        if(music4 != undefined){
+            music4.stop()
+            music4 = undefined
+        } 
+        if(musicBoss != undefined){
+            musicBoss.stop()
+            musicBoss = undefined
+        } 
+        if(musicSM != undefined){
+            musicSM.stop()
+            musicSM = undefined
+        } 
+        if(musicCredits != undefined){
+            musicCredits.stop()
+            musicCredits = undefined
+        }          
+        scene.scene.switch("level" + lv)
+    }
 }
 
 function generateRandomIntegerInRange(min, max) {
@@ -1962,7 +2369,8 @@ function sceneManager(){
     if(scene == scene.scene.get("tutorial") && (keys.SPACE.isDown || AButton.value == 1)){
 
         var theOtherScene = scene.scene.get("level1");            
-        theOtherScene.scene.restart()            
+        theOtherScene.scene.restart()
+        musicSM.stop()            
         scene.scene.switch("level1")
     } else if(scene == scene.scene.get("landsBetween")  && (keys.SPACE.isDown || AButton.value == 1)){
 
@@ -1970,6 +2378,31 @@ function sceneManager(){
         theOtherScene.scene.restart()            
         scene.scene.switch("level" + lv)
     }
+}
+
+volumeSlider.oninput = function() {
+
+    if(music1 != undefined){
+        music1.volume = this.value / 100
+    }
+    if(music2 != undefined){
+        music2.volume = this.value / 100
+    } 
+    if(music3 != undefined){
+        music3.volume = this.value / 100
+    } 
+    if(music4 != undefined){
+        music4.volume = this.value / 100
+    } 
+    if(musicBoss != undefined){
+        musicBoss.volume = this.value / 100
+    } 
+    if(musicSM != undefined){
+        musicSM.volume = this.value / 100
+    } 
+    if(musicCredits != undefined){
+        musicCredits.volume = this.value / 100
+    } 
 }
 
 
@@ -1990,6 +2423,103 @@ function update(time,delta){
 
     Delta = delta / 1000
     omniHandler()
+}
+
+//-----------------------------------------------------
+
+let SMClock = 0
+let fallingStars = []
+
+function preloadSM(){
+    this.load.audio('themeSM', [
+        'ost/Start Menu - Tonal Resonance.mp3',
+    ]);
+}
+
+function createSM(){
+
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('ENTER,SPACE,A,P,C');
+    gamepad = this.input.gamepad.gamepads
+    if(musicCredits != undefined){
+        musicCredits.stop()
+        musicCredits = undefined
+    }
+    if(musicSM == undefined){
+        musicSM = this.sound.add('themeSM')
+        musicSM.volume = volumeSlider.value / 100  
+        musicSM.play({loop: true});
+        this.scene.restart()
+    }
+
+    let tutorialText = this.add.text(225,140,"AVOID", { font: '110px' })
+    let tutorialText2 = this.add.text(290,400,"START GAME", { font: '32px' })
+    let indicator = new bullet(270,408,12,12,0,[0,0],true,0x00FF00)
+
+    for(let i = 0; i<50; i++){
+        
+        let dice = generateRandomIntegerInRange(1,2)
+
+        if(dice == 1){
+            fallingStars.push(new bullet(generateRandomIntegerInRange(0,800),generateRandomIntegerInRange(0,800),5,5,generateRandomIntegerInRange(150,250),[1,1],true,0xEEEEEE))
+        }else{
+            fallingStars.push(new bullet(generateRandomIntegerInRange(0,800),generateRandomIntegerInRange(0,800),5,5,generateRandomIntegerInRange(150,250),[1,1],true,0xEEEEEE))
+        }
+    }
+}
+
+function updateSM(time,delta){
+
+    Delta = delta / 1000
+    omniHandler()
+
+    if(gamepad.length > 0){
+        AButton = gamepad[0].buttons[0]
+    }
+
+    if(keys.ENTER.isDown || keys.SPACE.isDown || AButton.value == 1){
+
+        if(lv == 1){
+
+            var theOtherScene = scene.scene.get("tutorial");            
+            theOtherScene.scene.restart()
+            scene.scene.switch("tutorial")
+        }else{
+
+            var theOtherScene = scene.scene.get("level" + lv);            
+            theOtherScene.scene.restart()  
+            musicSM.stop()          
+            scene.scene.switch("level" + lv)
+        }
+    }
+            
+    if(keys.P.isDown && keys.A.isDown && keys.C.isDown){
+        var theOtherScene = scene.scene.get("debug");            
+        theOtherScene.scene.restart()            
+        scene.scene.switch("debug")
+    }
+    
+    for(let i = 0; i<fallingStars.length; i++){
+
+        if(fallingStars[i].x > 800 || fallingStars[i].y > 800){
+
+            let dice = generateRandomIntegerInRange(1,2)
+
+            if(dice == 1){
+
+                fallingStars[i].x = -10
+                fallingStars[i].y = generateRandomIntegerInRange(0,800)
+                fallingStars[i].speed = generateRandomIntegerInRange(150,250)
+            }else{
+
+                fallingStars[i].y = -10
+                fallingStars[i].x = generateRandomIntegerInRange(0,800)
+                fallingStars[i].speed = generateRandomIntegerInRange(150,250)
+            }
+        }
+    }
+
 }
 
 //-----------------------------------------------------
@@ -2146,10 +2676,14 @@ function updateDeath(time,delta){
 //------------------------------------------------------
 
 
+function preloadLevel1(){
+    this.load.audio('theme1', ['ost/1 - City of Backstreet.ogg',]);
+}
+
 function createLevel1(){
 
-    thisLevelPass.textContent = "SALVE"
-    levelName.textContent = "CANNONS!"      
+    thisLevelPass.textContent = "VV292Y"
+    levelName.textContent = "Cannons!"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
@@ -2159,7 +2693,13 @@ function createLevel1(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
-
+    if(music1 == undefined){
+        music1 = this.sound.add('theme1')
+        music1.volume = volumeSlider.value / 100
+        music1.play({loop: true});
+        this.scene.restart()
+    }
+    
     let cannon1 = new cannon(16,200,0.5,200,[1,0])
     let cannon2 = new cannon(768,300,0.5,200,[-1,0])
     let cannon3 = new cannon(16,400,0.5,200,[1,0])
@@ -2168,9 +2708,13 @@ function createLevel1(){
     let finish = new goal(16,16,768,40)
 }
 
+function preloadLevel2(){
+    this.load.audio('theme1', ['ost/1 - City of Backstreet.ogg',]);
+}
+
 function createLevel2(){
 
-    thisLevelPass.textContent = "SALVE2"
+    thisLevelPass.textContent = "Q4UJE6"
     levelName.textContent = "CANNONS TOGETHER STRONG!"      
     scene = this
     entities=[]    
@@ -2181,6 +2725,12 @@ function createLevel2(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music1 == undefined){
+        music1 = this.sound.add('theme1')
+        music1.volume = volumeSlider.value / 100 
+        music1.play({loop: true});
+        this.scene.restart()
+    }
 
     let cannon1 = new cannon(16,200,0.75,200,[1,0])
     let cannon2 = new cannon(16,200 + PU + 4,0.75,200,[1,0])
@@ -2193,10 +2743,14 @@ function createLevel2(){
     let finish = new goal(650,16,134,50)
 }
 
+function preloadLevel3(){
+    this.load.audio('theme1', ['ost/1 - City of Backstreet.ogg',]);
+}
+
 function createLevel3(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "THE STORM!"      
+    thisLevelPass.textContent = "8KPMLN"
+    levelName.textContent = "The Storm!"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
@@ -2206,6 +2760,12 @@ function createLevel3(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music1 == undefined){
+        music1 = this.sound.add('theme1')
+        music1.volume = volumeSlider.value / 100 
+        music1.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall1 = new wall(80,500,630,284)
 
@@ -2216,10 +2776,14 @@ function createLevel3(){
     let finish = new goal(710,750,74,34)
 }
 
+function preloadLevel4(){
+    this.load.audio('theme1', ['ost/1 - City of Backstreet.ogg',]);
+}
+
 function createLevel4(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "LASERZZZZZZ!"      
+    thisLevelPass.textContent = "HRPH2P"
+    levelName.textContent = "Laserzzzzzz!"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
@@ -2229,6 +2793,12 @@ function createLevel4(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music1 == undefined){
+        music1 = this.sound.add('theme1')
+        music1.volume = volumeSlider.value / 100 
+        music1.play({loop: true});
+        this.scene.restart()
+    }
 
     let laser1 = new nonnoLaser(16,200,1.5,0.5,[1,0])
     let laser2 = new nonnoLaser(768,300,1.5,0.75,[-1,0])
@@ -2239,10 +2809,14 @@ function createLevel4(){
     let finish = new goal(16,750,768,34)    
 }
 
+function preloadLevel5(){
+    this.load.audio('theme1', ['ost/1 - City of Backstreet.ogg',]);
+}
+
 function createLevel5(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "LASERZZZZZZ!"      
+    thisLevelPass.textContent = "PG7P5H"
+    levelName.textContent = "Cannons AND Lasers together strong!"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
@@ -2252,6 +2826,12 @@ function createLevel5(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music1 == undefined){
+        music1 = this.sound.add('theme1')
+        music1.volume = volumeSlider.value / 100 
+        music1.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall1 = new wall(160,180,480,350)
     let wall2 = new wall(160,530,100,254)
@@ -2286,10 +2866,14 @@ function createLevel5(){
     let finish = new goal(16,750,144,34)
 }
 
+function preloadLevel6(){
+    this.load.audio('theme1', ['ost/1 - City of Backstreet.ogg',]);
+}
+
 function createLevel6(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "CANNONS TOGETHER STRONG!"      
+    thisLevelPass.textContent = "6EVN95"
+    levelName.textContent = "Against The Current"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
@@ -2299,6 +2883,12 @@ function createLevel6(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music1 == undefined){
+        music1 = this.sound.add('theme1')
+        music1.volume = volumeSlider.value / 100 
+        music1.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall1 = new wall(16,166,149,670)
     let wall2 = new wall(272,16,149,620)
@@ -2322,10 +2912,14 @@ function createLevel6(){
     let finish = new goal(677,750,107,34)
 }
 
+function preloadLevel7(){
+    this.load.audio('theme1', ['ost/1 - City of Backstreet.ogg',]);
+}
+
 function createLevel7(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "CANNONS TOGETHER STRONG!"      
+    thisLevelPass.textContent = "569Q8Y"
+    levelName.textContent = "Against Each Other"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
@@ -2335,6 +2929,12 @@ function createLevel7(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music1 == undefined){
+        music1 = this.sound.add('theme1')
+        music1.volume = volumeSlider.value / 100 
+        music1.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall1 = new wall(16,16,334,150)
     let wall2 = new wall(16,166,134,484)
@@ -2367,10 +2967,14 @@ function createLevel7(){
     let finish = new goal(750,16,34,100)
 }
 
+function preloadLevel8(){
+    this.load.audio('theme1', ['ost/1 - City of Backstreet.ogg',]);
+}
+
 function createLevel8(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "CANNONS TOGETHER STRONG!"      
+    thisLevelPass.textContent = "8TL79Q"
+    levelName.textContent = "Tracking Cannons!"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
@@ -2380,6 +2984,12 @@ function createLevel8(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music1 == undefined){
+        music1 = this.sound.add('theme1')
+        music1.volume = volumeSlider.value / 100 
+        music1.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall1 = new wall(300,16,50,100)
     let wall2 = new wall(200,116,150,50)
@@ -2397,10 +3007,14 @@ function createLevel8(){
     let finish = new goal(520,380,30,170)
 }
 
+function preloadLevel9(){
+    this.load.audio('theme1', ['ost/1 - City of Backstreet.ogg',]);
+}
+
 function createLevel9(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "CANNONS TOGETHER STRONG!"      
+    thisLevelPass.textContent = "86TH7J"
+    levelName.textContent = "Against The Lasers"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
@@ -2410,6 +3024,12 @@ function createLevel9(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music1 == undefined){
+        music1 = this.sound.add('theme1')
+        music1.volume = volumeSlider.value / 100 
+        music1.play({loop: true});
+        this.scene.restart()
+    }
     
     let wall1 = new wall(46,16,20,184)
     let wall2 = new wall(46,241,20,309)
@@ -2446,10 +3066,14 @@ function createLevel9(){
     let finish = new goal(534,16,106,30)
 }
 
+function preloadLevel10(){
+    this.load.audio('theme1', ['ost/1 - City of Backstreet.ogg',]);
+}
+
 function createLevel10(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "3ZUT4N"
+    levelName.textContent = "Storm and Thunder!"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
@@ -2459,6 +3083,12 @@ function createLevel10(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music1 == undefined){
+        music1 = this.sound.add('theme1')
+        music1.volume = volumeSlider.value / 100 
+        music1.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall1 = new wall(80,500,630,284)
 
@@ -2474,10 +3104,14 @@ function createLevel10(){
     let finish = new goal(710,750,74,34)
 }
 
+function preloadLevel11(){
+    this.load.audio('theme2', ['ost/2 - Joker Dance.ogg',]);
+}
+
 function createLevel11(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "TVVQ2Q"
+    levelName.textContent = "RUN"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
@@ -2487,6 +3121,16 @@ function createLevel11(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music1 != undefined){
+        music1.stop()
+        music1 = undefined
+    }
+    if(music2 == undefined){
+        music2 = this.sound.add('theme2') 
+        music2.volume = volumeSlider.value / 100
+        music2.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall1 = new wall(16,380,600,40)
 
@@ -2505,10 +3149,14 @@ function createLevel11(){
     let cannon0 = new trackingCannon(16,600,0.5,150)
 }
 
+function preloadLevel12(){
+    this.load.audio('theme2', ['ost/2 - Joker Dance.ogg',]);
+}
+
 function createLevel12(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "ZQ4L3E"
+    levelName.textContent = "They can do that?"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
@@ -2518,6 +3166,12 @@ function createLevel12(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music2 == undefined){
+        music2 = this.sound.add('theme2')
+        music2.volume = volumeSlider.value / 100 
+        music2.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall1 = new wall(150,120,230,10)
     let wall2 = new wall(420,120,230,10)
@@ -2539,10 +3193,14 @@ function createLevel12(){
     let finish = new goal(200,16,400,50)
 }
 
+function preloadLevel13(){
+    this.load.audio('theme2', ['ost/2 - Joker Dance.ogg',]);
+}
+
 function createLevel13(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "7V53SK"
+    levelName.textContent = "Bouncy Balls (they're kinda " + '"'+"squary"+'"'+" tho)"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
@@ -2552,6 +3210,12 @@ function createLevel13(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music2 == undefined){
+        music2 = this.sound.add('theme2')
+        music2.volume = volumeSlider.value / 100 
+        music2.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(350,350,100,100)
 
@@ -2567,10 +3231,14 @@ function createLevel13(){
     let finish = new goal(650,16,134,50)
 }
 
+function preloadLevel14(){
+    this.load.audio('theme2', ['ost/2 - Joker Dance.ogg',]);
+}
+
 function createLevel14(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "RJ6RLL"
+    levelName.textContent = "You thought you got away with it didn't you?"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
@@ -2580,6 +3248,12 @@ function createLevel14(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music2 == undefined){
+        music2 = this.sound.add('theme2')
+        music2.volume = volumeSlider.value / 100 
+        music2.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall1 = new wall(150,120,230,10)
     let wall2 = new wall(420,120,230,10)
@@ -2607,10 +3281,14 @@ let level15cannon
 let level15coordinates
 let level15clock = 0
 
+function preloadLevel15(){
+    this.load.audio('theme2', ['ost/2 - Joker Dance.ogg',]);
+}
+
 function createLevel15(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "2RQV22"
+    levelName.textContent = "That's one crazy boi"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
@@ -2620,6 +3298,12 @@ function createLevel15(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music2 == undefined){
+        music2 = this.sound.add('theme2')
+        music2.volume = volumeSlider.value / 100 
+        music2.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(16,100,84,25)
     let wall1 = new wall(100,75,25,50)
@@ -2647,10 +3331,14 @@ function updateLevel15(time,delta){
     }
 }
 
+function preloadLevel16(){
+    this.load.audio('theme2', ['ost/2 - Joker Dance.ogg',]);
+}
+
 function createLevel16(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "964Z8M"
+    levelName.textContent = "Confy Room with deadly balls and cannons"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
@@ -2660,6 +3348,12 @@ function createLevel16(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music2 == undefined){
+        music2 = this.sound.add('theme2')
+        music2.volume = volumeSlider.value / 100 
+        music2.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(100,32,50,752)
     let wall1 = new wall(650,16,50,752)
@@ -2685,10 +3379,14 @@ function createLevel16(){
     let finish = new goal(700,16,84,50)
 }
 
+function preloadLevel17(){
+    this.load.audio('theme2', ['ost/2 - Joker Dance.ogg',]);
+}
+
 function createLevel17(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "87GNVF"
+    levelName.textContent = "3 Bros"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
@@ -2698,6 +3396,12 @@ function createLevel17(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music2 == undefined){
+        music2 = this.sound.add('theme2')
+        music2.volume = volumeSlider.value / 100 
+        music2.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(380,16,40,200)
     let wall1 = new wall(200,200,400,400)
@@ -2707,13 +3411,16 @@ function createLevel17(){
     let pcannon1 = new predictingCannon(600,392,0.8,320)
 
     let finish = new goal(420,16,30,184)
+}
 
+function preloadLevel18(){
+    this.load.audio('theme2', ['ost/2 - Joker Dance.ogg',]);
 }
 
 function createLevel18(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "HVZ7ZC"
+    levelName.textContent = "The Corridor"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
@@ -2723,6 +3430,12 @@ function createLevel18(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music2 == undefined){
+        music2 = this.sound.add('theme2')
+        music2.volume = volumeSlider.value / 100 
+        music2.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(16,16,334,768)
     let wall1 = new wall(450,16,334,768)
@@ -2735,10 +3448,14 @@ function createLevel18(){
     let finish = new goal(350,16,100,30)
 }
 
+function preloadLevel19(){
+    this.load.audio('theme2', ['ost/2 - Joker Dance.ogg',]);
+}
+
 function createLevel19(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "U256TV"
+    levelName.textContent = "the Sniper"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
@@ -2748,6 +3465,12 @@ function createLevel19(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music2 == undefined){
+        music2 = this.sound.add('theme2')
+        music2.volume = volumeSlider.value / 100 
+        music2.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(100,700,164,20)
     let wall1 = new wall(460,700,50,20)
@@ -2771,10 +3494,14 @@ function createLevel19(){
     let finish = new goal(130,720,30,64)
 }
 
+function preloadLevel20(){
+    this.load.audio('theme2', ['ost/2 - Joker Dance.ogg',]);
+}
+
 function createLevel20(){
 
-    thisLevelPass.textContent = "SALVE"
-    levelName.textContent = "CANNONS!"      
+    thisLevelPass.textContent = "2NY2EW"
+    levelName.textContent = "Oh no, who's that?"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
@@ -2784,6 +3511,12 @@ function createLevel20(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music2 == undefined){
+        music2 = this.sound.add('theme2')
+        music2.volume = volumeSlider.value / 100 
+        music2.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(258,50,476,58)
     let wall10 = new wall(734,54,50,2)
@@ -2830,10 +3563,14 @@ function createLevel20(){
     grid = new nodeGrid(gridNodeSize)
 }
 
+function preloadLevel21(){
+    this.load.audio('theme3', ['ost/3 - Moonlight Land.ogg',]);
+}
+
 function createLevel21(){
 
-    thisLevelPass.textContent = "SALVE"
-    levelName.textContent = "CANNONS!"      
+    thisLevelPass.textContent = "JBMF8J"
+    levelName.textContent = "Cross the River"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
@@ -2843,6 +3580,16 @@ function createLevel21(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music2 != undefined){
+        music2.stop()
+        music2 = undefined
+    }
+    if(music3 == undefined){
+        music3 = this.sound.add('theme3') 
+        music3.volume = volumeSlider.value / 100
+        music3.play({loop: true});
+        this.scene.restart()
+    }
 
     for (let i = 0; i<34; i++){
         let cannon0 = new cannon(16 , 80 + i*18 ,generateRandomInRange(1.2,3.2),generateRandomIntegerInRange(50,100),[1,0])
@@ -2854,13 +3601,16 @@ function createLevel21(){
     let finish = new goal(700,16,84,40)
 
     grid = new nodeGrid(gridNodeSize)
+}
 
+function preloadLevel22(){
+    this.load.audio('theme3', ['ost/3 - Moonlight Land.ogg',]);
 }
 
 function createLevel22(){
 
-    thisLevelPass.textContent = "SALVE"
-    levelName.textContent = "CANNONS!"      
+    thisLevelPass.textContent = "U3QM4M"
+    levelName.textContent = "Hide in the Smoke!"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
@@ -2870,6 +3620,12 @@ function createLevel22(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music3 == undefined){
+        music3 = this.sound.add('theme3')
+        music3.volume = volumeSlider.value / 100 
+        music3.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(48,16,768,48)
     let wall1 = new wall(16,752,768,32)
@@ -2884,7 +3640,7 @@ function createLevel22(){
     let laser6 = new nonnoLaser(464,432,2,4,[0,1])
     let laser7 = new nonnoLaser(489,432,2,4,[0,1])
 
-    let ball0 = new ball(generateRandomIntegerInRange(650,750),generateRandomIntegerInRange(50,140),[-1,1])
+    let ball0 = new ball(generateRandomIntegerInRange(650,750),generateRandomIntegerInRange(64,140),[-1,1])
     let ball1 = new ball(generateRandomIntegerInRange(650,750),generateRandomIntegerInRange(150,240),[-1,1])
     let ball5 = new ball(generateRandomIntegerInRange(650,750),generateRandomIntegerInRange(250,340),[-1,1])
     let ball2 = new ball(generateRandomIntegerInRange(650,750),generateRandomIntegerInRange(400,490),[-1,1])
@@ -2901,13 +3657,16 @@ function createLevel22(){
     let finish = new goal(PU,432,PU*3,PU*20)
 
     grid = new nodeGrid(gridNodeSize)
+}
 
+function preloadLevel23(){
+    this.load.audio('theme3', ['ost/3 - Moonlight Land.ogg',]);
 }
 
 function createLevel23(){
 
-    thisLevelPass.textContent = "SALVE"
-    levelName.textContent = "CANNONS!"      
+    thisLevelPass.textContent = "G4V9P8"
+    levelName.textContent = "The Storm has it against you"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
@@ -2917,6 +3676,12 @@ function createLevel23(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music3 == undefined){
+        music3 = this.sound.add('theme3')
+        music3.volume = volumeSlider.value / 100 
+        music3.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall1 = new wall(80,500,630,284)
     let laser0 = new nonnoLaser(90, 16,generateRandomInRange(2,3.5),0.2,[0,1])
@@ -2941,10 +3706,14 @@ function createLevel23(){
     let finish = new goal(710,750,74,34)
 }
 
+function preloadLevel24(){
+    this.load.audio('theme3', ['ost/3 - Moonlight Land.ogg',]);
+}
+
 function createLevel24(){
 
-    thisLevelPass.textContent = "SALVE"
-    levelName.textContent = "CANNONS!"      
+    thisLevelPass.textContent = "PL4CSR"
+    levelName.textContent = "Mines!"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
@@ -2954,6 +3723,12 @@ function createLevel24(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music3 == undefined){
+        music3 = this.sound.add('theme3')
+        music3.volume = volumeSlider.value / 100 
+        music3.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(16,16,768,184)
     let wall1 = new wall(16,600,768,184)
@@ -2972,10 +3747,14 @@ function createLevel24(){
     let finish = new goal(16,570,134,30)
 }
 
+function preloadLevel25(){
+    this.load.audio('theme3', ['ost/3 - Moonlight Land.ogg',]);
+}
+
 function createLevel25(){
 
-    thisLevelPass.textContent = "SALVE"
-    levelName.textContent = "CANNONS!"      
+    thisLevelPass.textContent = "Y44FR9"
+    levelName.textContent = "The Field"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
@@ -2985,6 +3764,12 @@ function createLevel25(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music3 == undefined){
+        music3 = this.sound.add('theme3')
+        music3.volume = volumeSlider.value / 100 
+        music3.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(100,16,600,84)
     let wall1 = new wall(392,100,16,300)
@@ -3001,10 +3786,14 @@ function createLevel25(){
     let finish = new goal(16,16,84,30)
 }
 
+function preloadLevel26(){
+    this.load.audio('theme3', ['ost/3 - Moonlight Land.ogg',]);
+}
+
 function createLevel26(){
 
-    thisLevelPass.textContent = "SALVE"
-    levelName.textContent = "CANNONS!"      
+    thisLevelPass.textContent = "2Y65Y9"
+    levelName.textContent = "The Smoke Can Hide Other Things Too"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
@@ -3014,6 +3803,12 @@ function createLevel26(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music3 == undefined){
+        music3 = this.sound.add('theme3')
+        music3.volume = volumeSlider.value / 100 
+        music3.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(580,16,20,600)
     let wall1 = new wall(350,200,20,600)
@@ -3057,10 +3852,14 @@ function createLevel26(){
     let finish = new goal(16,760,104,24)
 }
 
+function preloadLevel27(){
+    this.load.audio('theme3', ['ost/3 - Moonlight Land.ogg',]);
+}
+
 function createLevel27(){
 
-    thisLevelPass.textContent = "SALVE"
-    levelName.textContent = "CANNONS!"      
+    thisLevelPass.textContent = "QG29N9"
+    levelName.textContent = "The Spinny Bois are here!"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
@@ -3070,6 +3869,12 @@ function createLevel27(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music3 == undefined){
+        music3 = this.sound.add('theme3')
+        music3.volume = volumeSlider.value / 100 
+        music3.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(100,450,180,334)
     let wall1 = new wall(16,16,200,120)
@@ -3091,10 +3896,14 @@ function createLevel27(){
     let finish = new goal(302,136,98,30)
 }
 
+function preloadLevel28(){
+    this.load.audio('theme3', ['ost/3 - Moonlight Land.ogg',]);
+}
+
 function createLevel28(){
 
-    thisLevelPass.textContent = "SALVE"
-    levelName.textContent = "CANNONS!"      
+    thisLevelPass.textContent = "5S2KPN"
+    levelName.textContent = "Can You Fit?"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
@@ -3104,6 +3913,12 @@ function createLevel28(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music3 == undefined){
+        music3 = this.sound.add('theme3')
+        music3.volume = volumeSlider.value / 100 
+        music3.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(16,80,700,20)
 
@@ -3206,10 +4021,14 @@ function createLevel28(){
     let finish = new goal(650,754,134,30)
 }
 
+function preloadLevel29(){
+    this.load.audio('theme3', ['ost/3 - Moonlight Land.ogg',]);
+}
+
 function createLevel29(){
 
-    thisLevelPass.textContent = "SALVE"
-    levelName.textContent = "CANNONS!"      
+    thisLevelPass.textContent = "N9PLL4"
+    levelName.textContent = "Double Spinning?"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
@@ -3219,6 +4038,12 @@ function createLevel29(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music3 == undefined){
+        music3 = this.sound.add('theme3')
+        music3.volume = volumeSlider.value / 100 
+        music3.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(80,720,710,64)
     let wall1 = new wall(16,16,710,64)
@@ -3237,10 +4062,14 @@ function createLevel29(){
     let finish = new goal(726,16,58,30)
 }
 
+function preloadLevel30(){
+    this.load.audio('theme3', ['ost/3 - Moonlight Land.ogg',]);
+}
+
 function createLevel30(){
 
-    thisLevelPass.textContent = "SALVE"
-    levelName.textContent = "CANNONS!"      
+    thisLevelPass.textContent = "EEH5G9"
+    levelName.textContent = "Hot Stuff"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
@@ -3250,6 +4079,12 @@ function createLevel30(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music3 == undefined){
+        music3 = this.sound.add('theme3')
+        music3.volume = volumeSlider.value / 100 
+        music3.play({loop: true});
+        this.scene.restart()
+    }
 
     let lava0 = new lava(PU,PU,PU*48,PU)
     let lava1 = new lava(PU,PU*2,PU,PU*47)
@@ -3267,20 +4102,22 @@ function createLevel30(){
     let lava12 = new lava(PU*39,PU*40,PU*5,PU*8)
     let lava13 = new lava(PU*8,PU*5,PU*5,PU*3)
 
-
     let stalker0 = new stalker(PU*25,PU*20)
     stalker0.speed = playerSpeed
 
     grid = new nodeGrid(gridNodeSize)
 
     let finish = new goal(PU*2,PU*2,PU*2,PU*6)
+}
 
+function preloadLevel31(){
+    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
 }
 
 function createLevel31(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "ZC8BFM"
+    levelName.textContent = "Run, Hot Stuff ;)"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
@@ -3290,6 +4127,16 @@ function createLevel31(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music3 != undefined){
+        music3.stop()
+        music3 = undefined
+    }
+    if(music4 == undefined){
+        music4 = this.sound.add('theme4')
+        music4.volume = volumeSlider.value / 100 
+        music4.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall1 = new wall(16,380,600,40)
 
@@ -3327,10 +4174,14 @@ function createLevel31(){
     let finish = new goal(16,520,30,180)
 }
 
+function preloadLevel32(){
+    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
+}
+
 function createLevel32(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "7RF7JC"
+    levelName.textContent = "The Hot Corridor"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
@@ -3340,6 +4191,12 @@ function createLevel32(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music4 == undefined){
+        music4 = this.sound.add('theme4')
+        music4.volume = volumeSlider.value / 100  
+        music4.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(16,16,84,768)
     let wall1 = new wall(700,16,84,768)
@@ -3362,10 +4219,14 @@ function createLevel32(){
     let finish = new goal(410,750,50,34)
 }
 
+function preloadLevel33(){
+    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
+}
+
 function createLevel33(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "843KEB"
+    levelName.textContent = "Where are you?"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
@@ -3375,6 +4236,12 @@ function createLevel33(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music4 == undefined){
+        music4 = this.sound.add('theme4')
+        music4.volume = volumeSlider.value / 100  
+        music4.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(16,700,84,4)
     let wall1 = new wall(16,676,500,4)
@@ -3402,10 +4269,14 @@ function createLevel33(){
     let finish = new goal(700,16,60,30)
 }
 
+function preloadLevel34(){
+    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
+}
+
 function createLevel34(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "QBCR3M"
+    levelName.textContent = "Time To Step Up"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,Z,DOWN,SHIFT,LEFT,RIGHT,UP');
@@ -3415,6 +4286,12 @@ function createLevel34(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music4 == undefined){
+        music4 = this.sound.add('theme4')
+        music4.volume = volumeSlider.value / 100  
+        music4.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(350,150,50,634)
     let wall1 = new wall(575,16,50,634)
@@ -3442,10 +4319,14 @@ function createLevel34(){
     let finish = new goal(625,16,159,30)
 }
 
+function preloadLevel35(){
+    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
+}
+
 function createLevel35(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "2FP9E9"
+    levelName.textContent = "Dash or Kaboom"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,Z,DOWN,Z,SHIFT,LEFT,RIGHT,UP');
@@ -3455,6 +4336,12 @@ function createLevel35(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music4 == undefined){
+        music4 = this.sound.add('theme4')
+        music4.volume = volumeSlider.value / 100  
+        music4.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(16,250,634,50)
     let wall1 = new wall(166,500,650,50)
@@ -3491,10 +4378,14 @@ function createLevel35(){
     let finish = new goal(750,550,34,234)
 }
 
+function preloadLevel36(){
+    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
+}
+
 function createLevel36(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "635THD"
+    levelName.textContent = "He's back"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
@@ -3504,6 +4395,12 @@ function createLevel36(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music4 == undefined){
+        music4 = this.sound.add('theme4')
+        music4.volume = volumeSlider.value / 100  
+        music4.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(100,700,164,20)
     let wall2 = new wall(710,680,20,40)
@@ -3529,10 +4426,14 @@ function createLevel36(){
     let finish = new goal(130,720,30,64)
 }
 
+function preloadLevel37(){
+    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
+}
+
 function createLevel37(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "MQ5UD7"
+    levelName.textContent = "Fast Boi"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
@@ -3542,6 +4443,12 @@ function createLevel37(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music4 == undefined){
+        music4 = this.sound.add('theme4')
+        music4.volume = volumeSlider.value / 100  
+        music4.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(PU*7,PU*7,PU*6,PU*6)
     let wall6 = new wall(PU*21,PU*7,PU*6,PU*6)
@@ -3560,10 +4467,14 @@ function createLevel37(){
     let finish = new goal(PU,PU,PU*8,PU*5)
 }
 
+function preloadLevel38(){
+    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
+}
+
 function createLevel38(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "N6L9VJ"
+    levelName.textContent = "Crowded Corridors"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
@@ -3573,6 +4484,12 @@ function createLevel38(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music4 == undefined){
+        music4 = this.sound.add('theme4')
+        music4.volume = volumeSlider.value / 100  
+        music4.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(200,16,60,384)
     let wall1 = new wall(200,416,60,384)
@@ -3602,10 +4519,14 @@ function createLevel38(){
 
 let smokeArray39 = []
 
+function preloadLevel39(){
+    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
+}
+
 function createLevel39(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "LB3JTF"
+    levelName.textContent = "Post-Apocalyptic Storm"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
@@ -3615,6 +4536,12 @@ function createLevel39(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music4 == undefined){
+        music4 = this.sound.add('theme4')
+        music4.volume = volumeSlider.value / 100  
+        music4.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall1 = new lava(80,500,630,284)
 
@@ -3661,13 +4588,47 @@ function updateLevel39(time,delta){
     }
 }
 
-function createLevel40(){}
 
+
+function preloadLevel40(){
+    this.load.audio('themeBoss', ['ost/Boss - Space Racing.ogg',]);
+}
+
+function createLevel40(){
+
+    thisLevelPass.textContent = "C4WY6J"
+    levelName.textContent = "..."      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP,SPACE');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(40,720,true,true);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music4 != undefined){
+        music4.stop()
+        music4 = undefined
+    }
+    if(musicBoss == undefined){
+        musicBoss = this.sound.add('themeBoss')
+        musicBoss.volume = volumeSlider.value / 100  
+        musicBoss.play({loop: true});
+        this.scene.restart()
+    }
+}
+
+
+
+function preloadLevel41(){
+    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
+}
 
 function createLevel41(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "CHAY87"
+    levelName.textContent = "THE GRID"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
@@ -3677,6 +4638,16 @@ function createLevel41(){
     let upperEdge = new wall(0,0, XDIMENSION *3, wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION*3)
+    if(musicBoss != undefined){
+        musicBoss.stop()
+        musicBoss = undefined
+    }
+    if(music4 == undefined){
+        music4 = this.sound.add('theme4')
+        music4.volume = volumeSlider.value / 100  
+        music4.play({loop: true});
+        this.scene.restart()
+    }
 
     for(let i=0; i<16; i++){
 
@@ -3699,10 +4670,14 @@ function createLevel41(){
     let finish = new goal(740,740,44,44)
 }
 
+function preloadLevel42(){
+    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
+}
+
 function createLevel42(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "89KZ4V"
+    levelName.textContent = "THE BOX"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
@@ -3712,6 +4687,12 @@ function createLevel42(){
     let upperEdge = new wall(0,0, XDIMENSION *3, wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION*3)
+    if(music4 == undefined){
+        music4 = this.sound.add('theme4')
+        music4.volume = volumeSlider.value / 100  
+        music4.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(16,100,376,50)
     let wall1 = new wall(408,16,376,134)
@@ -3738,10 +4719,14 @@ function createLevel42(){
     let finish = new goal(750,700,34,84)
 }
 
+function preloadLevel43(){
+    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
+}
+
 function createLevel43(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "QG5KPJ"
+    levelName.textContent = "The Spiral"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
@@ -3751,6 +4736,12 @@ function createLevel43(){
     let upperEdge = new wall(0,0, XDIMENSION *3, wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION*3)
+    if(music4 == undefined){
+        music4 = this.sound.add('theme4')
+        music4.volume = volumeSlider.value / 100  
+        music4.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(350,750,100,4)
 
@@ -3774,10 +4765,14 @@ function createLevel43(){
 
 let level44Clock = 0
 
+function preloadLevel44(){
+    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
+}
+
 function createLevel44(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "7FRCNZ"
+    levelName.textContent = "The Fireworks"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
@@ -3787,6 +4782,12 @@ function createLevel44(){
     let upperEdge = new wall(0,0, XDIMENSION *3, wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION*3)
+    if(music4 == undefined){
+        music4 = this.sound.add('theme4')
+        music4.volume = volumeSlider.value / 100  
+        music4.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(16,700,700,60)
     let wall1 = new wall(100,16,784,40)
@@ -3809,10 +4810,14 @@ function updateLevel44(time,delta){
     }
 }
 
+function preloadLevel45(){
+    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
+}
+
 function createLevel45(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "PX4588"
+    levelName.textContent = "The Rising Volcano"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
@@ -3822,6 +4827,12 @@ function createLevel45(){
     let upperEdge = new wall(0,0, XDIMENSION *3, wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION*3)
+    if(music4 == undefined){
+        music4 = this.sound.add('theme4')
+        music4.volume = volumeSlider.value / 100  
+        music4.play({loop: true});
+        this.scene.restart()
+    }
 
     let lava0 = new lava(16,790,768,800)
     lava0.speed = 50
@@ -3851,10 +4862,14 @@ function createLevel45(){
     let finish = new goal(PU,PU,PU*5,PU*2)
 }
 
+function preloadLevel46(){
+    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
+}
+
 function createLevel46(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "Q23B8S"
+    levelName.textContent = "The Matrix"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
@@ -3864,6 +4879,12 @@ function createLevel46(){
     let upperEdge = new wall(0,0, XDIMENSION *3, wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION*3)
+    if(music4 == undefined){
+        music4 = this.sound.add('theme4')
+        music4.volume = volumeSlider.value / 100  
+        music4.play({loop: true});
+        this.scene.restart()
+    }
 
     let placed = []
     let numberToPlace = 100
@@ -3921,10 +4942,14 @@ function createLevel46(){
     let finish = new goal(PU*47 + PU/2 , PU*47 + PU/2,PU*1.5,PU*1.5)
 }
 
+function preloadLevel47(){
+    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
+}
+
 function createLevel47(){
 
-    thisLevelPass.textContent = "SALVE2"
-    levelName.textContent = "STORM AND THUNDER!"      
+    thisLevelPass.textContent = "8499PV"
+    levelName.textContent = "The Last One"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
@@ -3934,6 +4959,12 @@ function createLevel47(){
     let upperEdge = new wall(0,0, XDIMENSION *3, wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION*3)
+    if(music4 == undefined){
+        music4 = this.sound.add('theme4')
+        music4.volume = volumeSlider.value / 100  
+        music4.play({loop: true});
+        this.scene.restart()
+    }
 
     let wall0 = new wall(16,PU*44,PU*22,30)
     let wall1 = new wall(PU*27,PU*44,PU*22,84)
@@ -3979,4 +5010,114 @@ function createLevel47(){
     grid = new nodeGrid(gridNodeSize)
 
     let finish = new goal(PU*19 , PU*3 , PU*12,PU*2)
+}
+
+
+let creditsText1
+let creditsText2
+let creditsText3
+let creditsText6
+let creditsText4
+let creditsText5
+let creditsClock = 0
+let fallingStars2 = []
+
+
+function preloadCredits(){
+    this.load.audio('themeCredits', ['ost/credits - Thought Soup.mp3',]);
+}
+
+function createCredits(){
+
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('ENTER,SPACE');
+    gamepad = this.input.gamepad.gamepads
+
+    if(music4 != undefined){
+        music4.stop()
+        music4 = undefined
+    }
+    if(musicCredits == undefined){
+        musicCredits = this.sound.add('themeCredits')
+        musicCredits.volume = volumeSlider.value / 100  
+        musicCredits.play({loop: true});
+        this.scene.restart()
+    }
+
+    creditsText1 = this.add.text(225,850,"AVOID", { font: '110px' })
+    creditsText2 = this.add.text(140,1150,"A Game By Ludovico De Salvo", { font: '32px' })
+    creditsText3 = this.add.text(140,1350,"Music Courtesy of", { font: '32px' })
+    creditsText6 = this.add.text(180,1400,"-Monolith Official Soundtrack\n-Swngyil YOON", { font: '26px' })
+    creditsText4 = this.add.text(120,1650," If you input the password "+'"'+":AV01D!"+'"'+"\nyou can jump to any level by "+
+                                         "inserting\n    the level number as password", { font: '24px' })
+    creditsText5 = this.add.text(160,1950,"Thank You For Playing <3", { font: '32px' })
+
+    for(let i = 0; i<50; i++){
+        
+        let dice = generateRandomIntegerInRange(1,2)
+
+        if(dice == 1){
+            fallingStars2.push(new bullet(generateRandomIntegerInRange(0,800),generateRandomIntegerInRange(0,800),5,5,generateRandomIntegerInRange(150,250),[1,1],true,0xEEEEEE))
+        }else{
+            fallingStars2.push(new bullet(generateRandomIntegerInRange(0,800),generateRandomIntegerInRange(0,800),5,5,generateRandomIntegerInRange(150,250),[1,1],true,0xEEEEEE))
+        }
+    }
+}
+
+function updateCredits(time,delta){
+
+    Delta = delta / 1000
+    omniHandler()
+
+    creditsClock += Delta
+
+    if(creditsClock < 38.75){
+        creditsText1.y -= 40 * Delta
+        creditsText2.y -= 40 * Delta
+        creditsText3.y -= 40 * Delta
+        creditsText4.y -= 40 * Delta
+        creditsText5.y -= 40 * Delta
+        creditsText6.y -= 40 * Delta
+    }else{
+        creditsText1.y -= 40 * Delta
+        creditsText2.y -= 40 * Delta
+        creditsText3.y -= 40 * Delta
+        creditsText4.y -= 40 * Delta
+        creditsText6.y -= 40 * Delta
+
+        lv = 1
+        localStorage["specialBoi"] = 1
+
+        if(gamepad.length > 0){
+            AButton = gamepad[0].buttons[0]
+        }
+    
+        if(keys.ENTER.isDown || keys.SPACE.isDown || AButton.value == 1){
+    
+            var theOtherScene = scene.scene.get("startMenu");            
+            theOtherScene.scene.restart()        
+            scene.scene.switch("startMenu")
+        }
+    }
+    
+    for(let i = 0; i<fallingStars2.length; i++){
+
+        if(fallingStars2[i].x > 800 || fallingStars2[i].y > 800){
+
+            let dice = generateRandomIntegerInRange(1,2)
+
+            if(dice == 1){
+
+                fallingStars2[i].x = -10
+                fallingStars2[i].y = generateRandomIntegerInRange(0,800)
+                fallingStars2[i].speed = generateRandomIntegerInRange(150,250)
+            }else{
+
+                fallingStars2[i].y = -10
+                fallingStars2[i].x = generateRandomIntegerInRange(0,800)
+                fallingStars2[i].speed = generateRandomIntegerInRange(150,250)
+            }
+        }
+    }
 }
