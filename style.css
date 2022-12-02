@@ -5,11 +5,8 @@ html{
 }
 
 body {
-    background-color: #272727;
-    opacity: 1;
-    background-image:  radial-gradient(#d4d4d4 1.5px, transparent 1.5px), radial-gradient(#d4d4d4 1.5px, #272727 1.5px);
-    background-size: 60px 60px;
-    background-position: 0 0,30px 30px;
+    background-color: #1d1d1d;
+
 }
 
 h1{
@@ -18,23 +15,26 @@ h1{
 
 .outer{
     text-align: center;
-
 }
 
+.title { grid-area: title; }
+.levelStuff { grid-area: levelStuff; }
+.main { grid-area: main; }
+.volumeStuff { grid-area: volumeStuff; }
 
-.square{
-    width: 50px;
-    height: 50px;
-    display: inline-block;
-    margin: 0px;
-    background-color: white;
-    color: black;
-    margin: auto;
-    border: 1px solid black;
-  }
 
-.square:hover{
-    background-color: aqua;
+
+
+.grid-container {
+  display: grid;
+  grid-template-areas:
+    'title title title'
+    'levelStuff main volumeStuff';
+  grid-template-columns: 450px;
+}
+
+.grid-container > div {
+  text-align: center;
 }
 
 
@@ -62,7 +62,7 @@ h1{
     width: 25px;
     height: 25px;
     border-radius: 50%;
-    background: #04AA6D;
+    background: #09f0f8;
     cursor: pointer;
   }
   
@@ -70,6 +70,6 @@ h1{
     width: 25px;
     height: 25px;
     border-radius: 50%;
-    background: #04AA6D;
+    background: #09f0f8;
     cursor: pointer;
 }

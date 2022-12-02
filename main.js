@@ -341,6 +341,7 @@ let config = {
     type: Phaser.AUTO,
     width: XDIMENSION,
     height: YDIMENSION,
+    parent: 'canvas',
     input: {
         gamepad: true
     },
@@ -4873,7 +4874,7 @@ function preloadLevel16(){
 function createLevel16(){
 
     thisLevelPass.textContent = "964Z8M"
-    levelName.textContent = "Confy Room with deadly balls and cannons"      
+    levelName.textContent = "Comfy Room with deadly balls and cannons"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
@@ -6149,7 +6150,7 @@ function createLevel40(){
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
 
     if(skipBossIntro == "true"){
-        pg = new player(300,720,true,true)
+        pg = new player(392,720,true,true)
         bigBoi = new Boss()
         bigBoi.moveTo(300,50)
         bigBoi.LHand.moveTo(150,200)
@@ -6269,7 +6270,7 @@ function preloadLevel41(){
 function createLevel41(){
 
     thisLevelPass.textContent = "CHAY87"
-    levelName.textContent = "THE GRID"      
+    levelName.textContent = "The Grid"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
@@ -6317,7 +6318,7 @@ function preloadLevel42(){
 function createLevel42(){
 
     thisLevelPass.textContent = "89KZ4V"
-    levelName.textContent = "THE BOX"      
+    levelName.textContent = "The Box"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
@@ -6632,7 +6633,7 @@ function createLevel47(){
     let spin = new spinnyBoi(PU*24 + 8,PU*8,0.5,200)
 
     for(let i = 0; i<8; i++){
-        let mine0 = new mine(generateRandomIntegerInRange(PU*19,PU*30),generateRandomIntegerInRange(PU*10,PU*34))
+        let mine0 = new mine(generateRandomIntegerInRange(19,30) * PU + 2,generateRandomIntegerInRange(10,34) * PU + 2)
     }
 
     let smoke0 = new smoke(PU*21,PU*40,PU*8,PU*3)
