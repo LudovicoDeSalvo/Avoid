@@ -4492,8 +4492,8 @@ function createLevel7(){
 
     let cannon8 = new cannon(150,300,0.6,150,[1,0])
     let cannon9 = new cannon(634,290,0.6,150,[-1,0])
-    let cannon10 = new cannon(150,280,0.6,150,[1,0])
-    let cannon11 = new cannon(634,270,0.6,150,[-1,0])
+    //let cannon10 = new cannon(150,280,0.6,150,[1,0])
+    //let cannon11 = new cannon(634,270,0.6,150,[-1,0])
 
     let cannon12 = new cannon(150,200,0.6,250,[1,0])
     let cannon13 = new cannon(634,200,0.6,250,[-1,0])
