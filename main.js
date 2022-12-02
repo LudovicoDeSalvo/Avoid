@@ -288,7 +288,7 @@ var lv40 = {
     key: 'level40',
     preload: preloadLevel40,
     create: createLevel40,
-    update: update,
+    update: updateLevel40,
 };
 var lv41 = {
     key: 'level41',
@@ -375,7 +375,9 @@ let music4
 let musicSM
 let musicBoss
 let musicCredits
-let passUnlocked = true
+let passUnlocked = localStorage["passBoi"] || "false"
+let skipBossIntro = localStorage["skipBoi"] || "false"
+
 
 
 // GAME VARIABLES
@@ -404,6 +406,8 @@ let lavaColor2 = 0x8B0000
 let smokeColor = 0x555555
 let upgradeColor = 0x00FFFF
 let upgradeColor2 = 0xAAFFFF
+let bossColor = 0xAA2222
+let bossHandColor = 0xAA2222
 
 
 
@@ -434,6 +438,9 @@ class Entity{
         this.velocity = velocity
         this.color = 0x000000
         this.toProcess = toProcess == undefined ? true : toProcess
+        this.targetCoor = undefined         //targetCoordinates
+        this.saveVelocity
+        this.ID = 0
 
         this.look = scene.add.graphics()
         if(toProcess){entities.push(this)}        
@@ -444,8 +451,22 @@ class Entity{
 
     //DO NOT PLACE WALLS ON EACH OTHER
     move(forbiddenEntities){  //moves and returns if there has been a collision AND the index of the entities you collided with in the entities array
-             //(it saves from calling checkCollision again in the handler)
-             //forbideenEntities contains entities colors (IDs) that will be considered collidable even if they're not       
+            //(it saves from calling checkCollision again in the handler)
+            //forbideenEntities contains entities colors (IDs) that will be considered collidable even if they're not       
+        
+        
+        let sensibility = this.speed * Delta
+
+        if(this.targetCoor != undefined){
+        
+
+            if(this.saveVelocity == undefined)
+                this.saveVelocity = this.velocity
+            
+            this.velocity = [this.targetCoor[0] - this.x , this.targetCoor[1] - this.y]
+
+
+        }
         
         this.velocity = normalizeVector(this.velocity)
 
@@ -469,7 +490,7 @@ class Entity{
                 //This check properly if there is a collision and the distance to touch the stopping object
                 collision = this.checkCollision2TheRevenge( entities[i] , mx , my)
 
-                if(collision[0] === true){
+                if(collision[0]){
 
                     collided = true
                     withWhich.push(i)
@@ -477,10 +498,10 @@ class Entity{
                     //If there's a collision, checks if it can still moves on another axis
                     let blocked = this.checkCollisionXY(entities[i] , mx , my)
                         
-                    if ( blocked[0] === true){
+                    if ( blocked[0] ){
                         mx = collision[1]                        
                     }
-                    if( blocked[1] === true){
+                    if( blocked[1] ){
                         my = collision[2]
                     }
                     //this checks if you're a free both in X and in Y, if you are you can move in X and cover the distance in Y (remember that you already verified 
@@ -495,12 +516,12 @@ class Entity{
 
                 for(let j = 0; j<forbiddenEntities.length; j++){
 
-                    if(entities[i].color == forbiddenEntities[j]){
+                    if(entities[i].ID == forbiddenEntities[j]){
 
                         //This check properly if there is a collision and the distance to touch the stopping object
                         collision = this.checkCollision2TheRevenge( entities[i] , mx , my)
 
-                        if(collision[0] === true){
+                        if(collision[0]){
 
                             collided = true
                             withWhich.push(i)
@@ -508,10 +529,10 @@ class Entity{
                             //If there's a collision, checks if it can still moves on another axis
                             let blocked = this.checkCollisionXY(entities[i] , mx , my)
                                 
-                            if ( blocked[0] === true){
+                            if ( blocked[0] ){
                                 mx = collision[1]                        
                             }
-                            if( blocked[1] === true){
+                            if( blocked[1] ){
                                 my = collision[2]
                             }
                             //this checks if you're a free both in X and in Y, if you are you can move in X and cover the distance in Y (remember that you already verified 
@@ -526,6 +547,16 @@ class Entity{
         }
         
         this.moveTo(this.x + mx, this.y + my)
+
+        if(this.targetCoor != undefined){
+            if( this.x >= this.targetCoor[0] - sensibility && this.x <= this.targetCoor[0] + sensibility && this.y >= this.targetCoor[1] - sensibility && 
+                    this.y <= this.targetCoor[1] + sensibility ){
+        
+                this.targetCoor = undefined
+                this.velocity = this.saveVelocity
+                this.saveVelocity = undefined
+            }
+        }
 
         return [collided , withWhich]
     }
@@ -690,6 +721,7 @@ class player extends Entity{
         this.canShoot = canShoot == undefined ? false : canShoot
         this.inRecovery = false
 
+        this.ID = 1
         this.color = playerColor
         this.look.fillStyle(this.color);
         this.look.fillRect(x , y , this.width, this.height);
@@ -722,7 +754,6 @@ class player extends Entity{
         //Direction and Input Manager
         let dx = 0
         let dy = 0
-        
 
         if(gamepad.length > 0){      //Gamepad Stuff
             
@@ -770,13 +801,10 @@ class player extends Entity{
         
         if(keys.SPACE){                            //SPACE 
             
-            if(scene == scene.scene.get("level40")){
-
-                
+            if(this.canShoot){
 
                 if((keys.SPACE.isDown || YButton.value == 1) && this.inRecovery == false){
 
-                    
                     let placed = false
 
                     for(let i = 0; i<this.magazine.length && placed == false; i++){
@@ -824,7 +852,7 @@ class player extends Entity{
 
                 let collision = this.checkCollision2TheRevenge(entities[i],0,0)
 
-                var theOtherScene2 = scene.scene.get("debug");  
+                var theOtherScene2 = scene.scene.get("debug");  //default: "debug"  
                 
                 if(collision[0]){
                     
@@ -843,7 +871,7 @@ class player extends Entity{
                 }
             }
 
-            if(entities[i] != this && entities[i].color == goalColor){
+            if(entities[i] != this && entities[i].ID == 15){
                 
                 let collision = this.checkCollision2TheRevenge(entities[i],0,0)
 
@@ -865,6 +893,7 @@ class wall extends Entity{
     constructor(x,y,width,height){
         super(x,y,width,height,true,false,0,[0,0],true)
 
+        this.ID = 2
         this.color = wallColor
         this.look.fillStyle(this.color);
         this.look.fillRect(x , y , width, height);
@@ -887,6 +916,7 @@ class cannon extends Entity{
         this.color = cannonColor
         this.magazine = []        
 
+        this.ID = 2
         this.look.fillStyle(this.color);
         this.look.fillRect(x , y , PU, PU);
 
@@ -1044,6 +1074,7 @@ class bullet extends Entity{
         this.color = color == undefined ? defaultBulletColor : color
         this.active = active 
 
+        this.ID = 3
         if(this.active)
             this.activate()
         else
@@ -1086,6 +1117,8 @@ class playerBullet extends bullet{
         this.clockEnabled = false
         this.clock = 3
         this.canBeShot = true
+
+        this.ID = 4
     }
 
     handler(){
@@ -1098,9 +1131,14 @@ class playerBullet extends bullet{
         
         if(this.active){
 
-            let data = this.move()
+            let data = this.move([17,18])
             
             if(data[0]){
+                
+                if(entities[data[1][0]].ID == 17){
+                    bigBoi.reduceHealth()
+                }
+
                 this.deactivate()
             }
         }
@@ -1128,6 +1166,7 @@ class trackingCannon extends cannon{
 
         this.color = trackingCannonColor
         
+        this.ID = 5
         this.look.clear()
         this.look.fillStyle(this.color)
         this.look.fillRect(x , y , PU, PU)    
@@ -1148,7 +1187,7 @@ class predictingCannon extends cannon{
         super(x,y,bulletClock,bulletSpeed,bulletVelocity,bulletSize,capacity)
         
         this.color = predictingCannonColor
-        
+        this.ID = 6
         this.look.clear()
         this.look.fillStyle(this.color)
         this.look.fillRect(x , y , PU, PU)    
@@ -1178,6 +1217,7 @@ class spinnyBoi extends cannon{
         this.color = predictingCannonColor
         this.anticlockwise = anticlockwise == undefined ? false : anticlockwise
         
+        this.ID = 7
         this.look.clear()
         this.look.fillStyle(this.color)
         this.look.fillRect(x , y , PU, PU)    
@@ -1211,6 +1251,7 @@ class nonnoLaser extends Entity{ //ACTIVATE GENERATELASER() IN THE LASER IF YOU 
         this.color = nonnoLaserColor
         this.laserObjColor = laserColor
 
+        this.ID = 8
         this.look.fillStyle(this.color);
         this.look.fillRect(x , y , PU, PU);
 
@@ -1280,6 +1321,7 @@ class stalker extends Entity{
         this.clock = 0
         this.path = []
 
+        this.ID = 9
         this.color = stalkerColor
         this.look.fillStyle(this.color);
         this.look.fillRect(x , y , PU, PU);
@@ -1297,7 +1339,7 @@ class stalker extends Entity{
             //this.colorPath()
         }
 
-        let data = this.move([lavaColor,lavaColor2,smokeColor])
+        let data = this.move([10,11])
         this.moveStalker(data[0])
     }
 
@@ -1495,6 +1537,7 @@ class node extends Entity{
         this.totalCost = Number.MAX_SAFE_INTEGER
         this.parent = null
 
+        this.ID = 99
         this.look = scene.add.graphics();
     }
 
@@ -1552,7 +1595,7 @@ class nodeGrid{
                             continua = false
                         }
 
-                        if(entities[k].color == lavaColor || entities[k].color == smokeColor){
+                        if(entities[k].ID == 10 || entities[k].ID == 11){
                             this.grid[i][j].walkable = false
                         }
                     }
@@ -1627,6 +1670,7 @@ class lava extends Entity{
         this.clock = 0
         this.timeToChange = false
 
+        this.ID = 10
         this.color = lavaColor
         this.look.fillStyle(this.color);
         this.look.fillRect(x , y , w, h);
@@ -1671,6 +1715,7 @@ class smoke extends Entity{
     constructor(x,y,w,h){
         super(x,y,w,h,false,false,0,[0,0],true)
 
+        this.ID = 11
         this.color = smokeColor
         this.look.fillStyle(this.color);
         this.look.fillRect(x , y , w, h);
@@ -1682,6 +1727,7 @@ class ball extends Entity{
     constructor(x,y,startingDirection){
         super(x,y,PU+1,PU+1,false,true,220,startingDirection,true)
 
+        this.ID = 12
         this.color = ballColor
         this.look.fillStyle(this.color);
         this.look.fillRect(x , y , this.width, this.height);
@@ -1826,6 +1872,7 @@ class mine extends Entity{
         this.explosionBOOM = new explosion(centerX - radius , centerY - radius , radius * 2 , radius * 2 , explosionColor)
         this.side = Math.floor(PU*0.75)
 
+        this.ID = 13
         this.color = this.playerTriggerable ? mineColor : mineColor2
         this.look.fillStyle(this.color);
         this.look.fillRect(x , y , this.side , this.side);
@@ -1843,6 +1890,11 @@ class mine extends Entity{
 
                     if(Math.floor(this.clock * 10) % 6 >= 3){
 
+                        if(this.playerTriggerable){
+                            this.color = mineColor
+                        }else{
+                            this.color = mineColor2
+                        }
                         this.look.clear()
                         this.look.fillStyle(this.color);
                         this.look.fillRect(this.x + this.proximityRadius - Math.floor(PU*0.75/2), this.y + this.proximityRadius - Math.floor(PU*0.75/2),
@@ -1850,9 +1902,10 @@ class mine extends Entity{
 
                     }else{                    
 
+                        this.color = 0xFF0000
                         this.look.clear()
-                        this.look.fillStyle(0xFF0000);
-                        this.look.fillRect(this.x +this.proximityRadius - Math.floor(PU*0.75/2), this.y + this.proximityRadius - Math.floor(PU*0.75/2),
+                        this.look.fillStyle(this.color);
+                        this.look.fillRect(this.x + this.proximityRadius - Math.floor(PU*0.75/2), this.y + this.proximityRadius - Math.floor(PU*0.75/2),
                             this.side, this.side);
                     }
 
@@ -1862,13 +1915,19 @@ class mine extends Entity{
 
                         if(Math.floor(this.clock * 10) % 2 ){
 
+                            this.color = 0xFF0000
                             this.look.clear()
-                            this.look.fillStyle(0xFF0000);
+                            this.look.fillStyle(this.color);
                             this.look.fillRect(this.x + this.proximityRadius - Math.floor(PU*0.75/2), this.y + this.proximityRadius - Math.floor(PU*0.75/2),
                                 this.side, this.side);
 
                         }else{
-        
+                            
+                            if(this.playerTriggerable){
+                                this.color = mineColor
+                            }else{
+                                this.color = mineColor2
+                            }
                             this.look.clear()
                             this.look.fillStyle(this.color);
                             this.look.fillRect(this.x + this.proximityRadius - Math.floor(PU*0.75/2), this.y + this.proximityRadius - Math.floor(PU*0.75/2),
@@ -1898,6 +1957,10 @@ class mine extends Entity{
                     }
                 }
             }
+
+            if(this.speed != 0)
+                this.move()
+
         }else{
 
             if(!this.complete){
@@ -1907,17 +1970,54 @@ class mine extends Entity{
                 if(this.clock > this.timeToBOOM + 0.5){
 
                     this.complete = true
+                    this.look.clear()
                     this.explosionBOOM.deactivate()
                 }
             }
         }
     }
+
+    moveTo(x,y){  //move the entity to a location
+        
+        let deltaX = x - this.x
+        let deltaY = y - this.y
+        
+        this.x = x
+        this.y = y
+
+        this.explosionBOOM.x += deltaX
+        this.explosionBOOM.y += deltaY
+
+        this.look.clear();
+        this.look.fillStyle(this.color);
+        this.look.fillRect(this.x + this.proximityRadius - Math.floor(PU*0.75/2), this.y + this.proximityRadius - Math.floor(PU*0.75/2), this.side, this.side);
+    }
+
+    reset(){
+        this.triggered = false
+        this.clock = 0
+        this.BOOM = false
+        this.complete = false
+        if(this.playerTriggerable){
+            this.color = mineColor
+        }else{
+            this.color = mineColor2
+        }
+        this.explosionBOOM.clock = 0
+        this.look.clear();
+        this.look.fillStyle(this.color);
+        this.look.fillRect(this.x + this.proximityRadius - Math.floor(PU*0.75/2), this.y + this.proximityRadius - Math.floor(PU*0.75/2), this.side, this.side);
+    }
 }
 
 
 class explosion extends bullet{
-    constructor(x,y,width,height,color){
+    constructor(x,y,width,height,color,lifeSpan){
         super(x,y,width,height,0,[0,0],false,color)
+
+        this.lifeSpan = lifeSpan ? lifeSpan : 10
+        this.clock = 0
+        this.ID = 14
     }
 
     handler(){
@@ -1926,7 +2026,7 @@ class explosion extends bullet{
             
             for (let i = 0; i < entities.length ; i++){
             
-                if(entities[i].color == mineColor || entities[i].color == mineColor2){
+                if(entities[i].ID == 13 ){
 
                     let collision = this.checkCollision2TheRevenge(entities[i],0,0)  
                     
@@ -1940,6 +2040,12 @@ class explosion extends bullet{
                     }
                 }
             }
+
+            this.clock += Delta
+
+            if(this.clock > this.lifeSpan){
+                this.deactivate()
+            }
         }
     }
 }
@@ -1949,6 +2055,7 @@ class goal extends Entity{
     constructor(x,y,w,h){
         super(x,y,w,h,false,false,0,[0,0],true)
 
+        this.ID = 15
         this.color = goalColor
         this.look.fillStyle(this.color);
         this.look.fillRect(x , y , w, h);
@@ -1965,11 +2072,17 @@ class upgrade extends Entity{
         this.clock = 0
         this.timeToChange = false
         this.done = false
-        this.textSlot = scene.add.text(this.x - 60, this.y + 10 , " " , { font: '12px' })
         
-        if(kind == "dash")
+        if(kind == "dash"){
+            this.textSlot = scene.add.text(this.x - 60, this.y + 10 , " " , { font: '12px' })
             this.text = "   UPGRADE TIME!\n You can Dash now!\n Press SHIFT or Z \nB on the controller"
+        }
+        if(kind == "pewpew"){
+            this.textSlot = scene.add.text(this.x - 130, this.y + 10 , " " , { font: '14px' })
+            this.text = "      ...The time has come\nYou can't continue on just avoiding\n      Press space to attack! \n       Y on the controller"
+        }
 
+        this.ID = 16
         this.color = upgradeColor
         this.look.fillStyle(this.color);
         this.look.fillRect(x , y , 8, 8);
@@ -2021,8 +2134,1418 @@ class upgrade extends Entity{
                     pg.dashAvailable = true
                     this.look.clear()
                 }
+                if(this.kind == "pewpew"){
+                    this.textSlot.setText(this.text)
+                    pg.canShoot = true
+                    this.look.clear()
+                }
             }
         }   
+    }
+}
+
+
+class Boss extends Entity{
+    // Moving state:
+    // 0: move none         1: move all         2: move L only      3: move R only          4: move H only          5: move L+H         6: move R+H         7: move L+R
+    constructor(){
+        
+        super(300,-300,200,200,false,true,50,[0,0],true)
+        
+        this.ID = 17
+        this.color = bossColor
+        this.look.fillStyle(this.color);
+        this.look.fillRect(this.x , this.y , this.width, this.height)
+        
+        this.LHand = new Entity(150,-300,100,100,false,true,75,[0,0],true)
+        this.LHand.color = bossHandColor
+        this.LHand.look.fillStyle(bossHandColor);
+        this.LHand.look.fillRect(this.LHand.x , this.LHand.y , this.LHand.width, this.LHand.height)
+        this.LHand.ID = 18
+        this.RHand = new Entity(550,-300,100,100,false,true,75,[0,0],true)
+        this.RHand.color = bossHandColor
+        this.RHand.look.fillStyle(bossHandColor);
+        this.RHand.look.fillRect(this.RHand.x , this.RHand.y , this.RHand.width, this.RHand.height)
+        this.RHand.ID = 18
+        
+        this.state = 0
+        this.lastAttack = -1
+        this.movingState = 0
+        this.clock = 0
+        this.stateClock = 0
+        this.stateClock2 = 0
+        this.stateClock3 = 0
+        this.stateVar1 = 0
+        this.stateFlags = []
+
+        this.recoveryTime = 3
+        this.health = 100
+        this.healthBar = new HealthBar()
+        this.healthBar.hide()
+        this.immune = true
+        this.fluctuating = 0
+        this.fluctuatingUp = true
+        this.lastPGX = pg.x
+        this.punishingBullet = new bullet(-100,100,50,50,800,[0,0],false)
+        this.phase = 1
+        this.dead = false
+
+        this.maxMagazineSize = 100
+        this.LMagazine = []
+        for(let i = 0; i<this.maxMagazineSize; i++){
+            this.LMagazine.push(new bullet(-100, -100 , 10 , 10 , 250 , [0,0], false))
+        }
+        this.RMagazine = []
+        for(let i = 0; i<this.maxMagazineSize; i++){
+            this.RMagazine.push(new bullet(-100, -100 , 10 , 10 , 250 , [0,0], false))
+        }
+        this.HMagazine = []
+        for(let i = 0; i<this.maxMagazineSize; i++){
+            this.HMagazine.push(new bullet(-100, -100 , 50 , 50 , 250 , [0,0], false))
+        }
+        this.MineMagazine = []
+        for(let i = 0; i<this.maxMagazineSize; i++){
+            this.MineMagazine.push(new mine(-100 + i*20,-100,3)) 
+        }
+
+        this.LLaser = new bullet(-100, -100, 1 , 1 ,0,[0,0],false,laserColor)
+        this.RLaser = new bullet(-100, -100, 1 , 1 ,0,[0,0],false,laserColor)
+        this.laser1 = new bullet(-100, -100, 1 , 1 ,0,[0,0],false,laserColor)
+        this.laser2 = new bullet(-100, -100, 1 , 1 ,0,[0,0],false,laserColor)
+        this.laser3 = new bullet(-100, -100, 1 , 1 ,0,[0,0],false,laserColor)
+        this.laser4 = new bullet(-100, -100, 1 , 1 ,0,[0,0],false,laserColor)
+
+        this.LPlaced = 0
+        this.RPlaced = 0
+        this.HPlaced = 0
+        this.MPlaced = 0
+    }
+    
+    handler(){
+
+        //fluctuaction manager
+        if(this.fluctuating < 0){
+            this.fluctuatingUp = true
+        }
+        if(this.fluctuating > 400){
+            this.fluctuatingUp = false
+        }
+
+        if(this.fluctuatingUp){
+            this.fluctuating += 133 * Delta
+        }else{
+            this.fluctuating -= 133 * Delta
+        }
+
+        switch(this.state){
+        
+            case 0: //Do Nothing
+            break;
+            case 1: //Spawning
+                
+                if(this.stateClock == 0){
+                    this.targetCoor = [300,50]
+                    this.LHand.targetCoor = [150,200]
+                    this.RHand.targetCoor = [550,200]
+                }
+
+                this.stateClock += Delta
+
+                if(this.stateClock > 9){
+                    this.movingState = 1
+
+                    if(!musicBoss.isPlaying)
+                        musicBoss.play({loop: true})
+
+                    this.stateChanger(2)
+                    this.healthBar.show()
+                    this.stateClock = 0
+                }
+            break;
+
+            case 2: // Recovery
+
+                this.movingState = 1
+                this.stateClock += Delta
+
+                if(this.stateClock > this.recoveryTime){
+
+                    let dice = generateRandomIntegerInRange(0,99)
+                    let newAttack = 0
+
+                    if(this.phase == 1){
+                        
+                        if(dice < 25){
+                            if(this.lastAttack != 3)
+                                newAttack = 3
+                        }else if(dice < 50){
+                            if(this.lastAttack != 4)
+                                newAttack = 4
+                        }else if(dice < 70){
+                            if(this.lastAttack != 6)
+                                newAttack = 6
+                        }else if(dice < 85){
+                            if(this.lastAttack != 5)
+                                newAttack = 5
+                        }else if(dice < 100){
+                            if(this.lastAttack != 7)
+                                newAttack = 7
+                        }
+
+                        if(newAttack != 0)
+                            this.stateChanger( newAttack )
+
+                    }else{
+
+                        if(dice < 20){
+                            if(this.lastAttack != 10)
+                                newAttack = 10
+                        }else if(dice < 40){
+                            if(this.lastAttack != 11)
+                                newAttack = 11
+                        }else if(dice < 60){
+                            if(this.lastAttack != 12)
+                                newAttack = 12
+                        }else if(dice < 80){
+                            if(this.lastAttack != 13)
+                                newAttack = 13
+                        }else if(dice < 100){
+                            if(this.lastAttack != 14)
+                                newAttack = 14
+                        }
+
+                        if(newAttack != 0)
+                            this.stateChanger( newAttack )
+                    }
+                }
+            break;
+
+            case 3: //Spray
+                
+                this.stateClock += Delta
+                this.punishingBulletManager()
+                
+                if(this.stateClock < 0.5){
+
+                    this.movingState = 6
+                    this.LHand.speed = 200
+                    this.LHand.targetCoor = [pg.x - 250,200 + this.fluctuating / 10 + 110]
+
+                }else if(this.stateClock >= 0.5 && this.stateClock < 1){
+
+                    this.LHand.targetCoor = [pg.x + 50,200 + this.fluctuating / 10 + 110]
+
+                }else if(this.stateClock >= 1 && this.stateClock < 3){
+
+                    this.LHand.targetCoor = [pg.x + 50,200 + this.fluctuating / 10 + 110]
+
+                    if(this.stateClock2 >= this.LPlaced * 0.075 && this.LPlaced < this.maxMagazineSize){
+                        this.LMagazine[this.LPlaced].moveTo(this.LHand.x + 50, this.LHand.y + this.LHand.height )
+                        this.LMagazine[this.LPlaced].velocity = [generateRandomInRange(-0.4,0.4),1]
+                        this.LMagazine[this.LPlaced].activate()
+                        this.LPlaced ++
+                    }
+                    this.stateClock2 += Delta
+
+                }else if(this.stateClock >= 3.5 && this.stateClock < 4){
+
+                    this.movingState = 4
+                    this.LHand.targetCoor = [this.x - 150 ,200 + this.fluctuating / 10 + 110]
+                    this.RHand.speed = 200
+                    this.RHand.targetCoor = [pg.x + 150,200 + this.fluctuating / 10 + 110]
+
+                }else if(this.stateClock >= 4 && this.stateClock < 4.5){
+
+                    this.movingState = 5
+                    this.RHand.targetCoor = [pg.x + 50,200 + this.fluctuating / 10 + 110]
+                    this.stateClock2 = 0
+
+                }else if(this.stateClock >= 5 && this.stateClock < 7){
+
+                    this.RHand.targetCoor = [pg.x - 50,200 + this.fluctuating / 10 + 110]
+                    
+                    if(this.stateClock2 >= this.RPlaced * 0.075 && this.RPlaced < this.maxMagazineSize){
+                        this.RMagazine[this.RPlaced].moveTo(this.RHand.x + 50, this.RHand.y + this.RHand.height )
+                        this.RMagazine[this.RPlaced].velocity = [generateRandomInRange(-0.4,0.4),1]
+                        this.RMagazine[this.RPlaced].activate()
+                        this.RPlaced ++
+                    }
+                    this.stateClock2 += Delta
+
+                }else if(this.stateClock >= 7 && this.stateClock < 7.5){
+
+                    this.RHand.targetCoor = [pg.x + 150,200 + this.fluctuating / 10 + 110]
+
+                }else if(this.stateClock >= 7.5 && this.stateClock < 8){
+
+                    this.RHand.speed = 400
+                    this.LHand.speed = 400
+                    this.movingState = 1
+                    
+                }else if(this.stateClock >= 8){
+
+                    this.lastAttack = 3
+                    this.stateChanger(2)
+                }
+            break;
+            
+            case 4: //Lasers from Hands
+            
+                this.stateClock += Delta
+                this.punishingBulletManager()
+                
+                if(this.stateClock < 2){
+
+                    this.movingState = 4
+                    this.LHand.speed = 400
+                    this.RHand.speed = 400
+                    this.LHand.targetCoor = [16 , pg.y - 42]
+                    this.RHand.targetCoor = [684 , pg.y - 42]
+                    this.LLaser.height = 50
+                    this.LLaser.width = 667
+                    this.RLaser.height = 50
+                    this.RLaser.width = 667
+
+                }else if(this.stateClock >= 2 && this.stateClock < 2.5){
+
+                    this.RHand.targetCoor = [684 , pg.y - 42]
+
+                }else if(this.stateClock >= 2.5 && this.stateClock < 3){
+
+                    this.LLaser.moveTo(this.LHand.x + this.LHand.width, this.LHand.y + 25)
+                    this.LLaser.activate()
+                    this.RHand.targetCoor = [684 , pg.y - 42]
+
+                }else if(this.stateClock >= 3 && this.stateClock < 3.5){
+
+                    this.LLaser.deactivate()
+                    this.LHand.targetCoor = [16 , pg.y - 42]
+
+                }else if(this.stateClock >= 3.5 && this.stateClock < 4){
+
+                    this.RLaser.moveTo(16, this.RHand.y + 25)
+                    this.RLaser.activate()
+                    this.LHand.targetCoor = [16 , pg.y - 42]
+
+                }else if(this.stateClock >= 4 && this.stateClock < 5){
+
+                    this.RLaser.deactivate()
+                    this.RHand.targetCoor = [684 , pg.y - 42]
+
+                }else if(this.stateClock >= 5 && this.stateClock < 5.5){
+
+                    this.LLaser.moveTo(this.LHand.x + this.LHand.width, this.LHand.y + 25)
+                    this.LLaser.activate()
+                    this.RHand.targetCoor = [684 , pg.y - 42]
+
+                }else if(this.stateClock >= 5.5 && this.stateClock < 6){
+
+                    this.LLaser.deactivate()
+                    this.LHand.targetCoor = [16 , pg.y - 42]
+
+                }else if(this.stateClock >= 6 && this.stateClock < 6.5){
+
+                    this.RLaser.moveTo(16, this.RHand.y + 25)
+                    this.RLaser.activate()
+                    this.LHand.targetCoor = [16 , pg.y - 42]
+
+                }else if(this.stateClock >= 6.5 && this.stateClock < 7.5){
+
+                    this.RLaser.deactivate()
+                    this.RHand.targetCoor = [684 , pg.y - 42]
+
+                }else if(this.stateClock >= 7.5 && this.stateClock < 8){
+
+                    this.LLaser.moveTo(this.LHand.x + this.LHand.width, this.LHand.y + 25)
+                    this.LLaser.activate()
+                    this.RHand.targetCoor = [684 , pg.y - 42]
+
+                }else if(this.stateClock >= 8 && this.stateClock < 8.5){
+
+                    this.LLaser.deactivate()
+                    this.LHand.targetCoor = [16 , pg.y - 42]
+
+                }else if(this.stateClock >= 8.5 && this.stateClock < 9){
+
+                    this.RLaser.moveTo(16, this.RHand.y + 25)
+                    this.RLaser.activate()
+                    this.LHand.targetCoor = [16 , pg.y - 42]
+
+                }else if(this.stateClock >= 9 && this.stateClock < 9.5){
+
+                    this.RLaser.deactivate()
+                    this.RHand.targetCoor = [684 , pg.y - 42]
+
+                }else if(this.stateClock >= 9.5 && this.stateClock < 10.5){
+
+                    this.movingState = 1
+                
+                }else if(this.stateClock >= 10.5){
+
+                    this.lastAttack = 4
+                    this.stateChanger(2)
+                }
+
+            break;
+
+            case 5: //Cross Lasers
+            
+                this.stateClock += Delta
+
+                if(this.stateClock < 0.1){
+
+                    this.movingState = 0
+                    this.LHand.speed = 400
+                    this.RHand.speed = 400
+                    this.LHand.targetCoor = [16,16]
+                    this.RHand.targetCoor = [684,684]
+                    this.targetCoor = [this.x, 120]
+                    this.speed = 100
+
+                }else if(this.stateClock > 1 && this.stateClock < 2){
+
+                    if(this.stateVar1 == 0){
+                        let ourX
+                        if(pg.x < 400){
+                            ourX = generateRandomIntegerInRange(400,484)
+                        }else{
+                            ourX = generateRandomIntegerInRange(116,200)
+                        }
+                        this.stateVar1 = ourX
+                    }
+
+                    this.speed = 400
+                    this.look.setAlpha(0.3)
+                    this.deadly = false
+
+                    let ourY = pg.y - 100
+                    if(ourY < 116)
+                        ourY = 116
+                    if(ourY > 484)
+                        ourY = 484
+
+                    this.targetCoor = [this.stateVar1 , ourY]
+                
+                }else if(this.stateClock > 2.5 && this.stateClock < 3){
+
+                    this.look.setAlpha(1)
+                    this.deadly = true
+                    
+                    this.laser1.moveTo(this.x + 50, 16)
+                    this.laser1.height = this.y - 16 
+                    this.laser1.width = 100
+                    this.laser1.activate()
+                    this.laser2.moveTo(this.x + this.width, this.y + 50)
+                    this.laser2.height = 100
+                    this.laser2.width = 800-16-this.x-this.width 
+                    this.laser2.activate()
+                    this.laser3.moveTo(this.x + 50, this.y + this.height)
+                    this.laser3.height = 800-16-this.y-this.height 
+                    this.laser3.width = 100
+                    this.laser3.activate()
+                    this.laser4.moveTo(16, this.y + 50)
+                    this.laser4.height = 100
+                    this.laser4.width = this.x - 16 
+                    this.laser4.activate()
+                    this.stateVar1 = 0
+
+                    this.LHand.targetCoor = [684,16]
+                    this.RHand.targetCoor = [16,684]
+
+
+                }else if(this.stateClock > 3 && this.stateClock < 4){
+
+                    this.laser1.deactivate()
+                    this.laser4.deactivate()
+                    this.laser3.deactivate()
+                    this.laser2.deactivate()
+                    
+                    
+                    if(this.stateVar1 == 0){
+                        let ourY
+                        if(pg.y < 400){
+                            ourY = generateRandomIntegerInRange(400,484)
+                        }else{
+                            ourY = generateRandomIntegerInRange(116,200)
+                        }
+                        this.stateVar1 = ourY
+                    }
+
+                    this.look.setAlpha(0.3)
+                    this.deadly = false
+                    
+                    let ourX = pg.x - 100
+                    if(ourX < 116)
+                        ourX = 116
+                    if(ourX > 484)
+                        ourX = 484
+
+                    this.targetCoor = [ourX , this.stateVar1]
+                
+                }else if(this.stateClock > 4.5 && this.stateClock < 5){
+
+                    this.look.setAlpha(1)
+                    this.deadly = true
+                    
+                    this.laser1.moveTo(this.x + 50, 16)
+                    this.laser1.height = this.y - 16 
+                    this.laser1.width = 100
+                    this.laser1.activate()
+                    this.laser2.moveTo(this.x + this.width, this.y + 50)
+                    this.laser2.height = 100
+                    this.laser2.width = 800-16-this.x-this.width 
+                    this.laser2.activate()
+                    this.laser3.moveTo(this.x + 50, this.y + this.height)
+                    this.laser3.height = 800-16-this.y-this.height 
+                    this.laser3.width = 100
+                    this.laser3.activate()
+                    this.laser4.moveTo(16, this.y + 50)
+                    this.laser4.height = 100
+                    this.laser4.width = this.x - 16 
+                    this.laser4.activate()
+
+                    this.LHand.targetCoor = [684,684]
+                    this.RHand.targetCoor = [16,16]
+
+                }else if(this.stateClock > 5 && this.stateClock < 6){
+
+                    this.laser1.deactivate()
+                    this.laser4.deactivate()
+                    this.laser3.deactivate()
+                    this.laser2.deactivate()
+                    
+                    if(this.stateVar1 == 0){
+                        let ourX
+                        if(pg.x < 400){
+                            ourX = generateRandomIntegerInRange(400,484)
+                        }else{
+                            ourX = generateRandomIntegerInRange(16,200)
+                        }
+                        this.stateVar1 = ourX
+                    }
+
+                    this.look.setAlpha(0.3)
+                    this.deadly = false
+
+                    let ourY = pg.y - 100
+                    if(ourY < 116)
+                        ourY = 116
+                    if(ourY > 484)
+                        ourY = 484
+
+                    this.targetCoor = [this.stateVar1 , ourY]
+                
+                }else if(this.stateClock > 6.5 && this.stateClock < 7){
+
+                    this.look.setAlpha(1)
+                    this.deadly = true
+                    
+                    this.laser1.moveTo(this.x + 50, 16)
+                    this.laser1.height = this.y - 16 
+                    this.laser1.width = 100
+                    this.laser1.activate()
+                    this.laser2.moveTo(this.x + this.width, this.y + 50)
+                    this.laser2.height = 100
+                    this.laser2.width = 800-16-this.x-this.width 
+                    this.laser2.activate()
+                    this.laser3.moveTo(this.x + 50, this.y + this.height)
+                    this.laser3.height = 800-16-this.y-this.height 
+                    this.laser3.width = 100
+                    this.laser3.activate()
+                    this.laser4.moveTo(16, this.y + 50)
+                    this.laser4.height = 100
+                    this.laser4.width = this.x - 16 
+                    this.laser4.activate()
+
+                    this.LHand.targetCoor = [16,684]
+                    this.RHand.targetCoor = [684,16]
+
+
+                }else if(this.stateClock > 7 && this.stateClock < 8){
+
+                    this.laser1.deactivate()
+                    this.laser4.deactivate()
+                    this.laser3.deactivate()
+                    this.laser2.deactivate()
+                    
+                    if(this.stateVar1 == 0){
+                        let ourY
+                        if(pg.y < 400){
+                            ourY = generateRandomIntegerInRange(400,584)
+                        }else{
+                            ourY = generateRandomIntegerInRange(116,200)
+                        }
+                        this.stateVar1 = ourY
+                    }
+
+                    this.look.setAlpha(0.3)
+                    this.deadly = false
+
+                    let ourX = pg.x - 100
+                    if(ourX < 116)
+                        ourX = 116
+                    if(ourX > 484)
+                        ourX = 484
+
+                    this.targetCoor = [ourX , this.stateVar1]
+                
+                }else if(this.stateClock > 8.5 && this.stateClock < 9){
+
+                    this.look.setAlpha(1)
+                    this.deadly = true
+                    
+                    this.laser1.moveTo(this.x + 50, 16)
+                    this.laser1.height = this.y - 16 
+                    this.laser1.width = 100
+                    this.laser1.activate()
+                    this.laser2.moveTo(this.x + this.width, this.y + 50)
+                    this.laser2.height = 100
+                    this.laser2.width = 800-16-this.x-this.width 
+                    this.laser2.activate()
+                    this.laser3.moveTo(this.x + 50, this.y + this.height)
+                    this.laser3.height = 800-16-this.y-this.height 
+                    this.laser3.width = 100
+                    this.laser3.activate()
+                    this.laser4.moveTo(16, this.y + 50)
+                    this.laser4.height = 100
+                    this.laser4.width = this.x - 16 
+                    this.laser4.activate()
+
+                    this.LHand.targetCoor = [16,16]
+                    this.RHand.targetCoor = [684,684]
+
+                }else if(this.stateClock > 9 && this.stateClock < 10){
+
+                    this.look.setAlpha(0.3)
+                    this.deadly = false
+                    
+                    this.laser1.deactivate()
+                    this.laser4.deactivate()
+                    this.laser3.deactivate()
+                    this.laser2.deactivate()
+                    this.speed = 400
+                    this.LHand.speed = 400
+                    this.RHand.speed = 400
+                    this.movingState = 1
+                    this.RHand.deadly = false
+                    this.RHand.look.setAlpha(0.3)
+                    this.RHand.deadly = false
+                    this.RHand.look.setAlpha(0.3)
+
+                }else if(this.stateClock > 10){
+
+                    this.lastAttack = 5 
+                    this.stateChanger(2)
+                }
+            break;
+
+            case 6: //Tracking Bullets
+
+                this.stateClock += Delta
+                this.punishingBulletManager()
+
+                if(this.stateClock < 0.1){
+
+                    this.movingState = 4
+                    this.LHand.speed = 400
+                    this.RHand.speed = 400
+                    this.LHand.targetCoor = [16,400]
+                    this.RHand.targetCoor = [684,400]
+                    if(this.HPlaced == 0)
+                        this.HPlaced++
+
+                }else if((this.stateClock >= 1 && this.stateClock < 3) || (this.stateClock >= 4 && this.stateClock < 6) || (this.stateClock >= 7 && this.stateClock < 9)){
+
+                    if(this.stateClock2 >= this.LPlaced * 0.25 && this.LPlaced < this.maxMagazineSize){
+                        this.LMagazine[this.LPlaced].moveTo(this.LHand.x + 50, this.LHand.y + this.LHand.height )
+                        this.LMagazine[this.LPlaced].velocity = [(pg.x + 8 - (this.LHand.x + 50)) * generateRandomInRange(0.5,1.5), 
+                            (pg.y + 8 - (this.LHand.y + 100)) * generateRandomInRange(0.5,1.5)]
+                        this.LMagazine[this.LPlaced].activate()
+                        this.LPlaced ++
+                    }
+
+                    if(this.stateClock2 >= this.RPlaced * 0.25 && this.RPlaced < this.maxMagazineSize){
+                        this.RMagazine[this.RPlaced].moveTo(this.RHand.x + 50, this.RHand.y + this.RHand.height )
+                        this.RMagazine[this.RPlaced].velocity = [(pg.x + 8 - (this.RHand.x + 50)) * generateRandomInRange(0.5,1.5), 
+                            (pg.y + 8 - (this.RHand.y + 100)) * generateRandomInRange(0.5,1.5)]
+                        this.RMagazine[this.RPlaced].activate()
+                        this.RPlaced ++
+                    }
+
+                    if(this.stateClock2 >= this.HPlaced * 1.9 && this.HPlaced < this.maxMagazineSize){
+                        this.HMagazine[this.HPlaced].moveTo(this.x + 100, this.y + 200 )
+                        this.HMagazine[this.HPlaced].speed = 350
+
+                        let TP = [pg.x - this.x - 100 , pg.y - this.y - 200]
+                        let bulletTravelDistance = getDistance(this.x + 100 , this.y +200 , pg.x , pg.y) - ( (this.width/2 + 25) * (1 + (Math.sqrt(2) - 1) / 2) )
+                        let timeOfTravel = bulletTravelDistance / 350
+                        let pgTravelDistance = playerSpeed * timeOfTravel
+                        let playerVector = [pg.velocity[0] * pgTravelDistance , pg.velocity[1] * pgTravelDistance]
+                        let linkingVector = [TP[0] + playerVector[0] , TP[1] + playerVector[1]]
+
+                        this.HMagazine[this.HPlaced].velocity = linkingVector
+                        this.HMagazine[this.HPlaced].speed = 500
+                        this.HMagazine[this.HPlaced].activate()
+                        this.HPlaced ++
+                    }
+
+                    this.stateClock2 += Delta
+                }else if(this.stateClock >= 9 && this.stateClock < 9.3){
+
+                    this.LHand.targetCoor = [150,200]
+                    this.RHand.targetCoor = [550,200]
+                    
+                }else if(this.stateClock >= 9.3){
+
+                    this.lastAttack = 6
+                    this.stateChanger(2)
+                }
+            break;
+
+            case 7: //Mine Vomit
+
+                this.stateClock += Delta
+                this.punishingBulletManager()
+
+                if(this.stateClock < 3.1){
+
+                    if(this.stateClock - this.stateClock2 > 1 ){
+                        
+                        for(let i = 0; i < 5; i++){
+                            this.MineMagazine[this.MPlaced].reset()
+                            this.MineMagazine[this.MPlaced].moveTo(this.x + 100, this.y + 100 )
+                            this.MineMagazine[this.MPlaced].speed = 100
+                            this.MineMagazine[this.MPlaced].targetCoor = [generateRandomIntegerInRange(50,750) , generateRandomIntegerInRange(50,750)] 
+                            this.MPlaced++
+                            if(this.MPlaced == 15){
+                                this.MPlaced = 0
+                            }
+                        }
+                        this.stateClock2 = this.stateClock
+                    }                   
+
+                }else if(this.stateClock >= 5){
+
+                    this.lastAttack = 7
+                    this.stateChanger(2)
+                }
+            break;
+
+            case 8: //Phase Transition
+
+                this.immune = true
+                this.stateClock += Delta
+                this.movingState = 0
+
+                if(this.stateClock < 3){
+
+                    this.speed = 50
+                    this.LHand.speed = 50
+                    this.RHand.speed = 50
+                    this.targetCoor = [300,50]
+                    this.LHand.targetCoor = [100,684]
+                    this.RHand.targetCoor = [600,684]
+                    
+                }else if(this.stateClock >= 3 && this.stateClock < 4){
+
+                    this.LHand.speed = 400
+                    this.RHand.speed = 400
+                    this.targetCoor = [300,50]
+                    this.LHand.targetCoor = [150,200]
+                    this.RHand.targetCoor = [550,200]
+
+                }else if(this.stateClock >= 4 && this.stateClock < 4.5){
+
+                    this.LHand.speed = 1800
+                    this.RHand.speed = 1800
+                    this.targetCoor = [300,50]
+                    this.LHand.targetCoor = [150,100]
+                    this.RHand.targetCoor = [550,100]
+
+                }else if(this.stateClock >= 4.5 && this.stateClock < 5){
+
+                    this.LHand.speed = 1800
+                    this.RHand.speed = 1800
+                    this.targetCoor = [300,50]
+                    this.LHand.targetCoor = [150,684]
+                    this.RHand.targetCoor = [550,684]
+
+                }else if(this.stateClock >= 5 && this.stateClock < 5.5){
+
+                    this.LHand.speed = 1800
+                    this.RHand.speed = 1800
+                    this.targetCoor = [300,50]
+                    this.LHand.targetCoor = [150,100]
+                    this.RHand.targetCoor = [550,100]
+
+                }else if(this.stateClock >= 5.5 && this.stateClock < 6){
+
+                    this.LHand.speed = 1800
+                    this.RHand.speed = 1800
+                    this.targetCoor = [300,50]
+                    this.LHand.targetCoor = [150,684]
+                    this.RHand.targetCoor = [550,684]
+
+                }else if(this.stateClock >= 6 && this.stateClock < 6.5){
+
+                    this.LHand.speed = 400
+                    this.RHand.speed = 400
+                    this.targetCoor = [300,50]
+                    this.LHand.targetCoor = [150,200]
+                    this.RHand.targetCoor = [550,200]
+
+                }else if(this.stateClock >= 7 && this.stateVar1 < 50){
+
+                    this.LHand.speed = 100
+                    this.RHand.speed = 100
+                    this.targetCoor = [300,50]
+                    this.LHand.targetCoor = [150,200]
+                    this.RHand.targetCoor = [550,200]
+
+                    if(this.stateClock - this.stateClock2 > 0.04){
+                        if(this.stateVar1 < 50){
+                            this.healthBar.reduce(-2)
+                            this.stateClock2 = this.stateClock
+                            this.stateVar1++
+                        }
+                    }
+
+                }else if(this.stateClock >= 7.5){
+
+                    this.stateChanger(2)
+                }
+            break;
+
+            case 9: //Death
+
+                this.immune = true
+                this.stateClock += Delta
+                this.movingState = 0
+
+                if(this.stateClock < 3){
+
+                    this.speed = 50
+                    this.LHand.speed = 50
+                    this.RHand.speed = 50
+                    this.targetCoor = [300,50]
+                    this.LHand.targetCoor = [100,684]
+                    this.RHand.targetCoor = [600,684]
+
+                    if(this.stateClock - this.stateClock2 > 0.25){
+                        
+                        let newBOOM = new explosion(this.x + generateRandomIntegerInRange(-50,200) , this.y + generateRandomIntegerInRange(-50,200) , 75 , 75 , 0xFF0000 , 2)
+                        newBOOM.activate()
+                        this.stateClock2 = this.stateClock
+                    }
+                    
+                }else if(this.stateClock >= 4 && this.stateVar1 < 18){
+
+                    this.LHand.speed = 400
+                    this.RHand.speed = 400
+                    this.targetCoor = [300,50]
+                    this.LHand.targetCoor = [150,200]
+                    this.RHand.targetCoor = [550,200]
+
+                    if(this.stateClock - this.stateClock2 > 0.04){
+                        if(this.stateVar1 < 18){
+                            this.healthBar.reduce(-2)
+                            this.stateClock2 = this.stateClock
+                            this.stateVar1++
+                        }
+                    }
+
+                }else if(this.stateClock >= 6 && this.stateClock < 11){
+
+                    this.speed = 50
+                    this.LHand.speed = 200
+                    this.RHand.speed = 200
+                    this.targetCoor = [300,50]
+                    this.LHand.targetCoor = [100,684]
+                    this.RHand.targetCoor = [600,684]
+
+                    if(this.stateClock - this.stateClock2 > 0.25){
+                        if(this.stateVar1 < 36){
+                            this.healthBar.reduce(2)
+                            this.stateClock2 = this.stateClock
+                            this.stateVar1++
+                        }
+
+                        let newBOOM = new explosion(this.x + generateRandomIntegerInRange(-50,200) , this.y + generateRandomIntegerInRange(-50,200) , 75 , 75 , 0xFF0000 , 2)
+                        newBOOM.activate()
+                        this.stateClock2 = this.stateClock
+                    }
+                }else if(this.stateClock >= 11){
+
+                    let newBOOM = new explosion(this.x - 25 , this.y - 25 , 250 , 250 , 0xFF0000 , 3)
+                    newBOOM.activate()
+                    let newBOOM2 = new explosion(this.LHand.x - 25 , this.LHand.y - 25 , 150 , 150 , 0xFF0000 , 3)
+                    newBOOM2.activate()
+                    let newBOOM3 = new explosion(this.RHand.x - 25 , this.RHand.y - 25 , 150 , 150 , 0xFF0000 , 3)
+                    newBOOM3.activate()
+
+                    this.healthBar.hide()
+                    this.look.clear()
+                    this.deadly = false
+                    this.LHand.look.clear()
+                    this.LHand.deadly = false
+                    this.RHand.look.clear()
+                    this.RHand.deadly = false
+                    this.moveTo(300,-500)
+                    this.LHand.moveTo(300,-500)
+                    this.RHand.moveTo(300,-500)
+                    this.state = 0
+                    this.dead = true
+                }
+            break;
+
+            case 10: //Angry Hands
+
+                this.stateClock += Delta
+                this.punishingBulletManager()
+
+                if(this.stateClock < 1){
+
+                    this.LHand.speed = 1200
+                    this.RHand.speed = 1200
+
+                }else if( (this.stateClock >= 1 && this.stateClock < 1.2) || (this.stateClock >= 4 && this.stateClock < 4.2) || (this.stateClock >= 7 && this.stateClock < 7.2) ){
+
+                    this.movingState = 6
+                    this.LHand.targetCoor = [this.x, this.y - 100]
+
+                }else if((this.stateClock >= 1.2 && this.stateClock < 1.3)||(this.stateClock >= 4.2 && this.stateClock < 4.3)||(this.stateClock >= 7.2 && this.stateClock < 7.3)){
+
+                    this.LHand.targetCoor = [pg.x, 684]
+
+                }else if((this.stateClock >= 2.5 && this.stateClock < 2.7) || (this.stateClock >= 5.5 && this.stateClock < 5.7) || (this.stateClock >= 8.5 && this.stateClock < 8.7)){
+
+                    this.movingState = 5
+                    this.RHand.targetCoor = [this.x, this.y - 100]
+
+                }else if((this.stateClock >= 2.7 && this.stateClock < 2.8)||(this.stateClock >= 5.7 && this.stateClock < 5.8)||(this.stateClock >= 8.7 && this.stateClock < 8.8)){
+
+                    this.RHand.targetCoor = [pg.x, 684]
+
+                }else if(this.stateClock >= 10 && this.stateClock < 10.4){
+
+                    this.movingState = 1
+
+                }else if(this.stateClock >= 10.4){
+
+                    this.lastAttack = 10
+                    this.stateChanger(2)
+                }
+            break;
+
+            case 11: //Big Spray
+
+                this.stateClock += Delta
+                this.punishingBulletManager()
+
+                if(this.stateClock < 2){
+
+                    this.movingState = 4
+                    this.LHand.speed = 200
+                    this.RHand.speed = 200
+                    this.LHand.targetCoor = [296,350]
+                    this.RHand.targetCoor = [404,350]
+                }else if(this.stateClock >= 2 && this.stateClock < 7){                    
+
+                    if(this.stateClock2 >= this.LPlaced * 0.2 && this.LPlaced < this.maxMagazineSize){
+                        this.LMagazine[this.LPlaced].moveTo(this.LHand.x + 50, this.LHand.y + this.LHand.height )
+                        this.LMagazine[this.LPlaced].velocity = [generateRandomInRange(-1,1),generateRandomInRange(-0.2,1)]
+                        this.LMagazine[this.LPlaced].width = 20
+                        this.LMagazine[this.LPlaced].height = 20
+                        this.LMagazine[this.LPlaced].speed = 400
+                        this.LMagazine[this.LPlaced].activate()
+                        this.LPlaced ++
+                    }
+                    if(this.stateClock2 >= this.RPlaced * 0.2 && this.RPlaced < this.maxMagazineSize){
+                        this.RMagazine[this.RPlaced].moveTo(this.RHand.x + 50, this.RHand.y + this.RHand.height )
+                        this.RMagazine[this.RPlaced].velocity = [generateRandomInRange(-1,1),generateRandomInRange(-0.2,1)]
+                        this.RMagazine[this.RPlaced].height = 20
+                        this.RMagazine[this.RPlaced].width = 20
+                        this.RMagazine[this.RPlaced].speed = 400
+                        this.RMagazine[this.RPlaced].activate()
+                        this.RPlaced ++
+                    }
+                    this.stateClock2 += Delta
+
+                }else if(this.stateClock >= 7 && this.stateClock < 8){
+                    this.movingState = 1
+                }else if(this.stateClock > 8){
+
+                    this.lastAttack = 11
+                    this.stateChanger(2)
+                }
+            break;
+
+            case 12: //Hey!
+
+                this.stateClock += Delta
+
+                if(this.stateClock < 0.5){
+
+                    this.movingState = 0
+                    this.LHand.speed = 100
+                    this.RHand.speed = 100
+                    this.speed = 100
+                    this.LHand.targetCoor = [16,16]
+                    this.RHand.targetCoor = [684,16]
+                    this.targetCoor = [300,200]
+                    this.LHand.look.setAlpha(0.3)
+                    this.RHand.look.setAlpha(0.3)
+                    this.LHand.deadly = false
+                    this.RHand.deadly = false
+
+                } else if(this.stateClock >= 1.5 && this.stateClock <14.4){
+
+                    this.speed = 0
+                    this.velocity = [0,0]
+
+                    let stepX = -1 * 650 * Delta
+                    this.moveTo(this.x + stepX,this.y)
+                    if(this.x < -200){
+                        this.x = 1200
+                        this.y = generateRandomIntegerInRange(16,584)
+                    }
+                    if(this.x > 100 && this.x < 500){
+
+                        if(this.stateClock - this.stateClock2 > 0.12 ){
+                        
+                            this.MineMagazine[this.MPlaced].reset()
+                            this.MineMagazine[this.MPlaced].moveTo(this.x + 100, this.y + 100 )
+                            this.MineMagazine[this.MPlaced].speed = 200
+                            this.MineMagazine[this.MPlaced].triggered = true
+                            this.MineMagazine[this.MPlaced].targetCoor = [generateRandomIntegerInRange(50,750) , generateRandomIntegerInRange(50,750)] 
+                            this.MPlaced++
+                            if(this.MPlaced == this.maxMagazineSize){
+                                this.MPlaced = 0
+                            }
+                            this.stateClock2 = this.stateClock
+                        }  
+                        
+                    }
+                }else if(this.stateClock >= 14.4 && this.stateClock < 16){
+
+                    this.speed = 300
+                    this.deadly = false
+                    this.look.setAlpha(0.3)
+                    this.targetCoor = [300,50]
+                    this.LHand.targetCoor = [150,200]
+                    this.RHand.targetCoor = [550,200]
+
+                }else if(this.stateClock > 16){
+
+                    this.lastAttack = 12
+                    this.stateChanger(2)
+                }
+            break;
+
+            case 13: //Lasers All Over
+
+                this.stateClock += Delta
+                this.movingState = 0
+
+                if(this.stateClock < 1.5){
+                    this.speed = 200
+                    this.look.setAlpha(0.3)
+                    this.targetCoor = [300,16]
+                    this.deadly = false
+                    this.LHand.speed = 150
+                    this.LHand.targetCoor = [16,300]
+                    this.RHand.speed = 150
+                    this.RHand.targetCoor = [684,300]
+                } else if ( this.stateClock >= 1.5 && this.stateClock < 10.5){
+
+                    if(this.stateClock - this.stateClock2 >= 1.5 ){
+                        
+                        this.LLaser.deactivate()
+                        this.RLaser.deactivate()
+                        
+                        this.LHand.speed = 2000
+                        this.LHand.deadly = false
+                        this.LHand.look.setAlpha(0.3)
+
+                        let dice = generateRandomIntegerInRange(1,4)
+                        if(dice == 1){
+                            let destination = generateRandomIntegerInRange(16,684)
+                            this.LHand.targetCoor = [16, destination]
+                            this.LLaser.x = 116
+                            this.LLaser.y = destination + 25
+                            this.LLaser.width = 667
+                            this.LLaser.height = 50
+
+                        }else if(dice == 2){
+                            let destination = generateRandomIntegerInRange(16,684)
+                            this.LHand.targetCoor = [destination,684]
+                            this.LLaser.x = destination + 25
+                            this.LLaser.y = 16
+                            this.LLaser.width = 50
+                            this.LLaser.height = 667
+
+                        }else if(dice == 3){
+                            let destination = generateRandomIntegerInRange(16,684)
+                            this.LHand.targetCoor = [684,destination]
+                            this.LLaser.x = 16
+                            this.LLaser.y = destination + 25
+                            this.LLaser.width = 667
+                            this.LLaser.height = 50
+
+                        }else if(dice == 4){
+                            let destination = generateRandomIntegerInRange(16,684)
+                            this.LHand.targetCoor = [destination,16]
+                            this.LLaser.x = destination + 25
+                            this.LLaser.y = 116
+                            this.LLaser.width = 50
+                            this.LLaser.height = 667
+                        }
+
+                        this.RHand.speed = 2000
+                        this.RHand.deadly = false
+                        this.RHand.look.setAlpha(0.3)
+
+                        let dice2 = generateRandomIntegerInRange(1,4)
+                        if(dice2 == 1){
+                            let destination = generateRandomIntegerInRange(16,684)
+                            this.RHand.targetCoor = [16, destination]
+                            this.RLaser.x = 116
+                            this.RLaser.y = destination + 25
+                            this.RLaser.width = 667
+                            this.RLaser.height = 50
+
+                        }else if(dice2 == 2){
+                            let destination = generateRandomIntegerInRange(16,684)
+                            this.RHand.targetCoor = [destination,684]
+                            this.RLaser.x = destination + 25
+                            this.RLaser.y = 16
+                            this.RLaser.width = 50
+                            this.RLaser.height = 667
+
+                        }else if(dice2 == 3){
+                            let destination = generateRandomIntegerInRange(16,684)
+                            this.RHand.targetCoor = [684,destination]
+                            this.RLaser.x = 16
+                            this.RLaser.y = destination + 25
+                            this.RLaser.width = 667
+                            this.RLaser.height = 50
+
+                        }else if(dice2 == 4){
+                            let destination = generateRandomIntegerInRange(16,684)
+                            this.RHand.targetCoor = [destination,16]
+                            this.RLaser.x = destination + 25
+                            this.RLaser.y = 116
+                            this.RLaser.width = 50
+                            this.RLaser.height = 667
+                        }
+                            
+                        this.stateClock2 = this.stateClock
+
+                        if(this.stateClock3 == 0)
+                            this.stateClock3 += 1
+                    }
+                    if( this.stateClock - this.stateClock3 >= 1.5 ){
+                        
+                        this.LLaser.activate()
+                        this.LHand.look.setAlpha(1)
+                        this.LHand.look.deadly = true
+                        this.RLaser.activate()
+                        this.RHand.look.setAlpha(1)
+                        this.RHand.look.deadly = true
+
+                        this.stateClock3 = this.stateClock
+                    }
+                }else if(this.stateClock >= 10.5 && this.stateClock < 12){
+
+                    this.LLaser.deactivate()
+                    this.RLaser.deactivate()
+                    this.LHand.speed = 200
+                    this.RHand.speed = 200
+                    this.LHand.deadly = false
+                    this.LHand.look.setAlpha(0.3)
+                    this.RHand.deadly = false
+                    this.RHand.look.setAlpha(0.3)
+                    this.speed = 100
+                    this.movingState = 1
+
+                }else if(this.stateClock > 12){
+
+                    this.lastAttack = 13
+                    this.stateChanger(2)
+                }
+            break;
+            
+            case 14: //Mine Rain
+
+                this.stateClock += Delta
+                this.punishingBulletManager()
+
+                if(this.stateClock < 1){
+                    this.movingState = 0
+                    this.speed = 100
+                    this.targetCoor = [300,130]
+                    this.LHand.speed = 200
+                    this.RHand.speed = 200
+                    this.LHand.targetCoor = [16, 16]
+                    this.RHand.targetCoor = [670, 16]
+
+                }else if (this.stateClock > 1.5 && this.stateClock < 6.5){
+
+                    if(this.stateClock - this.stateClock2 > 0.12 ){
+                        
+                        this.LHand.speed = 1200
+                        this.RHand.speed = 1200
+
+                        if(this.LHand.x < 20 + generateRandomIntegerInRange(0,100))
+                            this.LHand.targetCoor = [296,16]
+                        if(this.LHand.x > 292 - generateRandomIntegerInRange(0,100))
+                            this.LHand.targetCoor = [16,16]
+
+                        
+                        if(this.RHand.x > 670 - generateRandomIntegerInRange(0,100))
+                            this.RHand.targetCoor = [404,16]                            
+                        if(this.RHand.x < 410 + generateRandomIntegerInRange(0,100))
+                            this.RHand.targetCoor = [670,16]
+
+                        this.stateClock2 = this.stateClock
+                    }
+
+                    if(this.stateClock - this.stateClock3 > 0.3 ){
+
+                        this.MineMagazine[this.MPlaced].reset()
+                        this.MineMagazine[this.MPlaced].moveTo(this.LHand.x + 50, this.LHand.y + 100 )
+                        this.MineMagazine[this.MPlaced].timeToBOOM = generateRandomInRange(0.5,3)
+                        this.MineMagazine[this.MPlaced].speed = generateRandomIntegerInRange(300,400)
+                        this.MineMagazine[this.MPlaced].triggered = true
+                        this.MineMagazine[this.MPlaced].targetCoor = [this.LHand.x + 50 , 784] 
+                        this.MPlaced++
+                        if(this.MPlaced == this.maxMagazineSize){
+                            this.MPlaced = 0
+                        }
+                        this.MineMagazine[this.MPlaced].reset()
+                        this.MineMagazine[this.MPlaced].moveTo(this.RHand.x + 50, this.RHand.y + 100  )
+                        this.MineMagazine[this.MPlaced].timeToBOOM = generateRandomInRange(0.5,3)
+                        this.MineMagazine[this.MPlaced].speed = 200
+                        this.MineMagazine[this.MPlaced].triggered = true
+                        this.MineMagazine[this.MPlaced].targetCoor = [this.RHand.x + 50 , 784] 
+                        this.MPlaced++
+                        if(this.MPlaced == this.maxMagazineSize){
+                            this.MPlaced = 0
+                        }
+
+                        this.stateClock3 = this.stateClock
+                    }  
+
+                }else if(this.stateClock > 6.5 && this.stateClock < 7.5){
+                    this.LHand.speed = 200
+                    this.RHand.speed = 200
+                    this.movingState = 4
+                    this.LHand.targetCoor = [150,200]
+                    this.RHand.targetCoor = [550,200]
+                }else if(this.stateClock > 7.5 ){
+
+                    this.lastAttack = 14
+                    this.stateChanger(2)
+                }
+            break;
+        }
+
+
+
+        switch(this.movingState){
+            case 0:
+            break;
+            case 1:
+
+                if(this.lastPGX != pg.x){
+                    this.targetCoor = [pg.x - 100,50 + this.fluctuating / 10]
+                    this.LHand.targetCoor = [pg.x - 250,200 + this.fluctuating / 10]
+                    this.RHand.targetCoor = [pg.x + 150,200 + this.fluctuating / 10]
+                    this.lastPGX = pg.x
+                }
+                if(Math.floor(this.fluctuating) % 10 == 0){
+                    this.targetCoor = [pg.x - 100,50 + this.fluctuating / 10]
+                    this.LHand.targetCoor = [pg.x - 250,200 + this.fluctuating / 10]
+                    this.RHand.targetCoor = [pg.x + 150,200 + this.fluctuating / 10]
+                }
+            break;
+            case 2:
+
+                if(this.lastPGX != pg.x){
+                    this.LHand.targetCoor = [pg.x - 250,200 + this.fluctuating / 10]
+                    this.lastPGX = pg.x
+                }
+                if(Math.floor(this.fluctuating) % 10 == 0){
+                    this.LHand.targetCoor = [pg.x - 250,200 + this.fluctuating / 10]
+                }
+            break;
+            case 3:
+
+                if(this.lastPGX != pg.x){
+                    this.RHand.targetCoor = [pg.x + 150,200 + this.fluctuating / 10]
+                    this.lastPGX = pg.x
+                }
+                if(Math.floor(this.fluctuating) % 10 == 0){
+                    this.RHand.targetCoor = [pg.x + 150,200 + this.fluctuating / 10]
+                }
+            break;
+            case 4:
+
+                if(this.lastPGX != pg.x){
+                    this.targetCoor = [pg.x - 100,50 + this.fluctuating / 10]
+                    this.lastPGX = pg.x
+                }
+                if(Math.floor(this.fluctuating) % 10 == 0){
+                    this.targetCoor = [pg.x - 100,50 + this.fluctuating / 10]
+                }
+            break;
+            case 5:
+
+                if(this.lastPGX != pg.x){
+                    this.targetCoor = [pg.x - 100,50 + this.fluctuating / 10]
+                    this.LHand.targetCoor = [pg.x - 250,200 + this.fluctuating / 10]
+                    this.lastPGX = pg.x
+                }
+                if(Math.floor(this.fluctuating) % 10 == 0){
+                    this.targetCoor = [pg.x - 100,50 + this.fluctuating / 10]
+                    this.LHand.targetCoor = [pg.x - 250,200 + this.fluctuating / 10]
+                }
+            break;
+            case 6:
+
+                if(this.lastPGX != pg.x){
+                    this.targetCoor = [pg.x - 100,50 + this.fluctuating / 10]
+                    this.RHand.targetCoor = [pg.x + 150,200 + this.fluctuating / 10]
+                    this.lastPGX = pg.x
+                }
+                if(Math.floor(this.fluctuating) % 10 == 0){
+                    this.targetCoor = [pg.x - 100,50 + this.fluctuating / 10]
+                    this.RHand.targetCoor = [pg.x + 150,200 + this.fluctuating / 10]
+                }
+            break;
+            case 7:
+
+                if(this.lastPGX != pg.x){
+                    this.LHand.targetCoor = [pg.x - 250,200 + this.fluctuating / 10]
+                    this.RHand.targetCoor = [pg.x + 150,200 + this.fluctuating / 10]
+                    this.lastPGX = pg.x
+                }
+                if(Math.floor(this.fluctuating) % 10 == 0){
+                    this.LHand.targetCoor = [pg.x - 250,200 + this.fluctuating / 10]
+                    this.RHand.targetCoor = [pg.x + 150,200 + this.fluctuating / 10]
+                }
+            break;
+        }
+
+        if(this.state != 0){
+            this.move([18])
+            
+            if(this.state == 13){
+                this.LHand.move()
+                this.RHand.move()
+            }else{
+                this.LHand.move([17,18])
+                this.RHand.move([17,18])
+            }
+        }
+    }
+
+    stateChanger(stateToChangeTo){
+
+        this.LHand.speed = 75
+        this.RHand.speed = 75
+        this.speed = 50
+        this.stateClock2 = 0
+        this.stateClock = 0
+        this.stateClock3 = 0
+        this.LPlaced = 0
+        this.RPlaced = 0
+        this.HPlaced = 0
+        this.stateVar1 = 0
+        this.immune = false
+        this.look.setAlpha(1)
+        this.LHand.look.setAlpha(1)
+        this.RHand.look.setAlpha(1)
+        this.deadly = true
+        this.LHand.deadly = true
+        this.RHand.deadly = true
+        this.LLaser.deactivate()
+        this.RLaser.deactivate()
+        this.laser1.deactivate()
+        this.laser2.deactivate()
+        this.laser3.deactivate()
+        this.laser4.deactivate()
+
+        let data = this.checkCollision2TheRevenge(this.LHand,0,0)
+        let data2 = this.checkCollision2TheRevenge(this.RHand,0,0)
+        let data3 = this.LHand.checkCollision2TheRevenge(this.RHand,0,0)
+        if(data[0] || data3[0] || data2[0]){
+            this.moveTo(300,50)
+            this.LHand.moveTo(150,200)
+            this.RHand.moveTo(550,200)
+        }
+
+        this.state = stateToChangeTo
+    }
+
+    punishingBulletManager(){
+
+        if(pg.y < this.y + this.height + 50 && pg.y >= this.y + this.height && pg.x >= this.x && pg.x < this.x + this.width){
+            if(this.punishingBullet.active == false){
+                this.punishingBullet.moveTo(this.x+75 , this.y + 75)
+                this.punishingBullet.velocity = [pg.x - (this.x + 100) , pg.y - (this.y + 100)]
+                this.punishingBullet.activate()
+            }
+        }
+    }    
+    
+    reduceHealth(){
+
+        if(!this.immune){
+        
+            this.healthBar.reduce(2)
+            this.health -= 100
+
+            if(this.health == 50){
+                this.phase = 2
+                this.stateChanger(8)
+            }
+            if(this.health == 0){
+
+                this.stateChanger(9)
+            }
+        }
+    }
+}
+
+class HealthBar extends Entity{
+    constructor(){
+        super(150,20,500,20,false,false,0,[0,0],false)
+
+        this.ID = 19
+        this.color = 0xFF0000
+        this.look.fillStyle(this.color);
+        this.look.fillRect(150 , 20 , this.width, this.height);
+        this.text = scene.add.text(85,22,"BOSS: ", { font: '20px' })
+    }
+
+    reduce(percentage){
+        this.width -= 500 * percentage / 100
+        this.look.clear()
+        this.look.fillStyle(this.color);
+        this.look.fillRect(150 , 20 , this.width, this.height);
+    }
+
+    hide(){
+        this.look.clear()
+        this.text.setText("")
+    }
+
+    show(){
+        this.look.clear()
+        this.look.fillStyle(this.color);
+        this.look.fillRect(150 , 20 , this.width, this.height);
+        this.text.setText("BOSS: ")
     }
 }
 
@@ -2309,14 +3832,26 @@ function levelManager(){
             letsChangeBaby = true
         break;
         case ":AV01D!":
-            passUnlocked = true
+            passUnlocked = "true"
+            localStorage["passBoi"] = "true"
         break;
     }
 
-    if(passUnlocked && !letsChangeBaby){
-        localStorage["specialBoi"] = password.value
-        lv = password.value
-        letsChangeBaby = true
+    if(passUnlocked == "true" && !letsChangeBaby){
+        
+        let level = Number(password.value)
+
+        if(level != NaN){
+            
+            level = Math.floor(level)
+            
+            if(level > 0 && level <= 48){
+
+                localStorage["specialBoi"] = password.value
+                lv = password.value
+                letsChangeBaby = true
+            }
+        }
     }
 
     if(letsChangeBaby){
@@ -2593,18 +4128,18 @@ function createTutorial(){
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,SPACE,P,DOWN,LEFT,RIGHT,UP');
     gamepad = this.input.gamepad.gamepads
-    pg = new player(392,350);   
+    pg = new player(392,500);   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION) 
 
     let tutorialText = this.add.text(225,60,"WELCOME TO AVOID", { font: '32px' })
-    let tutorialText2 = this.add.text(160,110,"Just use the arrows keys or W A S D to move", { font: '18px' })
-    let tutorialText3 = this.add.text(145,130,"The Goal is reach the green zone in each level", { font: '18px' })
-    let tutorialText4 = this.add.text(130,150,"Also, try to avoid whatever the heck comes at you", { font: '18px' })
-    let tutorialText5 = this.add.text(75,170,"Actually you have to, because you'd die otherwhise, y'know?", { font: '18px' })
-    let tutorialText6 = this.add.text(200,210,"Press SPACE to jump into the action.", { font: '18px' })
+    let tutorialText2 = this.add.text(85,150,"      Just use the arrows keys or W A S D to move\n     The Goal is reach the green zone in each level" + 
+    "\n    Also, try to avoid whatever the heck comes at you\nActually you have to, because you'd die otherwhise, y'know?", { font: '18px' })
+    let tutorialText3 = this.add.text(100,270,"    The level you reached is saved by the browser,\n   but you can also you input the level's password\n" +
+        "                to jump to that level", { font: '18px' })
+    let tutorialText6 = this.add.text(200,400,"Press SPACE to jump into the action.", { font: '18px' })
 }
 
 
@@ -3921,7 +5456,6 @@ function createLevel28(){
     }
 
     let wall0 = new wall(16,80,700,20)
-
     let wall1 = new wall(150,100,100,150)
     let wall2 = new wall(150,300,100,100)
     let wall3 = new wall(150,450,100,100)
@@ -4090,7 +5624,6 @@ function createLevel30(){
     let lava1 = new lava(PU,PU*2,PU,PU*47)
     let lava2 = new lava(PU*48,PU*2,PU,PU*47)
     let lava3 = new lava(PU*2,PU*48,PU*46,PU)
-
     let lava4 = new lava(PU*2,PU*8,PU*20,PU*11)
     let lava5 = new lava(PU*16,PU*38,PU*15,PU*8)
     let lava6 = new lava(PU*29,PU*14,PU*10,PU*22)
@@ -4106,7 +5639,6 @@ function createLevel30(){
     stalker0.speed = playerSpeed
 
     grid = new nodeGrid(gridNodeSize)
-
     let finish = new goal(PU*2,PU*2,PU*2,PU*6)
 }
 
@@ -4156,7 +5688,6 @@ function createLevel31(){
     let lava12 = new lava(700,350,20,100)
 
     for(let i = 0; i<4; i++){
-
         let lava13 = new lava(200 + i*100,520,100,80 - i * 10)
         let lava14 = new lava(200 + i*100,620 + i * 10,100,80 - i * 10)
     }
@@ -4589,6 +6120,15 @@ function updateLevel39(time,delta){
 }
 
 
+let bigBoi
+let upgrade40
+let level40Clock = 0
+let upperEdge40
+let winText1
+let winText2
+let winText3
+let winText4
+let level40Goal
 
 function preloadLevel40(){
     this.load.audio('themeBoss', ['ost/Boss - Space Racing.ogg',]);
@@ -4602,11 +6142,38 @@ function createLevel40(){
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP,SPACE');
     gamepad = this.input.gamepad.gamepads
-    pg = new player(40,720,true,true);   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
-    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let realUpperEdge = new wall(0 , -500 ,XDIMENSION , wallThickness)
+    upperEdge40 = new lava(0,0, XDIMENSION , wallThickness - 1) 
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+
+    if(skipBossIntro == "true"){
+        pg = new player(300,720,true,true)
+        bigBoi = new Boss()
+        bigBoi.moveTo(300,50)
+        bigBoi.LHand.moveTo(150,200)
+        bigBoi.RHand.moveTo(550,200)
+        bigBoi.state = 2
+        bigBoi.immune = false
+        upperEdge40= new wall(0,0, XDIMENSION , wallThickness - 1)
+        bigBoi.healthBar.show()
+        
+        if(musicBoss != undefined){
+            if(!musicBoss.isPlaying)
+                musicBoss.play({loop: true})
+        }else{
+            musicBoss = this.sound.add('themeBoss')
+            musicBoss.volume = volumeSlider.value / 100  
+            this.scene.restart()
+        }
+
+    }else{
+        pg = new player(392,720,true)
+        upgrade40 = new upgrade(396,396,"pewpew")
+        bigBoi = new Boss()
+    }
+
     if(music4 != undefined){
         music4.stop()
         music4 = undefined
@@ -4614,8 +6181,82 @@ function createLevel40(){
     if(musicBoss == undefined){
         musicBoss = this.sound.add('themeBoss')
         musicBoss.volume = volumeSlider.value / 100  
-        musicBoss.play({loop: true});
         this.scene.restart()
+    }
+
+    level40Goal = new goal(400,1200,100,50)
+
+    winText1 = this.add.text(250,900,"WOW! YOU DID IT!", { font: '32px' })
+    winText2 = this.add.text(140,900,"That really was something, congratulations.\n", { font: '20px' })
+    winText3 = this.add.text(175,900,"Well the game is done, hope you had fun!", { font: '20px' })
+    winText4 = this.add.text(120,900,"EXCEPT IT ISN'T! There are some bonus levels just\n for you! Please try to contain your excitement.", { font: '20px' })
+
+    level40Clock = 0
+    level40Clock2 = 0
+}
+
+let doItOnce = true
+let doItOnce2 = true
+let doItOnce3 = true
+let level40Clock2 =0
+
+function updateLevel40(time,delta){
+
+    Delta = delta / 1000
+    omniHandler()
+
+    if(upgrade40 != undefined){
+        if(upgrade40.done == false){
+
+            level40Clock += Delta
+
+            if(upgrade40.taken){
+
+                if(doItOnce2){
+                    level40Clock = 0
+                    doItOnce2 = false
+                }
+
+                if(level40Clock > 2 && doItOnce){
+                    bigBoi.state = 1
+                    doItOnce = false
+                }
+
+                if(level40Clock > 10 && doItOnce3){
+                    upperEdge40= new wall(0,0, XDIMENSION , wallThickness - 1)
+                    doItOnce3 = false
+                    skipBossIntro = "true"
+                    localStorage["skipBoi"] = "true"
+                }
+            }
+        }
+    }
+
+    if(bigBoi.dead == true ){
+
+        level40Clock2 += Delta
+
+        if(level40Clock2 > 4){
+            winText1.x = 250
+            winText1.y = 120
+            if(musicBoss.isPlaying)
+                musicBoss.stop()
+        }
+        if(level40Clock2 > 6.5){
+            winText2.x = 140
+            winText2.y = 220
+        }
+        if(level40Clock2 > 9.5){
+            winText3.x = 175
+            winText3.y = 280
+        }
+        if(level40Clock2 > 13){
+            winText4.x = 120
+            winText4.y = 340
+        }
+        if(level40Clock2 > 16){
+            level40Goal.moveTo(350,16)
+        }
     }
 }
 
@@ -4659,7 +6300,6 @@ function createLevel41(){
             let cannon3 = new cannon(PU*3 + i*PU*3,PU,1,150,[-1,1])
             let cannon4 = new cannon(PU*3 + i*PU*3,768,1,150,[1,-1])
             let cannon5 = new cannon(768,PU*3 + i*PU*3,1,150,[-1,1])
-            
         }
         if( i == 15 ){
             let cannon2 = new cannon(PU,PU*3 + i*PU*3,1,150,[1,-1])
@@ -4803,7 +6443,7 @@ function updateLevel44(time,delta){
     level44Clock += Delta
 
     if(level44Clock > 0.05){
-        
+
         let mine1 = new mine(generateRandomInRange(20,760),generateRandomIntegerInRange(60,680),2)
         mine1.triggered = true
         level44Clock = 0
@@ -4823,7 +6463,6 @@ function createLevel45(){
     keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
     gamepad = this.input.gamepad.gamepads
     pg = new player(750,660,true);   
-    //let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION *3, wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION*3)
@@ -4837,7 +6476,6 @@ function createLevel45(){
     let lava0 = new lava(16,790,768,800)
     lava0.speed = 50
     lava0.velocity = [0,-1]
-
     let lava1 = new lava(PU , PU*3 , PU*28 , PU*2)
     let lava2 = new lava(PU*5 , PU*11 , PU*28 , PU*2)
     let lava3 = new lava(PU*33 , PU , PU*12 , PU*4)
@@ -4858,7 +6496,6 @@ function createLevel45(){
     stalker0.speed = playerSpeed *1.25
 
     grid = new nodeGrid(gridNodeSize)
-
     let finish = new goal(PU,PU,PU*5,PU*2)
 }
 
@@ -4968,13 +6605,12 @@ function createLevel47(){
 
     let wall0 = new wall(16,PU*44,PU*22,30)
     let wall1 = new wall(PU*27,PU*44,PU*22,84)
-
     let lava0 = new lava(PU*17,16,PU*2,688)
     let lava1 = new lava(PU*31,16,PU*2,688)
+    let lava2 = new lava(PU*24,PU*12,PU*2,PU*4)
 
     let laser0 = new nonnoLaser(PU*20,PU,10,1,[0,1])
     let laser1 = new nonnoLaser(PU*22+4,PU,10,1,[0,1])
-    //let laser2 = new nonnoLaser(PU*24+8,PU,10,1,[0,1])
     let laser3 = new nonnoLaser(PU*26+12,PU,10,1,[0,1])
     let laser4 = new nonnoLaser(PU*28+16,PU,10,1,[0,1])
 
@@ -4993,22 +6629,20 @@ function createLevel47(){
     let track1 = new trackingCannon(768,500,2,200)
     let track2 = new predictingCannon(16,500,2,200)
     let track3 = new predictingCannon(768,300,2,200)
-
-    let spin = new spinnyBoi(PU*25,PU*8,0.5,200)
+    let spin = new spinnyBoi(PU*24 + 8,PU*8,0.5,200)
 
     for(let i = 0; i<8; i++){
-        let mine0 = new mine(generateRandomIntegerInRange(PU*19,PU*30),generateRandomIntegerInRange(PU*3,PU*34))
+        let mine0 = new mine(generateRandomIntegerInRange(PU*19,PU*30),generateRandomIntegerInRange(PU*10,PU*34))
     }
 
     let smoke0 = new smoke(PU*21,PU*40,PU*8,PU*3)
-    let smoke1 = new smoke(PU*20,PU*20,PU*3,PU*5)
-    let smoke2 = new smoke(PU*26,PU*7,PU*5,PU*4)
+    let smoke1 = new smoke(PU*19,PU*7,PU*5,PU*3)
+    let smoke2 = new smoke(PU*26,PU*7,PU*5,PU*3)
 
     let stalker0 = new stalker(PU*2,PU*47)
     stalker0.speed = playerSpeed *0.5
 
     grid = new nodeGrid(gridNodeSize)
-
     let finish = new goal(PU*19 , PU*3 , PU*12,PU*2)
 }
 
