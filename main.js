@@ -1727,7 +1727,7 @@ class smoke extends Entity{
 
 class ball extends Entity{
     constructor(x,y,startingDirection){
-        super(x,y,PU+1,PU+1,false,true,220,startingDirection,true)
+        super(x,y,12,12,false,true,220,startingDirection,true)
 
         this.ID = 12
         this.color = ballColor
@@ -1737,7 +1737,7 @@ class ball extends Entity{
 
     handler(){
 
-        let data = this.move()
+        let data = this.move([20])
         let rotated = false
         
         if(data[0]){            
@@ -3552,6 +3552,21 @@ class HealthBar extends Entity{
 }
 
 
+class barrier extends Entity{
+    constructor(x,y,width,height){
+        super(x,y,width,height,false,false,0,[0,0],true)
+
+        this.ID = 20
+        this.color = 0xFFFFFF
+        this.look.fillStyle(this.color);
+        this.look.fillRect(x , y , width, height);
+        this.look.setAlpha(0.15)
+    }
+
+    handler(){}
+}
+
+
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 //
@@ -3888,7 +3903,8 @@ function levelManager(){
         if(musicCredits != undefined){
             musicCredits.stop()
             musicCredits = undefined
-        }          
+        }
+        passLabel.textContent = " This level Password: "          
         scene.scene.switch("level" + lv)
     }
 }
@@ -4898,8 +4914,10 @@ function createLevel16(){
         this.scene.restart()
     }
 
-    let wall0 = new wall(100,32,50,752)
-    let wall1 = new wall(650,16,50,752)
+    let wall0 = new wall(100,66,50,752)
+    let wall1 = new wall(650,16,50,718)
+    let barrier0 = new barrier(130,16,20,50)
+    let barrier1 = new barrier(650,734,20,50)
 
     let cannon0 = new cannon(150,250,1,200,[1,0])
     let cannon1 = new cannon(634,400,1,200,[-1,0])
@@ -5135,7 +5153,7 @@ function createLevel21(){
     }
 
     for (let i = 0; i<34; i++){
-        let cannon0 = new cannon(16 , 80 + i*18 ,generateRandomInRange(1.2,3.2),generateRandomIntegerInRange(50,100),[1,0])
+        let cannon0 = new cannon(16 , 80 + i*18 ,generateRandomInRange(2,4),generateRandomIntegerInRange(50,100),[1,0])
     }
 
     let stalker0 = new stalker(392,500)
@@ -5190,7 +5208,7 @@ function createLevel22(){
     let ball3 = new ball(generateRandomIntegerInRange(650,750),generateRandomIntegerInRange(500,590),[-1,1])
     let ball6 = new ball(generateRandomIntegerInRange(650,750),generateRandomIntegerInRange(600,690),[-1,1])
 
-    let smoke0 = new smoke(PU * 8,PU*4,PU*4,PU*3)
+    let smoke0 = new smoke(PU * 8,PU*21,PU*4,PU*3)
     let smoke1 = new smoke(PU*18,PU*11,PU*3,PU*5)
     let smoke2 = new smoke(PU*43,PU*43,PU*6,PU*4)
 
@@ -6342,12 +6360,17 @@ function createLevel42(){
         this.scene.restart()
     }
 
-    let wall0 = new wall(16,100,376,50)
-    let wall1 = new wall(408,16,376,134)
-    let wall2 = new wall(408,650,376,50)
-    let wall3 = new wall(16,650,376,134)
+    let wall0 = new wall(16,100,375,50)
+    let wall1 = new wall(425,16,376,134)
+    let wall2 = new wall(425,650,376,50)
+    let wall3 = new wall(16,650,375,134)
     let wall4 = new wall(16,150,84,500)
     let wall5 = new wall(700,150,84,500)
+    
+    let barrier0 = new barrier(375+16,130,50,20)
+    let barrier1 = new barrier(375+16,650,50,20)
+
+    
 
     for(let i = 0; i<30; i++){
         
@@ -6485,25 +6508,24 @@ function createLevel45(){
     lava0.speed = 50
     lava0.velocity = [0,-1]
     let lava1 = new lava(PU , PU*3 , PU*28 , PU*2)
-    let lava2 = new lava(PU*5 , PU*11 , PU*28 , PU*2)
+    let lava2 = new lava(PU*6 , PU*11 , PU*28 , PU*2)
     let lava3 = new lava(PU*33 , PU , PU*12 , PU*4)
-    let lava4 = new lava(PU*5 , PU*11 , PU*3 , PU*24)
-    let lava6 = new lava(PU*12, PU*7 , PU*36 , PU*2)
+    let lava4 = new lava(PU*6 , PU*11 , PU*3 , PU*24)
+    let lava6 = new lava(PU*13, PU*7 , PU*35 , PU*2)
     let lava8 = new lava(PU*20 , PU*27 , PU*29 , PU*2)
     let lava9 = new lava(PU*24 , PU*38 , PU*25 , PU*2)
     let lava10 = new lava(PU*8 , PU*32 , PU*30 , PU*3)
     let lava12 = new lava(PU*42 , PU*33 , PU*7 , PU*3)
-    let lava7 = new lava(PU*10 , PU*20 , PU*24 , PU*4)
+    let lava7 = new lava(PU*11 , PU*20 , PU*24 , PU*4)
     let lava11 = new lava(PU*20 , PU*16 , PU*29 , PU*2)
-    let lava13 = new lava(PU , PU*8 , PU*2 , PU*4)
-    let lava14 = new lava(PU*2 , PU*16 , PU*3 , PU*4)
-    let lava15 = new lava(PU , PU*24 , PU*2 , PU*4)
-    let lava16 = new lava(PU*3 , PU*32 , PU*2 , PU*3)
 
-    let stalker0 = new stalker(PU,PU*8)
-    stalker0.speed = playerSpeed *1.25
-
-    grid = new nodeGrid(gridNodeSize)
+    let lava13 = new lava(PU , PU*5 , PU , PU*50)
+    let lava18 = new lava(PU*4 , PU*7 , PU*2 , PU*6)
+    let lava14 = new lava(PU*2 , PU*16 , PU*2 , PU*4)
+    let lava15 = new lava(PU*4 , PU*23 , PU , PU*4)
+    let lava16 = new lava(PU*2 , PU*30 , PU*2 , PU*3)
+    let lava17 = new lava(PU*8 , PU*5 , PU*2 , PU*3)
+    
     let finish = new goal(PU,PU,PU*5,PU*2)
 }
 
@@ -6613,14 +6635,16 @@ function createLevel47(){
 
     let wall0 = new wall(16,PU*44,PU*22,30)
     let wall1 = new wall(PU*27,PU*44,PU*22,84)
+    let wall2 = new wall(PU*25-4,PU*11-4,8,4)
     let lava0 = new lava(PU*17,16,PU*2,688)
     let lava1 = new lava(PU*31,16,PU*2,688)
-    let lava2 = new lava(PU*24,PU*12,PU*2,PU*4)
+    let lava2 = new lava(PU*24,PU*11,PU*2,PU*4)
+    let barrier0 = new barrier(PU*19 , PU*44 , PU*12,PU)
 
-    let laser0 = new nonnoLaser(PU*20,PU,10,1,[0,1])
-    let laser1 = new nonnoLaser(PU*22+4,PU,10,1,[0,1])
-    let laser3 = new nonnoLaser(PU*26+12,PU,10,1,[0,1])
-    let laser4 = new nonnoLaser(PU*28+16,PU,10,1,[0,1])
+    let laser0 = new nonnoLaser(PU*20,PU,9,1,[0,1])
+    let laser1 = new nonnoLaser(PU*22+4,PU,9,1,[0,1])
+    let laser3 = new nonnoLaser(PU*26+12,PU,9,1,[0,1])
+    let laser4 = new nonnoLaser(PU*28+16,PU,9,1,[0,1])
 
     let cannon0 = new cannon(16,PU*43,0.5,200,[1,-1])
     let cannon1 = new cannon(66,PU*43,0.5,200,[1,-1])
@@ -6638,6 +6662,11 @@ function createLevel47(){
     let track2 = new predictingCannon(16,500,2,200)
     let track3 = new predictingCannon(768,300,2,200)
     let spin = new spinnyBoi(PU*24 + 8,PU*8,0.5,200)
+
+    let ball0 = new ball(generateRandomIntegerInRange(PU*3,PU*8),generateRandomIntegerInRange(PU*3,PU*8),[-1,-1])
+    let ball1 = new ball(generateRandomIntegerInRange(PU*43,PU*48),generateRandomIntegerInRange(PU*3,PU*8),[1,-1])
+    let ball2 = new ball(generateRandomIntegerInRange(PU*43,PU*48),generateRandomIntegerInRange(PU*35,PU*40),[1,1])
+    let ball3 = new ball(generateRandomIntegerInRange(PU*3,PU*8),generateRandomIntegerInRange(PU*35,PU*10),[-1,1])
 
     for(let i = 0; i<8; i++){
         let mine0 = new mine(generateRandomIntegerInRange(19,30) * PU + 2,generateRandomIntegerInRange(10,34) * PU + 2)

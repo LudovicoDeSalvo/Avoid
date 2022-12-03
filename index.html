@@ -21,11 +21,13 @@
     <div class="grid-container">
 
         <div class="title">
-            <h1 id="centerTitle"></h1>
+            <h1 id="centerTitle">Avoid</h1>
         </div>
 
         <div class="main-wrapper">
+
             <div class="levelStuff">
+
                 <div class="level-stuff-wrapper">
                     <h2 for="thisLevelPass" id="levelName"> </h2>
                     <input type="text" id="passwordBox" placeholder="Enter Level Password" maxlength="8">
@@ -33,29 +35,22 @@
                     <h2 id="psw-lbl"></h2>
                     <label for="thisLevelPass" id="thisLevelPassword"> </label>
                 </div>
+
                 <div class="volume-stuff-wrapper">
                     <label class="vlm-lbl"> Volume </label>
                     <input type="range" min="0" max="100" value="75" class="slider" id="sliderHTML">
                 </div>
+
             </div>
-            <div class="volumeStuff">
-                <!-- <div class="volume-stuff-wrapper">
-                    <label class="vlm-lbl"> Volume </label>
-                    <input type="range" min="0" max="100" value="75" class="slider" id="sliderHTML">
-                </div> -->
-            </div>
+
             <div class="main" id="canvas">
                 <script src="lib/phaser.js"></script>
                 <script src="main.js"></script>
             </div>
+            
         </div>
 
     </div>
-
-
-
-
-
 
 </body>
 
