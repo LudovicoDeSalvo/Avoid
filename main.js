@@ -4612,10 +4612,10 @@ function createLevel9(){
     let cannon2 = new cannon(214,389,1.5,50,[1,0])
     let cannon3 = new cannon(284,564,1.5,50,[-1,0])
 
-    let laser3 = new nonnoLaser(384,200,2.8,1.2,[1,0])
-    let laser4 = new nonnoLaser(384,320,2.1,1.9,[1,0])
-    let laser5 = new nonnoLaser(384,440,1.4,2.6,[1,0])
-    let laser6 = new nonnoLaser(384,560,0.7,3.3,[1,0])
+    let laser3 = new nonnoLaser(384,200,3.3,1.7,[1,0])
+    let laser4 = new nonnoLaser(384,320,2.6,2.4,[1,0])
+    let laser5 = new nonnoLaser(384,440,1.9,3.1,[1,0])
+    let laser6 = new nonnoLaser(384,560,1.2,3.8,[1,0])
 
     let Tcannon1 = new trackingCannon(384,160,0.4,150)
     let Tcannon2 = new trackingCannon(384,280,0.4,150)
