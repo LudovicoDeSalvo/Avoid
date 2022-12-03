@@ -5968,11 +5968,12 @@ function createLevel36(){
     let wall9 = new wall(80,300,20,16)
     let wall11 = new wall(160,720,20,64)
 
-    let lava0 = new lava(264,700,446,20)
-    let lava1 = new lava(710,120,20,560)
-    let lava2 = new lava(180,80,500,20)
-    let lava3 = new lava(80,130,20,170)
-    let lava4 = new lava(80,316,20,404)
+    let lava0 = new lava(264,705,446,10)
+    let lava1 = new lava(715,120,10,560)
+    let lava2 = new lava(180,85,500,10)
+    let lava3 = new lava(85,130,10,170)
+    let lava4 = new lava(85,316,10,399)
+    let lava5 = new lava(95,705,5,10)
 
     let cannon0 = new cannon(16,16,3.8 * 1.5,80,[1,0])
     let cannon1 = new cannon(16,40,2.6 * 1.5,80,[1,0])
