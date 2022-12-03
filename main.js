@@ -2731,8 +2731,8 @@ class Boss extends Entity{
                     this.movingState = 1
                     this.RHand.deadly = false
                     this.RHand.look.setAlpha(0.3)
-                    this.RHand.deadly = false
-                    this.RHand.look.setAlpha(0.3)
+                    this.LHand.deadly = false
+                    this.LHand.look.setAlpha(0.3)
 
                 }else if(this.stateClock > 10){
 
@@ -3442,7 +3442,7 @@ class Boss extends Entity{
         if(this.state != 0){
             this.move([18])
             
-            if(this.state == 13){
+            if(this.state == 13 || this.state == 5){
                 this.LHand.move()
                 this.RHand.move()
             }else{
@@ -6056,6 +6056,7 @@ function createLevel38(){
     let wall4 = new wall(510,16,60,334)
     let wall5 = new wall(510,366,60,434)
 
+
     for(let i=0 ; i<14; i++){
         if(i<6){
             let ball0 = new ball(generateRandomIntegerInRange(260,320),50 + i*50,[-1,1])
@@ -6347,7 +6348,7 @@ function createLevel42(){
     levelName.textContent = "The Box"      
     scene = this
     entities=[]    
-    keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
+    keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,X,DOWN,LEFT,RIGHT,UP');
     gamepad = this.input.gamepad.gamepads
     pg = new player(350,50,true);   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
