@@ -417,7 +417,8 @@ let button = document.getElementById("passwordButton")
 button.addEventListener("click",levelManager)
 let thisLevelPass = document.getElementById("thisLevelPassword")
 let levelName = document.getElementById("levelName")
-let volumeSlider = document.getElementById("sliderHTML");
+let volumeSlider = document.getElementById("sliderHTML")
+let passLabel = document.getElementById("psw-lbl")
 
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -2075,12 +2076,12 @@ class upgrade extends Entity{
         this.done = false
         
         if(kind == "dash"){
-            this.textSlot = scene.add.text(this.x - 60, this.y + 10 , " " , { font: '12px' })
-            this.text = "   UPGRADE TIME!\n You can Dash now!\n Press SHIFT or Z \nB on the controller"
+            this.textSlot = scene.add.text(this.x - 60, this.y + 10 , " " , { fontFamily: 'Audiowide',fontSize : '12px' })
+            this.text = "   UPGRADE TIME!\n You can Dash now!\n  Press SHIFT or Z \n B on the controller"
         }
         if(kind == "pewpew"){
-            this.textSlot = scene.add.text(this.x - 130, this.y + 10 , " " , { font: '14px' })
-            this.text = "      ...The time has come\nYou can't continue on just avoiding\n      Press space to attack! \n       Y on the controller"
+            this.textSlot = scene.add.text(this.x - 130, this.y + 10 , " " , { fontFamily: 'Audiowide',fontSize : '14px' })
+            this.text = "             ...The time has come\nYou can't continue on just avoiding\n          Press space to attack! \n             Y on the controller"
         }
 
         this.ID = 16
@@ -3505,7 +3506,7 @@ class Boss extends Entity{
         if(!this.immune){
         
             this.healthBar.reduce(2)
-            this.health -= 100
+            this.health--
 
             if(this.health == 50){
                 this.phase = 2
@@ -3527,7 +3528,7 @@ class HealthBar extends Entity{
         this.color = 0xFF0000
         this.look.fillStyle(this.color);
         this.look.fillRect(150 , 20 , this.width, this.height);
-        this.text = scene.add.text(85,22,"BOSS: ", { font: '20px' })
+        this.text = scene.add.text(76,17,"BOSS: ", { fontFamily: 'Audiowide',fontSize : '20px' })
     }
 
     reduce(percentage){
@@ -3966,10 +3967,12 @@ function update(time,delta){
 let SMClock = 0
 let fallingStars = []
 
+
 function preloadSM(){
     this.load.audio('themeSM', [
         'ost/Start Menu - Tonal Resonance.mp3',
     ]);
+    this.load.script('webfont', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js');
 }
 
 function createSM(){
@@ -3989,8 +3992,9 @@ function createSM(){
         this.scene.restart()
     }
 
-    let tutorialText = this.add.text(225,140,"AVOID", { font: '110px' })
-    let tutorialText2 = this.add.text(290,400,"START GAME", { font: '32px' })
+
+    scene.add.text(205,140,"AVOID", { fontFamily: 'Audiowide',fontSize : '110px' })
+    scene.add.text(290,397,"START GAME", { fontFamily: 'Audiowide',fontSize: '28px' })
     let indicator = new bullet(270,408,12,12,0,[0,0],true,0x00FF00)
 
     for(let i = 0; i<50; i++){
@@ -4016,6 +4020,8 @@ function updateSM(time,delta){
 
     if(keys.ENTER.isDown || keys.SPACE.isDown || AButton.value == 1){
 
+        passLabel.textContent = " This level Password: "
+        
         if(lv == 1){
 
             var theOtherScene = scene.scene.get("tutorial");            
@@ -4133,14 +4139,14 @@ function createTutorial(){
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
-    let leftEdge = new wall(0,0, wallThickness , YDIMENSION) 
-
-    let tutorialText = this.add.text(225,60,"WELCOME TO AVOID", { font: '32px' })
-    let tutorialText2 = this.add.text(85,150,"      Just use the arrows keys or W A S D to move\n     The Goal is reach the green zone in each level" + 
-    "\n    Also, try to avoid whatever the heck comes at you\nActually you have to, because you'd die otherwhise, y'know?", { font: '18px' })
-    let tutorialText3 = this.add.text(100,270,"    The level you reached is saved by the browser,\n   but you can also you input the level's password\n" +
-        "                to jump to that level", { font: '18px' })
-    let tutorialText6 = this.add.text(200,400,"Press SPACE to jump into the action.", { font: '18px' })
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    
+    scene.add.text(210,60,"WELCOME TO AVOID", { fontFamily: 'Audiowide',fontSize: '32px' })
+    scene.add.text(90,150,"           Just use the arrows keys or W A S D to move\n           The Goal is reach the green zone in each level" + 
+        "\n        Also, try to avoid whatever the heck comes at you\nActually you have to, because you'd die otherwhise, y'know?", { fontFamily: 'Audiowide',fontSize: '18px' })
+    scene.add.text(140,270,"    The level you reached is saved by the browser,\n   but you can also you input the level's password\n" +
+        "                    to jump to that level", { fontFamily: 'Audiowide',fontSize: '18px' })
+    scene.add.text(205,400,"Press SPACE to jump into the action.", { fontFamily: 'Audiowide',fontSize: '18px' })
 }
 
 
@@ -4158,8 +4164,9 @@ function createLandsBetween(){
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
 
-    let LBText = this.add.text(120,100,"VICTORY IS YOURS", { font: '58px' })
-    let LBText2 = this.add.text(90,180,"Press SPACE to advance to the next level", { font: '26px' })
+    scene.add.text(90,100,"VICTORY IS YOURS", { fontFamily: 'Audiowide' , fontSize: '58px' })
+    scene.add.text(95,200,"Press SPACE to advance to the next level", { fontFamily: 'Audiowide' , fontSize: '26px' })
+
 }
 
 
@@ -4181,9 +4188,9 @@ function createDeath(){
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
 
-    let deathText = this.add.text(250,100,"YOU DIED", { font: '58px' })
-    let deathText2 = this.add.text(290,200,"Respawing in:", { font: '26px' })
-    deathText3 = this.add.text(385,240," ",{ font: '26px' })
+    scene.add.text(240,100,"YOU DIED", { fontFamily: 'Audiowide',fontSize: '58px' })
+    scene.add.text(290,200,"Respawning in:", { fontFamily: 'Audiowide',fontSize: '26px' })
+    deathText3 = scene.add.text(385,240," ",{ fontFamily: 'Audiowide',fontSize: '26px' })
 }
 
 function updateDeath(time,delta){
@@ -6187,10 +6194,10 @@ function createLevel40(){
 
     level40Goal = new goal(400,1200,100,50)
 
-    winText1 = this.add.text(250,900,"WOW! YOU DID IT!", { font: '32px' })
-    winText2 = this.add.text(140,900,"That really was something, congratulations.\n", { font: '20px' })
-    winText3 = this.add.text(175,900,"Well the game is done, hope you had fun!", { font: '20px' })
-    winText4 = this.add.text(120,900,"EXCEPT IT ISN'T! There are some bonus levels just\n for you! Please try to contain your excitement.", { font: '20px' })
+    winText1 = this.add.text(265,900,"WOW! YOU DID IT!", { fontFamily: 'Audiowide',fontSize : '32px' })
+    winText2 = this.add.text(190,900,"That really was something, congratulations.\n", { fontFamily: 'Audiowide',fontSize : '20px' })
+    winText3 = this.add.text(175,900,"Well the game is done, hope you had fun!", { fontFamily: 'Audiowide',fontSize : '20px' })
+    winText4 = this.add.text(120,900,"EXCEPT IT ISN'T! There are some bonus levels just\n for you! Please try to contain your excitement.", { fontFamily: 'Audiowide',fontSize : '20px' })
 
     level40Clock = 0
     level40Clock2 = 0
@@ -6238,13 +6245,13 @@ function updateLevel40(time,delta){
         level40Clock2 += Delta
 
         if(level40Clock2 > 4){
-            winText1.x = 250
+            winText1.x = 240
             winText1.y = 120
             if(musicBoss.isPlaying)
                 musicBoss.stop()
         }
         if(level40Clock2 > 6.5){
-            winText2.x = 140
+            winText2.x = 160
             winText2.y = 220
         }
         if(level40Clock2 > 9.5){
@@ -6680,13 +6687,13 @@ function createCredits(){
         this.scene.restart()
     }
 
-    creditsText1 = this.add.text(225,850,"AVOID", { font: '110px' })
-    creditsText2 = this.add.text(140,1150,"A Game By Ludovico De Salvo", { font: '32px' })
-    creditsText3 = this.add.text(140,1350,"Music Courtesy of", { font: '32px' })
-    creditsText6 = this.add.text(180,1400,"-Monolith Official Soundtrack\n-Swngyil YOON", { font: '26px' })
-    creditsText4 = this.add.text(120,1650," If you input the password "+'"'+":AV01D!"+'"'+"\nyou can jump to any level by "+
-                                         "inserting\n    the level number as password", { font: '24px' })
-    creditsText5 = this.add.text(160,1950,"Thank You For Playing <3", { font: '32px' })
+    creditsText1 = this.add.text(200,850,"AVOID", { fontFamily: 'Audiowide',fontSize : '110px' })
+    creditsText2 = this.add.text(130,1150,"A Game By Ludovico De Salvo", { fontFamily: 'Audiowide',fontSize : '32px' })
+    creditsText3 = this.add.text(140,1350,"Music Courtesy of", { fontFamily: 'Audiowide',fontSize : '32px' })
+    creditsText6 = this.add.text(180,1400,"-Monolith Official Soundtrack\n-Swngyil YOON", { fontFamily: 'Audiowide',fontSize : '26px' })
+    creditsText4 = this.add.text(135,1650,"  If you input the password "+'"'+":AV01D!"+'"'+"\nyou can jump to any level by "+
+                                         "inserting\n    the level number as password", { fontFamily: 'Audiowide',fontSize : '24px' })
+    creditsText5 = this.add.text(160,1930,"Thank You For Playing <3", { fontFamily: 'Audiowide',fontSize : '32px' })
 
     for(let i = 0; i<50; i++){
         
