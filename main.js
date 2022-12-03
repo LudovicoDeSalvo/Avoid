@@ -717,8 +717,10 @@ class player extends Entity{
         this.dashing = false
         this.dashDuration = 0.15
         this.magazine = []
+        this.bulletIndicators = []
         for(let i = 0; i<4; i++){
             this.magazine.push(new playerBullet())
+            this.bulletIndicators.push( new bulletIndicator() )
         }
         this.canShoot = canShoot == undefined ? false : canShoot
         this.inRecovery = false
@@ -825,6 +827,8 @@ class player extends Entity{
                     this.inRecovery = false
                 }
 
+                
+
             }else{
                 sceneManager()
             }
@@ -843,6 +847,9 @@ class player extends Entity{
         this.velocity = [dx,dy]     //Vector is normalized in move()
         this.move()
         this.checkIfDead()
+
+        if(this.canShoot)
+            this.showBullet()
     }
 
 
@@ -887,6 +894,49 @@ class player extends Entity{
                 } 
             }
         }
+    }
+
+    showBullet(){
+
+        let numberOfActive = 0
+
+        for(let i = 0; i<4 ; i++){
+            if(this.magazine[i].canBeShot){
+                numberOfActive++
+            }
+        }
+
+        for(let i = 0; i<4; i++){
+
+            if(i<numberOfActive)
+                this.bulletIndicators[i].show()
+            else
+                this.bulletIndicators[i].hide()
+
+            this.bulletIndicators[i].moveTo(this.x + i*5 - 1, this.y + PU + 2)
+        }
+    }
+}
+
+class bulletIndicator extends Entity{
+    constructor(x,y){
+        super(x,y,4,4,false,false,0,[0,0],true)
+
+        this.hidden = false
+
+        this.ID = 21
+        this.color = 0x00FFFF
+        this.look.fillStyle(this.color);
+        this.look.fillRect(x , y , this.width, this.height);
+    }
+
+    show(){
+
+        this.look.setAlpha(1)
+    }
+
+    hide(){
+        this.look.setAlpha(0)
     }
 }
 
