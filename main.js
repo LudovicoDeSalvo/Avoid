@@ -827,8 +827,6 @@ class player extends Entity{
                     this.inRecovery = false
                 }
 
-                
-
             }else{
                 sceneManager()
             }
@@ -851,7 +849,6 @@ class player extends Entity{
         if(this.canShoot)
             this.showBullet()
     }
-
 
     checkIfDead(){
 
@@ -2231,7 +2228,7 @@ class Boss extends Entity{
         this.stateFlags = []
 
         this.recoveryTime = 3
-        this.health = 100
+        this.health = 80
         this.healthBar = new HealthBar()
         this.healthBar.hide()
         this.immune = true
@@ -3555,10 +3552,10 @@ class Boss extends Entity{
 
         if(!this.immune){
         
-            this.healthBar.reduce(2)
+            this.healthBar.reduce(2.5)
             this.health--
 
-            if(this.health == 50){
+            if(this.health == 40){
                 this.phase = 2
                 this.stateChanger(8)
             }
@@ -6099,12 +6096,16 @@ function createLevel38(){
         this.scene.restart()
     }
 
-    let wall0 = new wall(200,16,60,384)
+    let wall0 = new wall(200,16,60,380)
+    let barrier0 = new barrier(240,396,20,20)
     let wall1 = new wall(200,416,60,384)
-    let wall2 = new wall(350,16,60,434)
-    let wall3 = new wall(350,466,60,384)
+    let wall2 = new wall(350,16,60,514)
+    let barrier1 = new barrier(350,530,20,20)
+    let barrier3 = new barrier(390,530,20,20)
+    let wall3 = new wall(350,550,60,384)
     let wall4 = new wall(510,16,60,334)
-    let wall5 = new wall(510,366,60,434)
+    let barrier2 = new barrier(510,352,20,20)
+    let wall5 = new wall(510,372,60,434)
 
 
     for(let i=0 ; i<14; i++){
@@ -6424,7 +6425,7 @@ function createLevel42(){
 
     
 
-    for(let i = 0; i<30; i++){
+    for(let i = 0; i<35; i++){
         
         let dice = generateRandomIntegerInRange(1,4)
 
