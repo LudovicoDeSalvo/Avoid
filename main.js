@@ -6748,7 +6748,7 @@ let fallingStars2 = []
 
 
 function preloadCredits(){
-    this.load.audio('themeCredits', ['ost/credits - Thought Soup.mp3',]);
+    this.load.audio('themeCredits', ['ost/Credits - Thought Soup.mp3',]);
 }
 
 function createCredits(){
