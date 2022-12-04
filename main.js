@@ -6501,7 +6501,7 @@ function createLevel44(){
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,SHIFT,Z,DOWN,LEFT,RIGHT,UP');
     gamepad = this.input.gamepad.gamepads
-    pg = new player(392,760,true);   
+    pg = new player(740,760,true);   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION *3, wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
@@ -6513,7 +6513,7 @@ function createLevel44(){
         this.scene.restart()
     }
 
-    let wall0 = new wall(16,700,700,60)
+    let wall0 = new wall(16,700,700,100)
     let wall1 = new wall(100,16,784,40)
 
     let finish = new goal(16,16,84,40)
@@ -6757,6 +6757,7 @@ function createCredits(){
     entities=[]    
     keys = this.input.keyboard.addKeys('ENTER,SPACE');
     gamepad = this.input.gamepad.gamepads
+    levelName.textContent = "<3" 
 
     if(music4 != undefined){
         music4.stop()
