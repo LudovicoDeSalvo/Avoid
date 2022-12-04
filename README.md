@@ -5,6 +5,6 @@ The music is courtesy of Monolith Official Soundtracks and Swngyil YOON.
 I also thank my friend Angelo Lista (https://github.com/AngeloLista) for his help with the HTML and CSS part.
 
 Click here to play:
-https://lastnight77.github.io/
+https://lastnight0.github.io/
 
 Hope you have fun!
