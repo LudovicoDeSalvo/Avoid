@@ -3705,7 +3705,7 @@ function levelManager(){
             lv = 9
             letsChangeBaby = true
         break;
-        case "3ZUT4N":
+        case "3QUT4N":
             localStorage["specialBoi"] = 10
             lv = 10
             letsChangeBaby = true
@@ -3715,7 +3715,7 @@ function levelManager(){
             lv = 11
             letsChangeBaby = true
         break;
-        case "ZQ4L3E":
+        case "VQ4L3E":
             localStorage["specialBoi"] = 12
             lv = 12
             letsChangeBaby = true
@@ -3735,7 +3735,7 @@ function levelManager(){
             lv = 15
             letsChangeBaby = true
         break;
-        case "964Z8M":
+        case "964E8M":
             localStorage["specialBoi"] = 16
             lv = 16
             letsChangeBaby = true
@@ -3745,7 +3745,7 @@ function levelManager(){
             lv = 17
             letsChangeBaby = true
         break;
-        case "HVZ7ZC":
+        case "HVL7LC":
             localStorage["specialBoi"] = 18
             lv = 18
             letsChangeBaby = true
@@ -3810,7 +3810,7 @@ function levelManager(){
             lv = 30
             letsChangeBaby = true
         break;
-        case "ZC8BFM":
+        case "HC8BFM":
             localStorage["specialBoi"] = 31
             lv = 31
             letsChangeBaby = true
@@ -3865,7 +3865,7 @@ function levelManager(){
             lv = 41
             letsChangeBaby = true
         break;
-        case "89KZ4V":
+        case "89KI4V":
             localStorage["specialBoi"] = 42
             lv = 42
             letsChangeBaby = true
@@ -3875,7 +3875,7 @@ function levelManager(){
             lv = 43
             letsChangeBaby = true
         break;
-        case "7FRCNZ":
+        case "7FRCNM":
             localStorage["specialBoi"] = 44
             lv = 44
             letsChangeBaby = true
@@ -4042,7 +4042,7 @@ function createSM(){
 
     scene = this
     entities=[]    
-    keys = this.input.keyboard.addKeys('ENTER,SPACE,A,P,C');
+    keys = this.input.keyboard.addKeys('ENTER,SPACE,A,D,Z');
     gamepad = this.input.gamepad.gamepads
     if(musicCredits != undefined){
         musicCredits.stop()
@@ -4099,7 +4099,7 @@ function updateSM(time,delta){
         }
     }
             
-    if(keys.P.isDown && keys.A.isDown && keys.C.isDown){
+    if(keys.Z.isDown && keys.A.isDown && keys.D.isDown){
         var theOtherScene = scene.scene.get("debug");            
         theOtherScene.scene.restart()            
         scene.scene.switch("debug")
@@ -4678,7 +4678,7 @@ function preloadLevel10(){
 
 function createLevel10(){
 
-    thisLevelPass.textContent = "3ZUT4N"
+    thisLevelPass.textContent = "3QUT4N"
     levelName.textContent = "Storm and Thunder!"      
     scene = this
     entities=[]    
@@ -4761,7 +4761,7 @@ function preloadLevel12(){
 
 function createLevel12(){
 
-    thisLevelPass.textContent = "ZQ4L3E"
+    thisLevelPass.textContent = "VQ4L3E"
     levelName.textContent = "They can do that?"      
     scene = this
     entities=[]    
@@ -4943,7 +4943,7 @@ function preloadLevel16(){
 
 function createLevel16(){
 
-    thisLevelPass.textContent = "964Z8M"
+    thisLevelPass.textContent = "964E8M"
     levelName.textContent = "Comfy Room with deadly balls and cannons"      
     scene = this
     entities=[]    
@@ -5027,7 +5027,7 @@ function preloadLevel18(){
 
 function createLevel18(){
 
-    thisLevelPass.textContent = "HVZ7ZC"
+    thisLevelPass.textContent = "HVL7LC"
     levelName.textContent = "The Corridor"      
     scene = this
     entities=[]    
@@ -5721,7 +5721,7 @@ function preloadLevel31(){
 
 function createLevel31(){
 
-    thisLevelPass.textContent = "ZC8BFM"
+    thisLevelPass.textContent = "HC8BFM"
     levelName.textContent = "Run, Hot Stuff ;)"      
     scene = this
     entities=[]    
@@ -6395,7 +6395,7 @@ function preloadLevel42(){
 
 function createLevel42(){
 
-    thisLevelPass.textContent = "89KZ4V"
+    thisLevelPass.textContent = "89KI4V"
     levelName.textContent = "The Box"      
     scene = this
     entities=[]    
@@ -6495,7 +6495,7 @@ function preloadLevel44(){
 
 function createLevel44(){
 
-    thisLevelPass.textContent = "7FRCNZ"
+    thisLevelPass.textContent = "7FRCNM"
     levelName.textContent = "The Fireworks"      
     scene = this
     entities=[]    
