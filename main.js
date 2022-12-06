@@ -4283,6 +4283,19 @@ function updateDeath(time,delta){
 
 
 function preloadLevel1(){
+
+    var progressBar = this.add.graphics();
+
+    this.load.on('progress', function (value) {
+        progressBar.clear();
+        progressBar.fillStyle(0xffffff, 1);
+        progressBar.fillRect(650, 730, 100 * value, 10);
+    });
+    
+    this.load.on('complete', function () {
+        progressBar.destroy();
+    });
+
     this.load.audio('theme1', ['ost/1 - City of Backstreet.ogg',]);
 }
 
@@ -6820,9 +6833,9 @@ function updateCredits(time,delta){
     
         if(keys.ENTER.isDown || keys.SPACE.isDown || AButton.value == 1){
     
-            var theOtherScene = scene.scene.get("startMenu");            
+            var theOtherScene = scene.scene.get("SM");            
             theOtherScene.scene.restart()        
-            scene.scene.switch("startMenu")
+            scene.scene.switch("SM")
         }
     }
     
