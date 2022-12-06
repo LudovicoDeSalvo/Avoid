@@ -4032,6 +4032,19 @@ let fallingStars = []
 
 
 function preloadSM(){
+
+    var progressBar = this.add.graphics();
+
+    this.load.on('progress', function (value) {
+        progressBar.clear();
+        progressBar.fillStyle(0xffffff, 1);
+        progressBar.fillRect(650, 730, 100 * value, 10);
+    });
+    
+    this.load.on('complete', function () {
+        progressBar.destroy();
+    });
+
     this.load.audio('themeSM', [
         'ost/Start Menu - Tonal Resonance.mp3',
     ]);
