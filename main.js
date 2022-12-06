@@ -4038,7 +4038,10 @@ function preloadSM(){
     this.load.on('progress', function (value) {
         progressBar.clear();
         progressBar.fillStyle(0xffffff, 1);
-        progressBar.fillRect(650, 730, 100 * value, 10);
+        if(value < 0.1)
+            progressBar.fillRect(650, 730, 10, 10)
+        else
+            progressBar.fillRect(650, 730, 100 * value, 10);
     });
     
     this.load.on('complete', function () {
@@ -4050,6 +4053,8 @@ function preloadSM(){
     ]);
     this.load.script('webfont', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js');
 }
+
+
 
 function createSM(){
 
@@ -4297,12 +4302,15 @@ function updateDeath(time,delta){
 
 function preloadLevel1(){
 
-    var progressBar = this.add.graphics();
+    var progressBar = this.add.graphics();    
 
     this.load.on('progress', function (value) {
         progressBar.clear();
         progressBar.fillStyle(0xffffff, 1);
-        progressBar.fillRect(650, 730, 100 * value, 10);
+        if(value < 0.1)
+            progressBar.fillRect(650, 730, 10, 10)
+        else
+            progressBar.fillRect(650, 730, 100 * value, 10);
     });
     
     this.load.on('complete', function () {
