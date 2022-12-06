@@ -52,235 +52,235 @@ var credits = {
 {
 var lv1= {
     key: 'level1',
-    preload: preloadLevel1,
+    preload: preload0,
     create: createLevel1,
     update: update,
 };
 var lv2 = {
     key: 'level2',
-    preload: preloadLevel2,
+    preload: preload0,
     create: createLevel2,
     update: update,
 };
 var lv3 = {
     key: 'level3',
-    preload: preloadLevel3,
+    preload: preload0,
     create: createLevel3,
     update: update,
 };
 var lv4 = {
     key: 'level4',
-    preload: preloadLevel4,
+    preload: preload0,
     create: createLevel4,
     update: update,
 };
 var lv5 = {
     key: 'level5',
-    preload: preloadLevel5,
+    preload: preload0,
     create: createLevel5,
     update: update,
 };
 var lv6 = {
     key: 'level6',
-    preload: preloadLevel6,
+    preload: preload0,
     create: createLevel6,
     update: update,
 };
 var lv7 = {
     key: 'level7',
-    preload: preloadLevel7,
+    preload: preload0,
     create: createLevel7,
     update: update,
 };
 var lv8 = {
     key: 'level8',
-    preload: preloadLevel8,
+    preload: preload0,
     create: createLevel8,
     update: update,
 };
 var lv9 = {
     key: 'level9',
-    preload: preloadLevel9,
+    preload: preload0,
     create: createLevel9,
     update: update,
 };
 var lv10 = {
     key: 'level10',
-    preload: preloadLevel10,
+    preload: preload0,
     create: createLevel10,
     update: update,
 };
 var lv11 = {
     key: 'level11',
-    preload: preloadLevel11,
+    preload: preload1,
     create: createLevel11,
     update: update,
 };
 var lv12 = {
     key: 'level12',
-    preload: preloadLevel12,
+    preload: preload1,
     create: createLevel12,
     update: update,
 };
 var lv13 = {
     key: 'level13',
-    preload: preloadLevel13,
+    preload: preload1,
     create: createLevel13,
     update: update,
 };
 var lv14 = {
     key: 'level14',
-    preload: preloadLevel14,
+    preload: preload1,
     create: createLevel14,
     update: update,
 };
 var lv15 = {
     key: 'level15',
-    preload: preloadLevel15,
+    preload: preload1,
     create: createLevel15,
     update: updateLevel15,
 };
 var lv16 = {
     key: 'level16',
-    preload: preloadLevel16,
+    preload: preload1,
     create: createLevel16,
     update: update,
 };
 var lv17 = {
     key: 'level17',
-    preload: preloadLevel17,
+    preload: preload1,
     create: createLevel17,
     update: update,
 };
 var lv18 = {
     key: 'level18',
-    preload: preloadLevel18,
+    preload: preload1,
     create: createLevel18,
     update: update,
 };
 var lv19 = {
     key: 'level19',
-    preload: preloadLevel19,
+    preload: preload1,
     create: createLevel19,
     update: update,
 };
 var lv20 = {
     key: 'level20',
-    preload: preloadLevel20,
+    preload: preload1,
     create: createLevel20,
     update: update,
 };
 var lv21= {
     key: 'level21',
-    preload: preloadLevel21,
+    preload: preload2,
     create: createLevel21,
     update: update,
 };
 var lv22 = {
     key: 'level22',
-    preload: preloadLevel22,
+    preload: preload2,
     create: createLevel22,
     update: update,
 };
 var lv23 = {
     key: 'level23',
-    preload: preloadLevel23,
+    preload: preload2,
     create: createLevel23,
     update: update,
 };
 var lv24 = {
     key: 'level24',
-    preload: preloadLevel24,
+    preload: preload2,
     create: createLevel24,
     update: update,
 };
 var lv25 = {
     key: 'level25',
-    preload: preloadLevel25,
+    preload: preload2,
     create: createLevel25,
     update: update,
 };
 var lv26 = {
     key: 'level26',
-    preload: preloadLevel26,
+    preload: preload2,
     create: createLevel26,
     update: update,
 };
 var lv27 = {
     key: 'level27',
-    preload: preloadLevel27,
+    preload: preload2,
     create: createLevel27,
     update: update,
 };
 var lv28 = {
     key: 'level28',
-    preload: preloadLevel28,
+    preload: preload2,
     create: createLevel28,
     update: update,
 };
 var lv29 = {
     key: 'level29',
-    preload: preloadLevel29,
+    preload: preload2,
     create: createLevel29,
     update: update,
 };
 var lv30 = {
     key: 'level30',
-    preload: preloadLevel30,
+    preload: preload2,
     create: createLevel30,
     update: update,
 };
 var lv31= {
     key: 'level31',
-    preload: preloadLevel31,
+    preload: preload3,
     create: createLevel31,
     update: update,
 };
 var lv32 = {
     key: 'level32',
-    preload: preloadLevel32,
+    preload: preload3,
     create: createLevel32,
     update: update,
 };
 var lv33 = {
     key: 'level33',
-    preload: preloadLevel33,
+    preload: preload3,
     create: createLevel33,
     update: update,
 };
 var lv34 = {
     key: 'level34',
-    preload: preloadLevel34,
+    preload: preload3,
     create: createLevel34,
     update: update,
 };
 var lv35 = {
     key: 'level35',
-    preload: preloadLevel35,
+    preload: preload3,
     create: createLevel35,
     update: update,
 };
 var lv36 = {
     key: 'level36',
-    preload: preloadLevel36,
+    preload: preload3,
     create: createLevel36,
     update: update,
 };
 var lv37 = {
     key: 'level37',
-    preload: preloadLevel37,
+    preload: preload3,
     create: createLevel37,
     update: update,
 };
 var lv38 = {
     key: 'level38',
-    preload: preloadLevel38,
+    preload: preload3,
     create: createLevel38,
     update: update,
 };
 var lv39 = {
     key: 'level39',
-    preload: preloadLevel39,
+    preload: preload3,
     create: createLevel39,
     update: updateLevel39,
 };
@@ -292,43 +292,43 @@ var lv40 = {
 };
 var lv41 = {
     key: 'level41',
-    preload: preloadLevel41,
+    preload: preload4,
     create: createLevel41,
     update: update,
 };
 var lv42 = {
     key: 'level42',
-    preload: preloadLevel42,
+    preload: preload4,
     create: createLevel42,
     update: update,
 };
 var lv43 = {
     key: 'level43',
-    preload: preloadLevel43,
+    preload: preload4,
     create: createLevel43,
     update: update,
 };
 var lv44 = {
     key: 'level44',
-    preload: preloadLevel44,
+    preload: preload4,
     create: createLevel44,
     update: updateLevel44,
 };
 var lv45 = {
     key: 'level45',
-    preload: preloadLevel45,
+    preload: preload4,
     create: createLevel45,
     update: update,
 };
 var lv46 = {
     key: 'level46',
-    preload: preloadLevel46,
+    preload: preload4,
     create: createLevel46,
     update: update,
 };
 var lv47 = {
     key: 'level47',
-    preload: preloadLevel47,
+    preload: preload4,
     create: createLevel47,
     update: update,
 };
@@ -4300,7 +4300,7 @@ function updateDeath(time,delta){
 //------------------------------------------------------
 
 
-function preloadLevel1(){
+function preload0(){
 
     var progressBar = this.add.graphics();    
 
@@ -4348,10 +4348,6 @@ function createLevel1(){
     let finish = new goal(16,16,768,40)
 }
 
-function preloadLevel2(){
-    this.load.audio('theme1', ['ost/1 - City of Backstreet.ogg',]);
-}
-
 function createLevel2(){
 
     thisLevelPass.textContent = "Q4UJE6"
@@ -4383,10 +4379,6 @@ function createLevel2(){
     let finish = new goal(650,16,134,50)
 }
 
-function preloadLevel3(){
-    this.load.audio('theme1', ['ost/1 - City of Backstreet.ogg',]);
-}
-
 function createLevel3(){
 
     thisLevelPass.textContent = "8KPMLN"
@@ -4416,10 +4408,6 @@ function createLevel3(){
     let finish = new goal(710,750,74,34)
 }
 
-function preloadLevel4(){
-    this.load.audio('theme1', ['ost/1 - City of Backstreet.ogg',]);
-}
-
 function createLevel4(){
 
     thisLevelPass.textContent = "HRPH2P"
@@ -4447,10 +4435,6 @@ function createLevel4(){
     let laser5 = new nonnoLaser(16,600,1.5,1.5,[1,0])
 
     let finish = new goal(16,750,768,34)    
-}
-
-function preloadLevel5(){
-    this.load.audio('theme1', ['ost/1 - City of Backstreet.ogg',]);
 }
 
 function createLevel5(){
@@ -4506,10 +4490,6 @@ function createLevel5(){
     let finish = new goal(16,750,144,34)
 }
 
-function preloadLevel6(){
-    this.load.audio('theme1', ['ost/1 - City of Backstreet.ogg',]);
-}
-
 function createLevel6(){
 
     thisLevelPass.textContent = "6EVN95"
@@ -4550,10 +4530,6 @@ function createLevel6(){
     let cannon11 = new cannon(757,16,1,playerSpeed,[0,1])
 
     let finish = new goal(677,750,107,34)
-}
-
-function preloadLevel7(){
-    this.load.audio('theme1', ['ost/1 - City of Backstreet.ogg',]);
 }
 
 function createLevel7(){
@@ -4607,10 +4583,6 @@ function createLevel7(){
     let finish = new goal(750,16,34,100)
 }
 
-function preloadLevel8(){
-    this.load.audio('theme1', ['ost/1 - City of Backstreet.ogg',]);
-}
-
 function createLevel8(){
 
     thisLevelPass.textContent = "8TL79Q"
@@ -4645,10 +4617,6 @@ function createLevel8(){
     let Tcannon7 = new trackingCannon(400,534,0.7,200)
 
     let finish = new goal(520,380,30,170)
-}
-
-function preloadLevel9(){
-    this.load.audio('theme1', ['ost/1 - City of Backstreet.ogg',]);
 }
 
 function createLevel9(){
@@ -4706,10 +4674,6 @@ function createLevel9(){
     let finish = new goal(534,16,106,30)
 }
 
-function preloadLevel10(){
-    this.load.audio('theme1', ['ost/1 - City of Backstreet.ogg',]);
-}
-
 function createLevel10(){
 
     thisLevelPass.textContent = "3QUT4N"
@@ -4744,7 +4708,22 @@ function createLevel10(){
     let finish = new goal(710,750,74,34)
 }
 
-function preloadLevel11(){
+function preload1(){
+    var progressBar = this.add.graphics();
+
+    this.load.on('progress', function (value) {
+        progressBar.clear();
+        progressBar.fillStyle(0xffffff, 1);
+        if(value < 0.1)
+            progressBar.fillRect(650, 730, 10, 10)
+        else
+            progressBar.fillRect(650, 730, 100 * value, 10);
+    });
+    
+    this.load.on('complete', function () {
+        progressBar.destroy();
+    });
+
     this.load.audio('theme2', ['ost/2 - Joker Dance.ogg',]);
 }
 
@@ -4789,10 +4768,6 @@ function createLevel11(){
     let cannon0 = new trackingCannon(16,600,0.5,150)
 }
 
-function preloadLevel12(){
-    this.load.audio('theme2', ['ost/2 - Joker Dance.ogg',]);
-}
-
 function createLevel12(){
 
     thisLevelPass.textContent = "VQ4L3E"
@@ -4833,10 +4808,6 @@ function createLevel12(){
     let finish = new goal(200,16,400,50)
 }
 
-function preloadLevel13(){
-    this.load.audio('theme2', ['ost/2 - Joker Dance.ogg',]);
-}
-
 function createLevel13(){
 
     thisLevelPass.textContent = "7V53SK"
@@ -4869,10 +4840,6 @@ function createLevel13(){
     let ball7 = new ball( generateRandomIntegerInRange(100,700), generateRandomIntegerInRange(450,700),[-1,-1])
 
     let finish = new goal(650,16,134,50)
-}
-
-function preloadLevel14(){
-    this.load.audio('theme2', ['ost/2 - Joker Dance.ogg',]);
 }
 
 function createLevel14(){
@@ -4921,10 +4888,6 @@ let level15cannon
 let level15coordinates
 let level15clock = 0
 
-function preloadLevel15(){
-    this.load.audio('theme2', ['ost/2 - Joker Dance.ogg',]);
-}
-
 function createLevel15(){
 
     thisLevelPass.textContent = "2RQV22"
@@ -4969,10 +4932,6 @@ function updateLevel15(time,delta){
         let index = generateRandomIntegerInRange(0,level15coordinates.length - 1)
         level15cannon.moveTo(level15coordinates[index][0] , level15coordinates[index][1])
     }
-}
-
-function preloadLevel16(){
-    this.load.audio('theme2', ['ost/2 - Joker Dance.ogg',]);
 }
 
 function createLevel16(){
@@ -5021,10 +4980,6 @@ function createLevel16(){
     let finish = new goal(700,16,84,50)
 }
 
-function preloadLevel17(){
-    this.load.audio('theme2', ['ost/2 - Joker Dance.ogg',]);
-}
-
 function createLevel17(){
 
     thisLevelPass.textContent = "87GNVF"
@@ -5053,10 +5008,6 @@ function createLevel17(){
     let pcannon1 = new predictingCannon(600,392,0.8,320)
 
     let finish = new goal(420,16,30,184)
-}
-
-function preloadLevel18(){
-    this.load.audio('theme2', ['ost/2 - Joker Dance.ogg',]);
 }
 
 function createLevel18(){
@@ -5088,10 +5039,6 @@ function createLevel18(){
     let ball3 = new ball(430,375,[-1,1])
 
     let finish = new goal(350,16,100,30)
-}
-
-function preloadLevel19(){
-    this.load.audio('theme2', ['ost/2 - Joker Dance.ogg',]);
 }
 
 function createLevel19(){
@@ -5134,10 +5081,6 @@ function createLevel19(){
     let sniper = new predictingCannon(392,392,2,2000,undefined,12)
 
     let finish = new goal(130,720,30,64)
-}
-
-function preloadLevel20(){
-    this.load.audio('theme2', ['ost/2 - Joker Dance.ogg',]);
 }
 
 function createLevel20(){
@@ -5205,7 +5148,23 @@ function createLevel20(){
     grid = new nodeGrid(gridNodeSize)
 }
 
-function preloadLevel21(){
+function preload2(){
+
+    var progressBar = this.add.graphics();
+
+    this.load.on('progress', function (value) {
+        progressBar.clear();
+        progressBar.fillStyle(0xffffff, 1);
+        if(value < 0.1)
+            progressBar.fillRect(650, 730, 10, 10)
+        else
+            progressBar.fillRect(650, 730, 100 * value, 10);
+    });
+    
+    this.load.on('complete', function () {
+        progressBar.destroy();
+    });
+
     this.load.audio('theme3', ['ost/3 - Moonlight Land.ogg',]);
 }
 
@@ -5243,10 +5202,6 @@ function createLevel21(){
     let finish = new goal(700,16,84,40)
 
     grid = new nodeGrid(gridNodeSize)
-}
-
-function preloadLevel22(){
-    this.load.audio('theme3', ['ost/3 - Moonlight Land.ogg',]);
 }
 
 function createLevel22(){
@@ -5301,10 +5256,6 @@ function createLevel22(){
     grid = new nodeGrid(gridNodeSize)
 }
 
-function preloadLevel23(){
-    this.load.audio('theme3', ['ost/3 - Moonlight Land.ogg',]);
-}
-
 function createLevel23(){
 
     thisLevelPass.textContent = "G4V9P8"
@@ -5348,10 +5299,6 @@ function createLevel23(){
     let finish = new goal(710,750,74,34)
 }
 
-function preloadLevel24(){
-    this.load.audio('theme3', ['ost/3 - Moonlight Land.ogg',]);
-}
-
 function createLevel24(){
 
     thisLevelPass.textContent = "PL4CSR"
@@ -5389,10 +5336,6 @@ function createLevel24(){
     let finish = new goal(16,570,134,30)
 }
 
-function preloadLevel25(){
-    this.load.audio('theme3', ['ost/3 - Moonlight Land.ogg',]);
-}
-
 function createLevel25(){
 
     thisLevelPass.textContent = "Y44FR9"
@@ -5426,10 +5369,6 @@ function createLevel25(){
     }
 
     let finish = new goal(16,16,84,30)
-}
-
-function preloadLevel26(){
-    this.load.audio('theme3', ['ost/3 - Moonlight Land.ogg',]);
 }
 
 function createLevel26(){
@@ -5494,10 +5433,6 @@ function createLevel26(){
     let finish = new goal(16,760,104,24)
 }
 
-function preloadLevel27(){
-    this.load.audio('theme3', ['ost/3 - Moonlight Land.ogg',]);
-}
-
 function createLevel27(){
 
     thisLevelPass.textContent = "QG29N9"
@@ -5536,10 +5471,6 @@ function createLevel27(){
     stalker0.speed = playerSpeed
 
     let finish = new goal(302,136,98,30)
-}
-
-function preloadLevel28(){
-    this.load.audio('theme3', ['ost/3 - Moonlight Land.ogg',]);
 }
 
 function createLevel28(){
@@ -5662,10 +5593,6 @@ function createLevel28(){
     let finish = new goal(650,754,134,30)
 }
 
-function preloadLevel29(){
-    this.load.audio('theme3', ['ost/3 - Moonlight Land.ogg',]);
-}
-
 function createLevel29(){
 
     thisLevelPass.textContent = "N9PLL4"
@@ -5701,10 +5628,6 @@ function createLevel29(){
     let spinnyBoi1 = new spinnyBoi(392,392,0.1,70,true)
 
     let finish = new goal(726,16,58,30)
-}
-
-function preloadLevel30(){
-    this.load.audio('theme3', ['ost/3 - Moonlight Land.ogg',]);
 }
 
 function createLevel30(){
@@ -5749,7 +5672,22 @@ function createLevel30(){
     let finish = new goal(PU*2,PU*2,PU*2,PU*6)
 }
 
-function preloadLevel31(){
+function preload3(){
+    var progressBar = this.add.graphics();
+
+    this.load.on('progress', function (value) {
+        progressBar.clear();
+        progressBar.fillStyle(0xffffff, 1);
+        if(value < 0.1)
+            progressBar.fillRect(650, 730, 10, 10)
+        else
+            progressBar.fillRect(650, 730, 100 * value, 10);
+    });
+    
+    this.load.on('complete', function () {
+        progressBar.destroy();
+    });
+
     this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
 }
 
@@ -5812,10 +5750,6 @@ function createLevel31(){
     let finish = new goal(16,520,30,180)
 }
 
-function preloadLevel32(){
-    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
-}
-
 function createLevel32(){
 
     thisLevelPass.textContent = "7RF7JC"
@@ -5855,10 +5789,6 @@ function createLevel32(){
     let ball11 = new ball(generateRandomInRange(550,680),generateRandomIntegerInRange(500,600),[1,-1])
 
     let finish = new goal(410,750,50,34)
-}
-
-function preloadLevel33(){
-    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
 }
 
 function createLevel33(){
@@ -5907,10 +5837,6 @@ function createLevel33(){
     let finish = new goal(700,16,60,30)
 }
 
-function preloadLevel34(){
-    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
-}
-
 function createLevel34(){
 
     thisLevelPass.textContent = "QBCR3M"
@@ -5955,10 +5881,6 @@ function createLevel34(){
 
     let upgrade0 = new upgrade(180,500,"dash")
     let finish = new goal(625,16,159,30)
-}
-
-function preloadLevel35(){
-    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
 }
 
 function createLevel35(){
@@ -6016,10 +5938,6 @@ function createLevel35(){
     let finish = new goal(750,550,34,234)
 }
 
-function preloadLevel36(){
-    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
-}
-
 function createLevel36(){
 
     thisLevelPass.textContent = "635THD"
@@ -6065,10 +5983,6 @@ function createLevel36(){
     let finish = new goal(130,720,30,64)
 }
 
-function preloadLevel37(){
-    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
-}
-
 function createLevel37(){
 
     thisLevelPass.textContent = "MQ5UD7"
@@ -6104,10 +6018,6 @@ function createLevel37(){
 
     grid = new nodeGrid(gridNodeSize)
     let finish = new goal(PU,PU,PU*8,PU*5)
-}
-
-function preloadLevel38(){
-    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
 }
 
 function createLevel38(){
@@ -6162,10 +6072,6 @@ function createLevel38(){
 }
 
 let smokeArray39 = []
-
-function preloadLevel39(){
-    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
-}
 
 function createLevel39(){
 
@@ -6244,6 +6150,21 @@ let winText4
 let level40Goal
 
 function preloadLevel40(){
+    var progressBar = this.add.graphics();
+
+    this.load.on('progress', function (value) {
+        progressBar.clear();
+        progressBar.fillStyle(0xffffff, 1);
+        if(value < 0.1)
+            progressBar.fillRect(650, 730, 10, 10)
+        else
+            progressBar.fillRect(650, 730, 100 * value, 10);
+    });
+    
+    this.load.on('complete', function () {
+        progressBar.destroy();
+    });
+
     this.load.audio('themeBoss', ['ost/Boss - Space Racing.ogg',]);
 }
 
@@ -6375,7 +6296,22 @@ function updateLevel40(time,delta){
 
 
 
-function preloadLevel41(){
+function preload4(){
+    var progressBar = this.add.graphics();
+
+    this.load.on('progress', function (value) {
+        progressBar.clear();
+        progressBar.fillStyle(0xffffff, 1);
+        if(value < 0.1)
+            progressBar.fillRect(650, 730, 10, 10)
+        else
+            progressBar.fillRect(650, 730, 100 * value, 10);
+    });
+    
+    this.load.on('complete', function () {
+        progressBar.destroy();
+    });
+
     this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
 }
 
@@ -6421,10 +6357,6 @@ function createLevel41(){
     }
 
     let finish = new goal(740,740,44,44)
-}
-
-function preloadLevel42(){
-    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
 }
 
 function createLevel42(){
@@ -6477,10 +6409,6 @@ function createLevel42(){
     let finish = new goal(750,700,34,84)
 }
 
-function preloadLevel43(){
-    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
-}
-
 function createLevel43(){
 
     thisLevelPass.textContent = "QG5KPJ"
@@ -6523,10 +6451,6 @@ function createLevel43(){
 
 let level44Clock = 0
 
-function preloadLevel44(){
-    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
-}
-
 function createLevel44(){
 
     thisLevelPass.textContent = "7FRCNM"
@@ -6566,10 +6490,6 @@ function updateLevel44(time,delta){
         mine1.triggered = true
         level44Clock = 0
     }
-}
-
-function preloadLevel45(){
-    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
 }
 
 function createLevel45(){
@@ -6614,10 +6534,6 @@ function createLevel45(){
     let lava17 = new lava(PU*8 , PU*5 , PU*2 , PU*3)
     
     let finish = new goal(PU,PU,PU*5,PU*2)
-}
-
-function preloadLevel46(){
-    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
 }
 
 function createLevel46(){
@@ -6694,10 +6610,6 @@ function createLevel46(){
     }
 
     let finish = new goal(PU*47 + PU/2 , PU*47 + PU/2,PU*1.5,PU*1.5)
-}
-
-function preloadLevel47(){
-    this.load.audio('theme4', ['ost/4 - The Castle of The Dead and The Secret Sword.ogg',]);
 }
 
 function createLevel47(){
@@ -6780,8 +6692,22 @@ let creditsText5
 let creditsClock = 0
 let fallingStars2 = []
 
-
 function preloadCredits(){
+    var progressBar = this.add.graphics();
+
+    this.load.on('progress', function (value) {
+        progressBar.clear();
+        progressBar.fillStyle(0xffffff, 1);
+        if(value < 0.1)
+            progressBar.fillRect(650, 730, 10, 10)
+        else
+            progressBar.fillRect(650, 730, 100 * value, 10);
+    });
+    
+    this.load.on('complete', function () {
+        progressBar.destroy();
+    });
+
     this.load.audio('themeCredits', ['ost/Credits - Thought Soup.mp3',]);
 }
 
