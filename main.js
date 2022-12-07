@@ -6575,16 +6575,7 @@ function createLevel46(){
             if(areArraysEqual(placed[i],[first,second]) || (first >= 47 && second >= 47))
                 goodToGo = false
             
-            if(first == 1 && second == 1)
-                goodToGo = false
-
-            if(first == 1 && second == 2)
-                goodToGo = false
-            
-            if(first == 2 && second == 1)
-                goodToGo = false
-
-            if(first == 2 && second == 2)
+            if( (first == 1 || first == 2 ) && (second == 1 || second == 2) )
                 goodToGo = false
         }
 
