@@ -6583,6 +6583,9 @@ function createLevel46(){
             
             if(first == 2 && second == 1)
                 goodToGo = false
+
+            if(first == 2 && second == 2)
+                goodToGo = false
         }
 
         if(goodToGo){
@@ -6681,7 +6684,6 @@ function createLevel47(){
     grid = new nodeGrid(gridNodeSize)
     let finish = new goal(PU*19 , PU*3 , PU*12,PU*2)
 }
-
 
 let creditsText1
 let creditsText2
