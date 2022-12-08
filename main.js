@@ -4,7 +4,6 @@
 const XDIMENSION = 800
 const YDIMENSION = 800
 
-
 // Config Game
 
 var sceneDebug = {
