@@ -125,7 +125,7 @@ var lv13 = {
     key: 'level13',
     preload: preload1,
     create: createLevel13,
-    update: update,
+    update: updateLevel13,
 };
 var lv14 = {
     key: 'level14',
@@ -137,7 +137,7 @@ var lv15 = {
     key: 'level15',
     preload: preload1,
     create: createLevel15,
-    update: updateLevel15,
+    update: update,
 };
 var lv16 = {
     key: 'level16',
@@ -3669,132 +3669,132 @@ function levelManager(){
             lv = 2
             letsChangeBaby = true
         break;
-        case "8KPMLN":
+        case "HRPH2P":
             localStorage["specialBoi"] = 3
             lv = 3
             letsChangeBaby = true
         break;
-        case "HRPH2P":
+        case "PG7P5H":
             localStorage["specialBoi"] = 4
             lv = 4
             letsChangeBaby = true
         break;
-        case "PG7P5H":
+        case "569Q8Y":
             localStorage["specialBoi"] = 5
             lv = 5
             letsChangeBaby = true
         break;
-        case "6EVN95":
+        case "8TL79Q":
             localStorage["specialBoi"] = 6
             lv = 6
             letsChangeBaby = true
         break;
-        case "569Q8Y":
+        case "8KPMLN":
             localStorage["specialBoi"] = 7
             lv = 7
             letsChangeBaby = true
         break;
-        case "8TL79Q":
+        case "86TH7J":
             localStorage["specialBoi"] = 8
             lv = 8
             letsChangeBaby = true
         break;
-        case "86TH7J":
+        case "TVVQ2Q":
             localStorage["specialBoi"] = 9
             lv = 9
             letsChangeBaby = true
         break;
-        case "3QUT4N":
+        case "VQ4L3E":
             localStorage["specialBoi"] = 10
             lv = 10
             letsChangeBaby = true
         break;
-        case "TVVQ2Q":
+        case "7V53SK":
             localStorage["specialBoi"] = 11
             lv = 11
             letsChangeBaby = true
         break;
-        case "VQ4L3E":
+        case "RJ6RLL":
             localStorage["specialBoi"] = 12
             lv = 12
             letsChangeBaby = true
         break;
-        case "7V53SK":
+        case "2RQV22":
             localStorage["specialBoi"] = 13
             lv = 13
             letsChangeBaby = true
         break;
-        case "RJ6RLL":
+        case "964E8M":
             localStorage["specialBoi"] = 14
             lv = 14
             letsChangeBaby = true
         break;
-        case "2RQV22":
+        case "87GNVF":
             localStorage["specialBoi"] = 15
             lv = 15
             letsChangeBaby = true
         break;
-        case "964E8M":
+        case "HVL7LC":
             localStorage["specialBoi"] = 16
             lv = 16
             letsChangeBaby = true
         break;
-        case "87GNVF":
+        case "3QUT4N":
             localStorage["specialBoi"] = 17
             lv = 17
             letsChangeBaby = true
         break;
-        case "HVL7LC":
+        case "U256TV":
             localStorage["specialBoi"] = 18
             lv = 18
             letsChangeBaby = true
         break;
-        case "U256TV":
+        case "2NY2EW":
             localStorage["specialBoi"] = 19
             lv = 19
             letsChangeBaby = true
         break;
-        case "2NY2EW":
+        case "JBMF8J":
             localStorage["specialBoi"] = 20
             lv = 20
             letsChangeBaby = true
         break;
-        case "JBMF8J":
+        case "U3QM4M":
             localStorage["specialBoi"] = 21
             lv = 21
             letsChangeBaby = true
         break;
-        case "U3QM4M":
+        case "PL4CSR":
             localStorage["specialBoi"] = 22
             lv = 22
             letsChangeBaby = true
         break;
-        case "G4V9P8":
+        case "Y44FR9":
             localStorage["specialBoi"] = 23
             lv = 23
             letsChangeBaby = true
         break;
-        case "PL4CSR":
+        case "2Y65Y9":
             localStorage["specialBoi"] = 24
             lv = 24
             letsChangeBaby = true
         break;
-        case "Y44FR9":
+        case "QG29N9":
             localStorage["specialBoi"] = 25
             lv = 25
             letsChangeBaby = true
         break;
-        case "2Y65Y9":
+        case "5S2KPN":
             localStorage["specialBoi"] = 26
             lv = 26
             letsChangeBaby = true
         break;
-        case "QG29N9":
+        case "G4V9P8":
             localStorage["specialBoi"] = 27
             lv = 27
             letsChangeBaby = true
         break;
-        case "5S2KPN":
+        case "6EVN95":
             localStorage["specialBoi"] = 28
             lv = 28
             letsChangeBaby = true
@@ -4367,47 +4367,18 @@ function createLevel2(){
         this.scene.restart()
     }
 
-    let cannon1 = new cannon(16,200,0.75,200,[1,0])
-    let cannon2 = new cannon(16,200 + PU + 4,0.75,200,[1,0])
-    let cannon3 = new cannon(16,200 + PU * 2 + 8,0.75,200,[1,0])
-    let cannon4 = new cannon(768,500 + PU + 4,0.75,200,[-1,0])
-    let cannon5 = new cannon(768,500 + PU * 2 + 8,0.75,200,[-1,0])
-    let cannon6 = new cannon(768,500,0.75,200,[-1,0])
-    let cannon7 = new cannon(392,16,0.35,200,[0,1])
+    let cannon1 = new cannon(16,550,0.75,200,[1,0])
+    let cannon2 = new cannon(16,550 + PU + 4,0.75,200,[1,0])
+    let cannon3 = new cannon(16,550 + PU * 2 + 8,0.75,200,[1,0])
+    let cannon4 = new cannon(768,250 + PU + 4,0.75,200,[-1,0])
+    let cannon5 = new cannon(768,250 + PU * 2 + 8,0.75,200,[-1,0])
+    let cannon6 = new cannon(768,250,0.75,200,[-1,0])
+    let cannon7 = new cannon(392,16,0.38,200,[0,1])
 
     let finish = new goal(650,16,134,50)
 }
 
 function createLevel3(){
-
-    thisLevelPass.textContent = "8KPMLN"
-    levelName.textContent = "The Storm!"      
-    scene = this
-    entities=[]    
-    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
-    gamepad = this.input.gamepad.gamepads
-    pg = new player(40,720);   
-    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
-    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
-    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
-    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
-    if(music1 == undefined){
-        music1 = this.sound.add('theme1')
-        music1.volume = volumeSlider.value / 100 
-        music1.play({loop: true});
-        this.scene.restart()
-    }
-
-    let wall1 = new wall(80,500,630,284)
-
-    for(let i = 0; i<20; i++){
-        let cannon0 = new cannon(90 + i * 32,16,generateRandomInRange(0.75,1.5),generateRandomIntegerInRange(100,400),[0,1])
-    }
-
-    let finish = new goal(710,750,74,34)
-}
-
-function createLevel4(){
 
     thisLevelPass.textContent = "HRPH2P"
     levelName.textContent = "Laserzzzzzz!"      
@@ -4436,7 +4407,7 @@ function createLevel4(){
     let finish = new goal(16,750,768,34)    
 }
 
-function createLevel5(){
+function createLevel4(){
 
     thisLevelPass.textContent = "PG7P5H"
     levelName.textContent = "Cannons AND Lasers together strong!"      
@@ -4444,7 +4415,7 @@ function createLevel5(){
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
     gamepad = this.input.gamepad.gamepads
-    pg = new player(330,575);   
+    pg = new player(330,690);   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
@@ -4456,9 +4427,9 @@ function createLevel5(){
         this.scene.restart()
     }
 
-    let wall1 = new wall(160,180,480,350)
-    let wall2 = new wall(160,530,100,254)
-    let wall3 = new wall(410,530,230,100)
+    let wall1 = new wall(160,180,480,450)
+    let wall2 = new wall(160,630,100,154)
+    //let wall3 = new wall(410,30,230,100)
 
     let laser1 = new nonnoLaser(450,630,1,2,[0,1])
     let laser2 = new nonnoLaser(470,630,1,2,[0,1])
@@ -4467,10 +4438,8 @@ function createLevel5(){
 
     let laser5 = new nonnoLaser(640,540,1,3,[1,0])
     let cannon1 = new cannon(640,560,0.8,150,[1,0])
-    let laser6 = new nonnoLaser(768,410,1,2,[-1,0])
-    let cannon2 = new cannon(768,390,1.2,50,[-1,0])
-    let laser7 = new nonnoLaser(640,240,2,2,[1,0])
-    let cannon3 = new cannon(640,260,0.6,100,[1,0])    
+    let laser6 = new nonnoLaser(768,310,1,2,[-1,0])
+    let cannon2 = new cannon(768,290,1.2,50,[-1,0])   
     
     let laser8 = new nonnoLaser(300,16,2,2,[0,1])
     let cannon4= new cannon(320,16,1.5,120,[0,1])
@@ -4486,52 +4455,10 @@ function createLevel5(){
     let cannon8 = new cannon(16,450,1.2,50,[1,0])
     let cannon9 = new cannon(16,600,1.2,50,[1,0])    
 
-    let finish = new goal(16,750,144,34)
+    let finish = new goal(16,750,144,34)     
 }
 
-function createLevel6(){
-
-    thisLevelPass.textContent = "6EVN95"
-    levelName.textContent = "Against The Current"      
-    scene = this
-    entities=[]    
-    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
-    gamepad = this.input.gamepad.gamepads
-    pg = new player(75,67);   
-    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
-    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
-    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
-    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
-    if(music1 == undefined){
-        music1 = this.sound.add('theme1')
-        music1.volume = volumeSlider.value / 100 
-        music1.play({loop: true});
-        this.scene.restart()
-    }
-
-    let wall1 = new wall(16,166,149,670)
-    let wall2 = new wall(272,16,149,620)
-    let wall3 = new wall(528,166,149,670)
-
-    let cannon0 = new cannon(176,768,1.5,125,[0,-1])
-    let cannon1 = new cannon(199,768,1.5,150,[0,-1])
-    let cannon2 = new cannon(222,768,2,100,[0,-1])
-    let cannon3 = new cannon(245,768,1.75,175,[0,-1])
-
-    let cannon4 = new cannon(432,16,1,100,[0,1])
-    let cannon5 = new cannon(455,16,1.5,150,[0,1])
-    let cannon6 = new cannon(478,16,2,200,[0,1])
-    let cannon7 = new cannon(501,16,2.5,250,[0,1])
-
-    let cannon8 = new cannon(688,16,1,playerSpeed,[0,1])
-    let cannon9 = new cannon(711,16,1,playerSpeed,[0,1])
-    let cannon10 = new cannon(734,16,1,playerSpeed,[0,1])
-    let cannon11 = new cannon(757,16,1,playerSpeed,[0,1])
-
-    let finish = new goal(677,750,107,34)
-}
-
-function createLevel7(){
+function createLevel5(){
 
     thisLevelPass.textContent = "569Q8Y"
     levelName.textContent = "Against Each Other"      
@@ -4561,28 +4488,26 @@ function createLevel7(){
     let cannon0 = new cannon(150,600,1,150,[1,0])
     let cannon1 = new cannon(634,590,1,150,[-1,0])
 
-    let cannon2 = new cannon(150,478,1,150,[1,0])
-    let cannon3 = new cannon(634,504,1,150,[-1,0])
-    let cannon4 = new cannon(150,494,1,150,[1,0])
-    let cannon5 = new cannon(634,520,1,150,[-1,0])
+    let cannon2 = new cannon(150,448,1,150,[1,0])
+    let cannon3 = new cannon(634,474,1,150,[-1,0])
+    let cannon4 = new cannon(150,464,1,150,[1,0])
+    let cannon5 = new cannon(634,490,1,150,[-1,0])
 
-    let cannon6 = new cannon(150,390,0.6,250,[1,0])
-    let cannon7 = new cannon(634,400,0.6,250,[-1,0])
+    //let cannon6 = new cannon(150,390,0.6,250,[1,0])
+    //let cannon7 = new cannon(634,400,0.6,250,[-1,0])
 
-    let cannon8 = new cannon(150,300,0.6,150,[1,0])
-    let cannon9 = new cannon(634,290,0.6,150,[-1,0])
-    //let cannon10 = new cannon(150,280,0.6,150,[1,0])
-    //let cannon11 = new cannon(634,270,0.6,150,[-1,0])
+    let cannon8 = new cannon(150,330,0.6,150,[1,0])
+    let cannon9 = new cannon(634,320,0.6,150,[-1,0])
 
     let cannon12 = new cannon(150,200,0.6,250,[1,0])
     let cannon13 = new cannon(634,200,0.6,250,[-1,0])
 
     let laser1 = new nonnoLaser(392,16,12,3,[0,1],30)
 
-    let finish = new goal(750,16,34,100)
+    let finish = new goal(750,16,34,100)    
 }
 
-function createLevel8(){
+function createLevel6(){
 
     thisLevelPass.textContent = "8TL79Q"
     levelName.textContent = "Tracking Cannons!"      
@@ -4615,10 +4540,39 @@ function createLevel8(){
     let Tcannon5 = new trackingCannon(250,200,0.7,200)
     let Tcannon7 = new trackingCannon(400,534,0.7,200)
 
-    let finish = new goal(520,380,30,170)
+    let finish = new goal(520,380,30,170)    
 }
 
-function createLevel9(){
+function createLevel7(){
+
+    thisLevelPass.textContent = "8KPMLN"
+    levelName.textContent = "The Storm!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(40,720);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music1 == undefined){
+        music1 = this.sound.add('theme1')
+        music1.volume = volumeSlider.value / 100 
+        music1.play({loop: true});
+        this.scene.restart()
+    }
+
+    let wall1 = new wall(80,500,630,284)
+
+    for(let i = 0; i<20; i++){
+        let cannon0 = new cannon(90 + i * 32,16,generateRandomInRange(0.75,1.5),generateRandomIntegerInRange(100,400),[0,1])
+    }
+
+    let finish = new goal(710,750,74,34)
+}
+
+function createLevel8(){
 
     thisLevelPass.textContent = "86TH7J"
     levelName.textContent = "Against The Lasers"      
@@ -4670,18 +4624,55 @@ function createLevel9(){
     let Tcannon4 = new trackingCannon(384,400,0.4,150)
     let Tcannon5 = new trackingCannon(384,520,0.4,150)
 
-    let finish = new goal(534,16,106,30)
+    let finish = new goal(534,16,106,30)    
 }
 
-function createLevel10(){
+function createLevel9(){
 
-    thisLevelPass.textContent = "3QUT4N"
-    levelName.textContent = "Storm and Thunder!"      
+    thisLevelPass.textContent = "TVVQ2Q"
+    levelName.textContent = "RUN"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
     gamepad = this.input.gamepad.gamepads
-    pg = new player(40,720);   
+    pg = new player(100,200);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music1 == undefined){
+        music1 = this.sound.add('theme1')
+        music1.volume = volumeSlider.value / 100 
+        music1.play({loop: true});
+        this.scene.restart()
+    }    
+
+    let wall1 = new wall(16,380,600,40)
+
+    for(let i = 0; i<30; i++){
+        let laser0 = new nonnoLaser(20 + i* 20, 16, i * 0.13 ,300,[0,1])
+    }
+    for(let i = 0; i<8; i++){
+        let laser1 = new nonnoLaser(760 - i* 20, 16, (i + 30) * 0.13 ,300,[0,1])
+    }
+    for(let i = 0; i<30; i++){
+        let laser2 = new nonnoLaser(600 - i* 20, 768, (i + 38) * 0.13 ,300,[0,-1])
+    }
+
+    let finish = new goal(40,440,36,310)
+
+    let cannon0 = new trackingCannon(16,600,0.5,150)    
+}
+
+function createLevel10(){
+
+    thisLevelPass.textContent = "VQ4L3E"
+    levelName.textContent = "They can do that?"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(392,720);   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
@@ -4693,18 +4684,26 @@ function createLevel10(){
         this.scene.restart()
     }
 
-    let wall1 = new wall(80,500,630,284)
+    let wall1 = new wall(150,120,230,10)
+    let wall2 = new wall(420,120,230,10)
 
-    for(let i = 0; i<20; i++){
+    let cannon1 = new cannon(16,752,0.5,150,[1,-1])
+    let cannon2 = new cannon(32,768,0.5,150,[1,-1])
+    let cannon3 = new cannon(16,652,0.5,150,[1,-1])
+    let cannon4 = new cannon(16,552,0.5,150,[1,-1])
+    let cannon5 = new cannon(116,768,0.5,150,[1,-1])
+    let cannon6 = new cannon(216,768,0.5,150,[1,-1])
 
-        if(Math.random() < 0.75){
-            let cannone0 = new cannon(90 + i * 32,16,generateRandomInRange(0.75,1.5),generateRandomIntegerInRange(100,400),[0,1])
-        }else{
-            let laser0 = new nonnoLaser(90 + i* 32, 16,generateRandomInRange(1.5,3),0.2,[0,1])
-        }
-    }
+    let cannon7 = new cannon(768,752,0.5,150,[-1,-1])
+    let cannon8 = new cannon(752,768,0.5,150,[-1,-1])
+    let cannon9 = new cannon(768,652,0.5,150,[-1,-1])
+    let cannon10 = new cannon(768,552,0.5,150,[-1,-1])
+    let cannon11 = new cannon(668,768,0.5,150,[-1,-1])
+    let cannon12 = new cannon(568,768,0.5,150,[-1,-1])
+    
+    let finish = new goal(200,16,400,50)
 
-    let finish = new goal(710,750,74,34)
+    
 }
 
 function preload1(){
@@ -4728,13 +4727,13 @@ function preload1(){
 
 function createLevel11(){
 
-    thisLevelPass.textContent = "TVVQ2Q"
-    levelName.textContent = "RUN"      
+    thisLevelPass.textContent = "7V53SK"
+    levelName.textContent = "Bouncy Balls (they're kinda " + '"'+"squary"+'"'+" tho)"      
     scene = this
     entities=[]    
     keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
     gamepad = this.input.gamepad.gamepads
-    pg = new player(100,200);   
+    pg = new player(50,750);   
     let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
@@ -4750,83 +4749,6 @@ function createLevel11(){
         this.scene.restart()
     }
 
-    let wall1 = new wall(16,380,600,40)
-
-    for(let i = 0; i<30; i++){
-        let laser0 = new nonnoLaser(20 + i* 20, 16, i * 0.13 ,300,[0,1])
-    }
-    for(let i = 0; i<8; i++){
-        let laser1 = new nonnoLaser(760 - i* 20, 16, (i + 30) * 0.13 ,300,[0,1])
-    }
-    for(let i = 0; i<30; i++){
-        let laser2 = new nonnoLaser(600 - i* 20, 768, (i + 38) * 0.13 ,300,[0,-1])
-    }
-
-    let finish = new goal(40,440,36,310)
-
-    let cannon0 = new trackingCannon(16,600,0.5,150)
-}
-
-function createLevel12(){
-
-    thisLevelPass.textContent = "VQ4L3E"
-    levelName.textContent = "They can do that?"      
-    scene = this
-    entities=[]    
-    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
-    gamepad = this.input.gamepad.gamepads
-    pg = new player(392,720);   
-    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
-    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
-    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
-    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
-    if(music2 == undefined){
-        music2 = this.sound.add('theme2')
-        music2.volume = volumeSlider.value / 100 
-        music2.play({loop: true});
-        this.scene.restart()
-    }
-
-    let wall1 = new wall(150,120,230,10)
-    let wall2 = new wall(420,120,230,10)
-
-    let cannon1 = new cannon(16,752,0.5,150,[1,-1])
-    let cannon2 = new cannon(32,768,0.5,150,[1,-1])
-    let cannon3 = new cannon(16,652,0.5,150,[1,-1])
-    let cannon4 = new cannon(16,552,0.5,150,[1,-1])
-    let cannon5 = new cannon(116,768,0.5,150,[1,-1])
-    let cannon6 = new cannon(216,768,0.5,150,[1,-1])
-
-    let cannon7 = new cannon(768,752,0.5,150,[-1,-1])
-    let cannon8 = new cannon(752,768,0.5,150,[-1,-1])
-    let cannon9 = new cannon(768,652,0.5,150,[-1,-1])
-    let cannon10 = new cannon(768,552,0.5,150,[-1,-1])
-    let cannon11 = new cannon(668,768,0.5,150,[-1,-1])
-    let cannon12 = new cannon(568,768,0.5,150,[-1,-1])
-    
-    let finish = new goal(200,16,400,50)
-}
-
-function createLevel13(){
-
-    thisLevelPass.textContent = "7V53SK"
-    levelName.textContent = "Bouncy Balls (they're kinda " + '"'+"squary"+'"'+" tho)"      
-    scene = this
-    entities=[]    
-    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
-    gamepad = this.input.gamepad.gamepads
-    pg = new player(50,750);   
-    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
-    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
-    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
-    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
-    if(music2 == undefined){
-        music2 = this.sound.add('theme2')
-        music2.volume = volumeSlider.value / 100 
-        music2.play({loop: true});
-        this.scene.restart()
-    }
-
     let wall0 = new wall(350,350,100,100)
 
     let ball0 = new ball( generateRandomIntegerInRange(100,200), generateRandomIntegerInRange(100,200),[-1,1])
@@ -4838,10 +4760,10 @@ function createLevel13(){
     let ball6 = new ball( generateRandomIntegerInRange(100,350), generateRandomIntegerInRange(100,700),[1,1])
     let ball7 = new ball( generateRandomIntegerInRange(100,700), generateRandomIntegerInRange(450,700),[-1,-1])
 
-    let finish = new goal(650,16,134,50)
+    let finish = new goal(650,16,134,50)    
 }
 
-function createLevel14(){
+function createLevel12(){
 
     thisLevelPass.textContent = "RJ6RLL"
     levelName.textContent = "You thought you got away with it didn't you?"      
@@ -4880,14 +4802,14 @@ function createLevel14(){
     let laser0 = new nonnoLaser(300,768,0,300,[0,-1])
     let laser1 = new nonnoLaser(484,768,0,300,[0,-1])
     
-    let finish = new goal(200,16,400,50)
+    let finish = new goal(200,16,400,50)    
 }
 
-let level15cannon
-let level15coordinates
-let level15clock = 0
+let level13cannon
+let level13coordinates
+let level13clock = 0
 
-function createLevel15(){
+function createLevel13(){
 
     thisLevelPass.textContent = "2RQV22"
     levelName.textContent = "That's one crazy boi"      
@@ -4913,27 +4835,27 @@ function createLevel15(){
     let wall3 = new wall(600,100,184,25)
     let wall5 = new wall(520,220,80,380)
 
-    level15cannon = new trackingCannon(-100,-100,0.125,500)
-    level15coordinates = [[16,250],[16,550],[284,375],[768,750],[350,425],[600,375],[350,50],[100,768],[450,768]]
+    level13cannon = new trackingCannon(-100,-100,0.125,500)
+    level13coordinates = [[16,250],[16,550],[284,375],[768,750],[350,425],[600,375],[350,50],[100,768],[450,768]]
 
-    let finish = new goal(750,16,34,84)
+    let finish = new goal(750,16,34,84)    
 }
 
-function updateLevel15(time,delta){
+function updateLevel13(time,delta){
 
     Delta = delta / 1000
     omniHandler()
     
-    level15clock += Delta
+    level13clock += Delta
 
-    if(level15clock > 0.5){
-        level15clock = 0
-        let index = generateRandomIntegerInRange(0,level15coordinates.length - 1)
-        level15cannon.moveTo(level15coordinates[index][0] , level15coordinates[index][1])
+    if(level13clock > 0.5){
+        level13clock = 0
+        let index = generateRandomIntegerInRange(0,level13coordinates.length - 1)
+        level13cannon.moveTo(level13coordinates[index][0] , level13coordinates[index][1])
     }
 }
 
-function createLevel16(){
+function createLevel14(){
 
     thisLevelPass.textContent = "964E8M"
     levelName.textContent = "Comfy Room with deadly balls and cannons"      
@@ -4976,10 +4898,12 @@ function createLevel16(){
     let ball10 = new ball( generateRandomIntegerInRange(200,600), generateRandomIntegerInRange(50,750),[1,-1])
     let ball11 = new ball( generateRandomIntegerInRange(200,600), generateRandomIntegerInRange(50,750),[1,1])
 
-    let finish = new goal(700,16,84,50)
+    let finish = new goal(700,16,84,50)    
 }
 
-function createLevel17(){
+
+
+function createLevel15(){
 
     thisLevelPass.textContent = "87GNVF"
     levelName.textContent = "3 Bros"      
@@ -5006,10 +4930,12 @@ function createLevel17(){
     let tcannon1 = new trackingCannon(392,600,1,300)
     let pcannon1 = new predictingCannon(600,392,0.8,320)
 
-    let finish = new goal(420,16,30,184)
+    let finish = new goal(420,16,30,184)    
 }
 
-function createLevel18(){
+
+
+function createLevel16(){
 
     thisLevelPass.textContent = "HVL7LC"
     levelName.textContent = "The Corridor"      
@@ -5037,10 +4963,44 @@ function createLevel18(){
     let ball2 = new ball(350,350,[1,1])
     let ball3 = new ball(430,375,[-1,1])
 
-    let finish = new goal(350,16,100,30)
+    let finish = new goal(350,16,100,30)    
 }
 
-function createLevel19(){
+function createLevel17(){
+
+    thisLevelPass.textContent = "3QUT4N"
+    levelName.textContent = "Storm and Thunder!"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(40,720);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music2 == undefined){
+        music2 = this.sound.add('theme2')
+        music2.volume = volumeSlider.value / 100 
+        music2.play({loop: true});
+        this.scene.restart()
+    }
+
+    let wall1 = new wall(80,500,630,284)
+
+    for(let i = 0; i<20; i++){
+
+        if(Math.random() < 0.75){
+            let cannone0 = new cannon(90 + i * 32,16,generateRandomInRange(0.75,1.5),generateRandomIntegerInRange(100,400),[0,1])
+        }else{
+            let laser0 = new nonnoLaser(90 + i* 32, 16,generateRandomInRange(1.5,3),0.2,[0,1])
+        }
+    }
+
+    let finish = new goal(710,750,74,34)
+}
+
+function createLevel18(){
 
     thisLevelPass.textContent = "U256TV"
     levelName.textContent = "the Sniper"      
@@ -5082,7 +5042,7 @@ function createLevel19(){
     let finish = new goal(130,720,30,64)
 }
 
-function createLevel20(){
+function createLevel19(){
 
     thisLevelPass.textContent = "2NY2EW"
     levelName.textContent = "Oh no, who's that?"      
@@ -5147,6 +5107,38 @@ function createLevel20(){
     grid = new nodeGrid(gridNodeSize)
 }
 
+function createLevel20(){
+
+    thisLevelPass.textContent = "JBMF8J"
+    levelName.textContent = "Cross the River"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(30,750);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music2 == undefined){
+        music2 = this.sound.add('theme2')
+        music2.volume = volumeSlider.value / 100 
+        music2.play({loop: true});
+        this.scene.restart()
+    }    
+
+    for (let i = 0; i<34; i++){
+        let cannon0 = new cannon(16 , 80 + i*18 ,generateRandomInRange(2,4),generateRandomIntegerInRange(50,100),[1,0])
+    }
+
+    let stalker0 = new stalker(392,500)
+    stalker0.speed = playerSpeed
+
+    let finish = new goal(700,16,84,40)
+
+    grid = new nodeGrid(gridNodeSize)
+}
+
 function preload2(){
 
     var progressBar = this.add.graphics();
@@ -5169,42 +5161,6 @@ function preload2(){
 
 function createLevel21(){
 
-    thisLevelPass.textContent = "JBMF8J"
-    levelName.textContent = "Cross the River"      
-    scene = this
-    entities=[]    
-    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
-    gamepad = this.input.gamepad.gamepads
-    pg = new player(30,750);   
-    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
-    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
-    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
-    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
-    if(music2 != undefined){
-        music2.stop()
-        music2 = undefined
-    }
-    if(music3 == undefined){
-        music3 = this.sound.add('theme3') 
-        music3.volume = volumeSlider.value / 100
-        music3.play({loop: true});
-        this.scene.restart()
-    }
-
-    for (let i = 0; i<34; i++){
-        let cannon0 = new cannon(16 , 80 + i*18 ,generateRandomInRange(2,4),generateRandomIntegerInRange(50,100),[1,0])
-    }
-
-    let stalker0 = new stalker(392,500)
-    stalker0.speed = playerSpeed
-
-    let finish = new goal(700,16,84,40)
-
-    grid = new nodeGrid(gridNodeSize)
-}
-
-function createLevel22(){
-
     thisLevelPass.textContent = "U3QM4M"
     levelName.textContent = "Hide in the Smoke!"      
     scene = this
@@ -5216,9 +5172,13 @@ function createLevel22(){
     let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
     let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
     let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music2 != undefined){
+        music2.stop()
+        music2 = undefined
+    }
     if(music3 == undefined){
-        music3 = this.sound.add('theme3')
-        music3.volume = volumeSlider.value / 100 
+        music3 = this.sound.add('theme3') 
+        music3.volume = volumeSlider.value / 100
         music3.play({loop: true});
         this.scene.restart()
     }
@@ -5252,53 +5212,10 @@ function createLevel22(){
 
     let finish = new goal(PU,432,PU*3,PU*20)
 
-    grid = new nodeGrid(gridNodeSize)
+    grid = new nodeGrid(gridNodeSize)    
 }
 
-function createLevel23(){
-
-    thisLevelPass.textContent = "G4V9P8"
-    levelName.textContent = "The Storm has it against you"      
-    scene = this
-    entities=[]    
-    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
-    gamepad = this.input.gamepad.gamepads
-    pg = new player(40,750);   
-    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
-    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
-    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
-    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
-    if(music3 == undefined){
-        music3 = this.sound.add('theme3')
-        music3.volume = volumeSlider.value / 100 
-        music3.play({loop: true});
-        this.scene.restart()
-    }
-
-    let wall1 = new wall(80,500,630,284)
-    let laser0 = new nonnoLaser(90, 16,generateRandomInRange(2,3.5),0.2,[0,1])
-    
-    for(let i = 1; i<20; i++){
-
-        let dice = Math.random()
-        
-        if(dice > 0.75){
-            let laser0 = new nonnoLaser(90 + i* 32, 16,generateRandomInRange(2,3.5),0.2,[0,1])
-        }else{
-            
-            if(dice < 0.4){
-                let cannone0 = new trackingCannon(90 + i * 32,16,generateRandomInRange(1.2,2.2),generateRandomIntegerInRange(100,300))
-            }
-            else{
-                let cannone0 = new predictingCannon(90 + i * 32,16,generateRandomInRange(1.2,2.2),generateRandomIntegerInRange(100,300))
-            }
-        }
-    }
-
-    let finish = new goal(710,750,74,34)
-}
-
-function createLevel24(){
+function createLevel22(){
 
     thisLevelPass.textContent = "PL4CSR"
     levelName.textContent = "Mines!"      
@@ -5335,7 +5252,7 @@ function createLevel24(){
     let finish = new goal(16,570,134,30)
 }
 
-function createLevel25(){
+function createLevel23(){
 
     thisLevelPass.textContent = "Y44FR9"
     levelName.textContent = "The Field"      
@@ -5367,10 +5284,10 @@ function createLevel25(){
         let mine0 = new mine(generateRandomIntegerInRange(30,380),generateRandomIntegerInRange(120,770))
     }
 
-    let finish = new goal(16,16,84,30)
+    let finish = new goal(16,16,84,30)    
 }
 
-function createLevel26(){
+function createLevel24(){
 
     thisLevelPass.textContent = "2Y65Y9"
     levelName.textContent = "The Smoke Can Hide Other Things Too"      
@@ -5432,7 +5349,7 @@ function createLevel26(){
     let finish = new goal(16,760,104,24)
 }
 
-function createLevel27(){
+function createLevel25(){
 
     thisLevelPass.textContent = "QG29N9"
     levelName.textContent = "The Spinny Bois are here!"      
@@ -5469,10 +5386,10 @@ function createLevel27(){
     let stalker0 = new stalker(50,750)
     stalker0.speed = playerSpeed
 
-    let finish = new goal(302,136,98,30)
+    let finish = new goal(302,136,98,30)    
 }
 
-function createLevel28(){
+function createLevel26(){
 
     thisLevelPass.textContent = "5S2KPN"
     levelName.textContent = "Can You Fit?"      
@@ -5590,6 +5507,91 @@ function createLevel28(){
     }
 
     let finish = new goal(650,754,134,30)
+}
+
+function createLevel27(){    
+
+    thisLevelPass.textContent = "G4V9P8"
+    levelName.textContent = "The Storm has it against you"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP,SPACE');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(40,750);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music3 == undefined){
+        music3 = this.sound.add('theme3')
+        music3.volume = volumeSlider.value / 100 
+        music3.play({loop: true});
+        this.scene.restart()
+    }
+
+    let wall1 = new wall(80,500,630,284)
+    let laser0 = new nonnoLaser(90, 16,generateRandomInRange(2,3.5),0.2,[0,1])
+    
+    for(let i = 1; i<20; i++){
+
+        let dice = Math.random()
+        
+        if(dice > 0.75){
+            let laser0 = new nonnoLaser(90 + i* 32, 16,generateRandomInRange(2,3.5),0.2,[0,1])
+        }else{
+            
+            if(dice < 0.4){
+                let cannone0 = new trackingCannon(90 + i * 32,16,generateRandomInRange(1.2,2.2),generateRandomIntegerInRange(100,300))
+            }
+            else{
+                let cannone0 = new predictingCannon(90 + i * 32,16,generateRandomInRange(1.2,2.2),generateRandomIntegerInRange(100,300))
+            }
+        }
+    }
+
+    let finish = new goal(710,750,74,34)
+}
+
+function createLevel28(){
+
+    thisLevelPass.textContent = "6EVN95"
+    levelName.textContent = "Against The Current"      
+    scene = this
+    entities=[]    
+    keys = this.input.keyboard.addKeys('W,A,S,D,DOWN,LEFT,RIGHT,UP');
+    gamepad = this.input.gamepad.gamepads
+    pg = new player(75,67);   
+    let lowerEdge = new wall(0 , YDIMENSION - wallThickness ,XDIMENSION , wallThickness)
+    let upperEdge = new wall(0,0, XDIMENSION , wallThickness)
+    let rightEdge = new wall(XDIMENSION - wallThickness , 0 , wallThickness , YDIMENSION)
+    let leftEdge = new wall(0,0, wallThickness , YDIMENSION)
+    if(music3 == undefined){
+        music3 = this.sound.add('theme3')
+        music3.volume = volumeSlider.value / 100 
+        music3.play({loop: true});
+        this.scene.restart()
+    }
+
+    let wall1 = new wall(16,166,149,670)
+    let wall2 = new wall(272,16,149,620)
+    let wall3 = new wall(528,166,149,670)
+
+    let cannon0 = new cannon(176,768,1.5,125,[0,-1])
+    let cannon1 = new cannon(199,768,1.5,150,[0,-1])
+    let cannon2 = new cannon(222,768,2,100,[0,-1])
+    let cannon3 = new cannon(245,768,1.75,175,[0,-1])
+
+    let cannon4 = new cannon(432,16,1,100,[0,1])
+    let cannon5 = new cannon(455,16,1.5,150,[0,1])
+    let cannon6 = new cannon(478,16,2,200,[0,1])
+    let cannon7 = new cannon(501,16,2.5,250,[0,1])
+
+    let cannon8 = new cannon(688,16,1,playerSpeed,[0,1])
+    let cannon9 = new cannon(711,16,1,playerSpeed,[0,1])
+    let cannon10 = new cannon(734,16,1,playerSpeed,[0,1])
+    let cannon11 = new cannon(757,16,1,playerSpeed,[0,1])
+
+    let finish = new goal(677,750,107,34)
 }
 
 function createLevel29(){
