@@ -3908,12 +3908,21 @@ function levelManager(){
             
             level = Math.floor(level)
             
-            if(level > 0 && level <= 48){
+            if(level > 0 && level <= 48 && Number.isInteger(level)){
 
                 localStorage["specialBoi"] = password.value
                 lv = password.value
                 letsChangeBaby = true
             }
+        }
+
+        if(password.value == "40r") {
+
+            localStorage["skipBoi"] = "false"
+            skipBossIntro = false
+            localStorage["specialBoi"] = "40"
+            letsChangeBaby = true
+            lv = 40
         }
     }
 
