@@ -4,6 +4,6 @@ This is a personal project I put effort into for some months, it is actually bas
 The music is courtesy of Monolith Official Soundtracks and Swngyil YOON.
 I also thank my friend [Angelo Lista](https://github.com/AngeloLista) for his help with the HTML and CSS part.
 
-Click [HERE](https://lastnight0.itch.io/avoid) to play!
+##Click [HERE](https://lastnight0.itch.io/avoid) to play!
 
 Hope you have fun!
